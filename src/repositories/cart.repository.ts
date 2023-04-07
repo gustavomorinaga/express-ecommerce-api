@@ -7,20 +7,20 @@ import { ICart } from '@ts';
 export const CartRepository = {
 	async getCart(userId: string) {
 		try {
-			const product = await CartModel.findOne({ user: userId })
+			const cart = await CartModel.findOne({ user: userId })
 				.populate('user')
 				.populate({ path: 'products.product', select: '-stock' })
 				.lean();
 
-			return product;
+			return cart;
 		} catch (error) {
 			console.error(error);
 		}
 	},
 
-	async createCart(product: ICart) {
+	async createCart(cart: ICart) {
 		try {
-			const response = (await CartModel.create(product)).toObject();
+			const response = (await CartModel.create(cart)).toObject();
 
 			return response;
 		} catch (error) {
@@ -28,9 +28,9 @@ export const CartRepository = {
 		}
 	},
 
-	async updateCart(userId: string, product: ICart) {
+	async updateCart(userId: string, cart: ICart) {
 		try {
-			const response = await CartModel.findOneAndUpdate({ user: userId }, product, {
+			const response = await CartModel.findOneAndUpdate({ user: userId }, cart, {
 				new: true,
 			}).lean();
 

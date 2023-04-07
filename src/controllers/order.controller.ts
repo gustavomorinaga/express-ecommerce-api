@@ -74,7 +74,9 @@ OrderController.put('/:id', validate(updateOrderSchema), async (req, res) => {
 
 		const order = await OrderRepository.getOrder(id);
 		if (!order) return res.status(400).send({ error: 'Order not found' });
-		if (order.status === 'delivered')
+		if (order?.status === 'canceled')
+			return res.status(400).send({ error: 'Order canceled' });
+		if (order?.status === 'delivered')
 			return res.status(400).send({ error: 'Order delivered' });
 
 		const response = await OrderRepository.updateOrder(id, data);
@@ -96,9 +98,9 @@ OrderController.patch('/:id/status', validate(setStatusOrderSchema), async (req,
 		if (order?.status === 'delivered')
 			return res.status(400).send({ error: 'Order delivered' });
 
-		await OrderRepository.setStatusOrder(id, status);
+		const response = await OrderRepository.setStatusOrder(id, status);
 
-		return res.send();
+		return res.send(response);
 	} catch (error) {
 		console.error(error);
 	}
