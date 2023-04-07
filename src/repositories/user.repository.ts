@@ -1,8 +1,8 @@
 // Schemas
-import { UserModel } from '../models';
+import { UserModel } from '@models';
 
 // TS
-import { IUser } from '../ts';
+import { IUser } from '@ts';
 
 export const UserRepository = {
 	async getUsers() {
