@@ -33,6 +33,9 @@ devDependencies:
   '@typescript-eslint/parser':
     specifier: ^5.57.1
     version: 5.57.1(eslint@8.37.0)(typescript@5.0.3)
+  esbuild:
+    specifier: ^0.17.15
+    version: 0.17.15
   eslint:
     specifier: ^8.37.0
     version: 8.37.0
