@@ -1,14 +1,16 @@
 import express from 'express';
+import pino from 'pino-http';
 import cors from 'cors';
 
 // Config
-import { connect, environment } from './config';
+import { connect, environment, logger } from './config';
 
 // Routes
 import routes from './routes';
 
 const app = express();
 app.use(express.json());
+app.use(pino(logger));
 app.use(cors());
 
 // Routes

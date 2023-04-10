@@ -1,2 +1,3 @@
-export * from './connection';
-export * from './environment';
+export * from './connection.config';
+export * from './environment.config';
+export * from './logger.config';

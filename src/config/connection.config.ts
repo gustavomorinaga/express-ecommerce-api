@@ -1,6 +1,6 @@
 import mongoose from 'mongoose';
 
-import { environment } from './environment';
+import { environment } from './environment.config';
 
 export const connect = async () => {
 	try {
