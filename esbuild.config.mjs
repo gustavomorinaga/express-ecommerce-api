@@ -1,4 +1,5 @@
 import { build } from 'esbuild';
+import esbuildPluginPino from 'esbuild-plugin-pino';
 
 await build({
 	entryPoints: ['src/index.ts'],
@@ -7,4 +8,9 @@ await build({
 	platform: 'node',
 	target: 'node18',
 	outdir: 'dist',
+	plugins: [
+		esbuildPluginPino({
+			transports: ['pino-pretty'],
+		}),
+	],
 });
