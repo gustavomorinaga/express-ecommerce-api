@@ -5,7 +5,7 @@ export const errorLogger = (
 	req: Request,
 	res: Response
 ) => {
-	const status = error.status || 400;
+	const status = error?.status || 400;
 
 	req.log.error(error);
 	return res.status(status).send(error);

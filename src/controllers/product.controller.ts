@@ -4,7 +4,7 @@ import { Router } from 'express';
 import { ProductRepository } from '@repositories';
 
 // Middlewares
-import { validate } from '@middlewares';
+import { authenticateToken, validate } from '@middlewares';
 
 // TS
 import { IProduct, TQueryProduct } from '@ts';
@@ -45,41 +45,56 @@ ProductController.get('/:id', validate(getProductSchema), async (req, res) => {
 	}
 });
 
-ProductController.post('/', validate(createProductSchema), async (req, res) => {
-	try {
-		const data: IProduct = req.body;
+ProductController.post(
+	'/',
+	authenticateToken,
+	validate(createProductSchema),
+	async (req, res) => {
+		try {
+			const data: IProduct = req.body;
 
-		const response = await ProductRepository.createProduct(data);
+			const response = await ProductRepository.createProduct(data);
 
-		return res.send(response);
-	} catch (error) {
-		console.error(error);
+			return res.send(response);
+		} catch (error) {
+			console.error(error);
+		}
 	}
-});
+);
 
-ProductController.put('/:id', validate(updateProductSchema), async (req, res) => {
-	try {
-		const { id } = req.params;
-		const data: IProduct = req.body;
+ProductController.put(
+	'/:id',
+	authenticateToken,
+	validate(updateProductSchema),
+	async (req, res) => {
+		try {
+			const { id } = req.params;
+			const data: IProduct = req.body;
 
-		const response = await ProductRepository.updateProduct(id, data);
+			const response = await ProductRepository.updateProduct(id, data);
 
-		return res.send(response);
-	} catch (error) {
-		console.error(error);
+			return res.send(response);
+		} catch (error) {
+			console.error(error);
+		}
 	}
-});
+);
 
-ProductController.delete('/:id', validate(deleteProductSchema), async (req, res) => {
-	try {
-		const { id } = req.params;
+ProductController.delete(
+	'/:id',
+	authenticateToken,
+	validate(deleteProductSchema),
+	async (req, res) => {
+		try {
+			const { id } = req.params;
 
-		await ProductRepository.deleteProduct(id);
+			await ProductRepository.deleteProduct(id);
 
-		return res.send();
-	} catch (error) {
-		console.error(error);
+			return res.send();
+		} catch (error) {
+			console.error(error);
+		}
 	}
-});
+);
 
 export { ProductController };

@@ -1,3 +1,6 @@
+// Configs
+import { environment } from '@config';
+
 // Schemas
 import { UserModel } from '@models';
 
@@ -27,6 +30,8 @@ export const UserRepository = {
 
 	async createUser(user: IUser) {
 		try {
+			user.avatar = `${environment.AVATAR_GENERATOR_URL}?seed=${user.name}`;
+
 			const response = (await UserModel.create(user)).toObject();
 
 			return response;
@@ -35,9 +40,14 @@ export const UserRepository = {
 		}
 	},
 
-	async updateUser(id: string, user: IUser) {
+	async updateUser(id: string, data: IUser) {
 		try {
-			const response = await UserModel.findByIdAndUpdate(id, user, { new: true }).lean();
+			const user = await UserModel.findById(id).lean();
+			if (!user) throw new Error('User not found');
+
+			data.avatar = `${environment.AVATAR_GENERATOR_URL}?seed=${encodeURI(user.name)}`;
+
+			const response = await UserModel.findByIdAndUpdate(id, data, { new: true }).lean();
 
 			return response;
 		} catch (error) {
