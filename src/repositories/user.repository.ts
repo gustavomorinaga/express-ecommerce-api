@@ -30,6 +30,9 @@ export const UserRepository = {
 
 	async createUser(user: IUser) {
 		try {
+			const userExists = await UserModel.findOne({ email: user.email }).lean();
+			if (userExists) throw new Error('User already exists');
+
 			user.avatar = `${environment.AVATAR_GENERATOR_URL}?seed=${user.name}`;
 
 			const response = (await UserModel.create(user)).toObject();
