@@ -1,6 +1,8 @@
 import { Request, Response, NextFunction } from 'express';
+import statuses from 'http-status';
 import type { Schema, ZodError } from 'zod';
 
+/** @deprecated */
 export const validate =
 	(schema: Schema) => (req: Request, res: Response, next: NextFunction) => {
 		try {
@@ -12,6 +14,6 @@ export const validate =
 
 			next();
 		} catch (error) {
-			return res.status(400).send((error as ZodError).errors);
+			return res.status(statuses.BAD_REQUEST).send((error as ZodError).errors);
 		}
 	};
