@@ -2,7 +2,7 @@
 import { CartModel } from '@models';
 
 // TS
-import { ICart } from '@ts';
+import { ICart, IProduct } from '@ts';
 
 export const CartRepository = {
 	async getCart(userId: string) {
@@ -12,7 +12,9 @@ export const CartRepository = {
 				.populate({ path: 'products.product', select: '-stock' })
 				.lean();
 
-			return cart;
+			return cart as Omit<typeof cart, 'products'> & {
+				products: { product: IProduct; quantity: number }[];
+			};
 		} catch (error) {
 			console.error(error);
 		}
@@ -28,7 +30,7 @@ export const CartRepository = {
 		}
 	},
 
-	async updateCart(userId: string, cart: ICart) {
+	async updateCart(userId: string, cart: Omit<ICart, 'user'>) {
 		try {
 			const response = await CartModel.findOneAndUpdate({ user: userId }, cart, {
 				new: true,

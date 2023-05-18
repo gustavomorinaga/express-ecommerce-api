@@ -1,4 +1,5 @@
 import { Request, Response, NextFunction } from 'express';
+import statuses from 'http-status';
 import jwt from 'jsonwebtoken';
 
 // Configs
@@ -13,12 +14,12 @@ export const authenticateToken = (req: Request, res: Response, next: NextFunctio
 	const authHeader = req.headers['authorization'];
 	const token = authHeader && authHeader.split(' ')[1];
 
-	if (!token) return res.sendStatus(401);
+	if (!token) return res.sendStatus(statuses.UNAUTHORIZED);
 
 	jwt.verify(token, environment.JWT_SECRET, (err: any, user: any) => {
 		console.error(err);
 
-		if (err) return res.sendStatus(403);
+		if (err) return res.sendStatus(statuses.FORBIDDEN);
 
 		req.body._user = user as IUser;
 

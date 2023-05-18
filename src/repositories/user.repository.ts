@@ -43,7 +43,7 @@ export const UserRepository = {
 		}
 	},
 
-	async updateUser(id: string, data: IUser) {
+	async updateUser(id: string, data: Partial<Omit<IUser, 'password'>>) {
 		try {
 			const user = await UserModel.findById(id).lean();
 			if (!user) throw new Error('User not found');

@@ -1,10 +1,8 @@
 import { Router } from 'express';
+import statuses from 'http-status';
 
 // Repositories
 import { UserRepository } from '@repositories';
-
-// Middlewares
-import { validate } from '@middlewares';
 
 // Schemas
 import {
@@ -15,8 +13,8 @@ import {
 	deleteUserSchema,
 } from '@schemas';
 
-// TS
-import { IUser } from '@ts';
+// Utils
+import { zParse } from '@utils';
 
 /** Responsável por gerenciar as contas dos usuários */
 const UserController = Router();
@@ -25,73 +23,77 @@ UserController.get('/', async (req, res) => {
 	try {
 		const users = await UserRepository.getUsers();
 
-		return res.send(users);
+		return res.status(statuses.OK).send(users);
 	} catch (error) {
 		console.error(error);
 	}
 });
 
-UserController.get('/:id', validate(getUserSchema), async (req, res) => {
+UserController.get('/:id', async (req, res) => {
 	try {
-		const { id } = req.params;
+		const {
+			params: { id },
+		} = await zParse(getUserSchema, req);
 
 		const user = await UserRepository.getUser(id);
 
-		return res.send(user);
+		return res.status(statuses.OK).send(user);
 	} catch (error) {
 		console.error(error);
 	}
 });
 
-UserController.post('/', validate(createUserSchema), async (req, res) => {
+UserController.post('/', async (req, res) => {
 	try {
-		const data: IUser = req.body;
+		const { body: data } = await zParse(createUserSchema, req);
 
 		const response = await UserRepository.createUser(data);
 
-		return res.send(response);
+		return res.status(statuses.CREATED).send(response);
 	} catch (error) {
 		console.error(error);
 	}
 });
 
-UserController.put('/:id', validate(updateUserSchema), async (req, res) => {
+UserController.put('/:id', async (req, res) => {
 	try {
-		const { id } = req.params;
-		const data: IUser = req.body;
+		const {
+			params: { id },
+			body: data,
+		} = await zParse(updateUserSchema, req);
 
 		const response = await UserRepository.updateUser(id, data);
 
-		return res.send(response);
+		return res.status(statuses.OK).send(response);
 	} catch (error) {
 		console.error(error);
 	}
 });
 
-UserController.patch(
-	'/:id/password',
-	validate(updateUserPasswordSchema),
-	async (req, res) => {
-		try {
-			const { id } = req.params;
-			const { password }: IUser = req.body;
-
-			const response = await UserRepository.updateUserPassword(id, password);
-
-			return res.send(response);
-		} catch (error) {
-			console.error(error);
-		}
-	}
-);
-
-UserController.delete('/:id', validate(deleteUserSchema), async (req, res) => {
+UserController.patch('/:id/password', async (req, res) => {
 	try {
-		const { id } = req.params;
+		const {
+			params: { id },
+			body: { password },
+		} = await zParse(updateUserPasswordSchema, req);
+
+		const response = await UserRepository.updateUserPassword(id, password);
+
+		return res.status(statuses.OK).send(response);
+	} catch (error) {
+		console.error(error);
+	}
+});
+
+UserController.delete('/:id', async (req, res) => {
+	try {
+		const {
+			params: { id },
+		} = await zParse(deleteUserSchema, req);
 
 		await UserRepository.deleteUser(id);
 
-		return res.send();
+		return res.sendStatus(statuses.NO_CONTENT);
 	} catch (error) {
 		console.error(error);
 	}

@@ -31,7 +31,7 @@ export const OrderRepository = {
 		}
 	},
 
-	async createOrder(product: IOrder) {
+	async createOrder(product: Omit<IOrder, 'status'>) {
 		try {
 			const response = (await OrderModel.create(product)).toObject();
 
@@ -41,7 +41,7 @@ export const OrderRepository = {
 		}
 	},
 
-	async updateOrder(id: string, product: IOrder) {
+	async updateOrder(id: string, product: Partial<IOrder>) {
 		try {
 			const response = await OrderModel.findByIdAndUpdate(id, product, {
 				new: true,

@@ -1,13 +1,8 @@
 import { Router } from 'express';
+import statuses from 'http-status';
 
 // Repositories
 import { CartRepository, OrderRepository } from '@repositories';
-
-// Middlewares
-import { validate } from '@middlewares';
-
-// TS
-import { IOrder } from '@ts';
 
 // Schemas
 import {
@@ -17,6 +12,9 @@ import {
 	setStatusOrderSchema,
 } from '@schemas';
 
+// Utils
+import { zParse } from '@utils';
+
 /** Responsável por gerenciar os pedidos feitos pelos usuários */
 const OrderController = Router();
 
@@ -24,30 +22,32 @@ OrderController.get('/', async (req, res) => {
 	try {
 		const orders = await OrderRepository.getOrders();
 
-		return res.send(orders);
+		return res.status(statuses.OK).send(orders);
 	} catch (error) {
 		console.error(error);
 	}
 });
 
-OrderController.get('/:id', validate(getOrderSchema), async (req, res) => {
+OrderController.get('/:id', async (req, res) => {
 	try {
-		const { id } = req.params;
+		const {
+			params: { id },
+		} = await zParse(getOrderSchema, req);
 
 		const order = await OrderRepository.getOrder(id);
 
-		return res.send(order);
+		return res.status(statuses.OK).send(order);
 	} catch (error) {
 		console.error(error);
 	}
 });
 
-OrderController.post('/', validate(createOrderSchema), async (req, res) => {
+OrderController.post('/', async (req, res) => {
 	try {
-		const data: IOrder = req.body;
+		const { body: data } = await zParse(createOrderSchema, req);
 
-		const cart = await CartRepository.getCart(data.user as string);
-		if (!cart) return res.status(400).send({ error: 'Cart not found' });
+		const cart = await CartRepository.getCart(data.user);
+		if (!cart) return res.status(statuses.NOT_FOUND).send({ error: 'Cart not found' });
 
 		await CartRepository.deleteCart(data.user as string);
 
@@ -61,46 +61,51 @@ OrderController.post('/', validate(createOrderSchema), async (req, res) => {
 			products: cart.products,
 		});
 
-		return res.send(response);
+		return res.status(statuses.CREATED).send(response);
 	} catch (error) {
 		console.error(error);
 	}
 });
 
-OrderController.put('/:id', validate(updateOrderSchema), async (req, res) => {
+OrderController.put('/:id', async (req, res) => {
 	try {
-		const { id } = req.params;
-		const data: IOrder = req.body;
+		const {
+			params: { id },
+			body: data,
+		} = await zParse(updateOrderSchema, req);
 
 		const order = await OrderRepository.getOrder(id);
-		if (!order) return res.status(400).send({ error: 'Order not found' });
+		if (!order)
+			return res.status(statuses.BAD_REQUEST).send({ error: 'Order not found' });
 		if (order?.status === 'canceled')
-			return res.status(400).send({ error: 'Order canceled' });
+			return res.status(statuses.BAD_REQUEST).send({ error: 'Order canceled' });
 		if (order?.status === 'delivered')
-			return res.status(400).send({ error: 'Order delivered' });
+			return res.status(statuses.BAD_REQUEST).send({ error: 'Order delivered' });
 
 		const response = await OrderRepository.updateOrder(id, data);
 
-		return res.send(response);
+		return res.status(statuses.OK).send(response);
 	} catch (error) {
 		console.error(error);
 	}
 });
 
-OrderController.patch('/:id/status', validate(setStatusOrderSchema), async (req, res) => {
+OrderController.patch('/:id/status', async (req, res) => {
 	try {
-		const { id } = req.params;
-		const { status }: IOrder = req.body;
+		const {
+			params: { id },
+			body: { status },
+		} = await zParse(setStatusOrderSchema, req);
 
 		const order = await OrderRepository.getOrder(id);
 		if (order?.status === 'canceled')
-			return res.status(400).send({ error: 'Order canceled' });
+			return res.status(statuses.BAD_REQUEST).send({ error: 'Order canceled' });
 		if (order?.status === 'delivered')
-			return res.status(400).send({ error: 'Order delivered' });
+			return res.status(statuses.BAD_REQUEST).send({ error: 'Order delivered' });
 
 		const response = await OrderRepository.setStatusOrder(id, status);
 
-		return res.send(response);
+		return res.status(statuses.OK).send(response);
 	} catch (error) {
 		console.error(error);
 	}

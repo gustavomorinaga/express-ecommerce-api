@@ -1,9 +1,9 @@
-import { isValidObjectId } from 'mongoose';
 import { z } from 'zod';
+import { ObjectId } from '@utils';
 
 export const getUserSchema = z.object({
 	params: z.object({
-		id: z.custom(isValidObjectId),
+		id: ObjectId,
 	}),
 });
 
@@ -69,7 +69,7 @@ export const updateUserSchema = z.object({
 			.optional(),
 	}),
 	params: z.object({
-		id: z.custom(isValidObjectId),
+		id: ObjectId,
 	}),
 });
 
@@ -78,12 +78,12 @@ export const updateUserPasswordSchema = z.object({
 		password: z.string().min(6).max(20),
 	}),
 	params: z.object({
-		id: z.custom(isValidObjectId),
+		id: ObjectId,
 	}),
 });
 
 export const deleteUserSchema = z.object({
 	params: z.object({
-		id: z.custom(isValidObjectId),
+		id: ObjectId,
 	}),
 });

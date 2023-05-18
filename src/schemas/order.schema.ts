@@ -1,15 +1,15 @@
-import { isValidObjectId } from 'mongoose';
 import { z } from 'zod';
+import { ObjectId } from '@utils';
 
 export const getOrderSchema = z.object({
 	params: z.object({
-		id: z.custom(isValidObjectId),
+		id: ObjectId,
 	}),
 });
 
 export const createOrderSchema = z.object({
 	body: z.object({
-		user: z.custom(isValidObjectId),
+		user: ObjectId,
 		deliveryAddress: z.object({
 			street: z.string().min(3).max(50),
 			number: z.number().min(1),
@@ -41,7 +41,7 @@ export const updateOrderSchema = z.object({
 		observation: z.string().max(100).optional(),
 	}),
 	params: z.object({
-		id: z.custom(isValidObjectId),
+		id: ObjectId,
 	}),
 });
 
@@ -50,6 +50,6 @@ export const setStatusOrderSchema = z.object({
 		status: z.enum(['pending', 'canceled', 'delivered']),
 	}),
 	params: z.object({
-		id: z.custom(isValidObjectId),
+		id: ObjectId,
 	}),
 });

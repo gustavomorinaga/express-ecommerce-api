@@ -1,4 +1,5 @@
 import { Router } from 'express';
+import statuses from 'http-status';
 
 // Configs
 import { environment, generateAccessToken, transporter } from '@config';
@@ -6,42 +7,44 @@ import { environment, generateAccessToken, transporter } from '@config';
 // Repositories
 import { AuthRepository } from '@repositories';
 
-// Middlewares
-import { validate } from '@middlewares';
-
 // Schemas
-import { createUserSchema, loginAuthSchema } from '@schemas';
+import {
+	createUserSchema,
+	loginAuthSchema,
+	resetAuthSchema,
+	retrieveAuthSchema,
+} from '@schemas';
 
-// TS
-import { IAuth, IUser } from '@ts';
+// Utils
+import { zParse } from '@utils';
 
 /** Responsável por gerenciar a autenticação dos usuários */
 const AuthController = Router();
 
-AuthController.post('/login', validate(loginAuthSchema), async (req, res) => {
+AuthController.post('/login', async (req, res) => {
 	try {
-		const auth: IAuth = req.body;
+		const { body: auth } = await zParse(loginAuthSchema, req);
 
 		const user = await AuthRepository.login(auth);
-		if (!user) return res.sendStatus(401);
+		if (!user) return res.sendStatus(statuses.UNAUTHORIZED);
 
 		const { password, createdAt, updatedAt, ...access } = user;
 
 		const token = generateAccessToken(access, { expiresIn: '1h' });
 
-		return res.send({ ...user, token });
+		return res.status(statuses.OK).send({ ...user, token });
 	} catch (error) {
 		console.error(error);
 	}
 });
 
-AuthController.post('/signup', validate(createUserSchema), async (req, res) => {
+AuthController.post('/signup', async (req, res) => {
 	try {
-		const data: IUser = req.body;
+		const { body: data } = await zParse(createUserSchema, req);
 
 		const response = await AuthRepository.signUp(data);
 
-		return res.send(response);
+		return res.status(statuses.OK).send(response);
 	} catch (error) {
 		console.error(error);
 	}
@@ -49,7 +52,7 @@ AuthController.post('/signup', validate(createUserSchema), async (req, res) => {
 
 AuthController.post('/retrieve', async (req, res) => {
 	try {
-		const auth: IAuth = req.body;
+		const { body: auth } = await zParse(retrieveAuthSchema, req);
 
 		const token = generateAccessToken(auth, { expiresIn: '30m' });
 
@@ -64,7 +67,7 @@ AuthController.post('/retrieve', async (req, res) => {
 			`,
 		});
 
-		return res.sendStatus(200);
+		return res.sendStatus(statuses.OK);
 	} catch (error) {
 		console.error(error);
 	}
@@ -72,11 +75,11 @@ AuthController.post('/retrieve', async (req, res) => {
 
 AuthController.patch('/reset', async (req, res) => {
 	try {
-		const auth: IAuth = req.body;
+		const { body: auth } = await zParse(resetAuthSchema, req);
 
 		await AuthRepository.resetPassword(auth);
 
-		return res.sendStatus(200);
+		return res.sendStatus(statuses.OK);
 	} catch (error) {
 		console.error(error);
 	}

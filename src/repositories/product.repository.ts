@@ -41,7 +41,7 @@ export const ProductRepository = {
 		}
 	},
 
-	async updateProduct(id: string, product: IProduct) {
+	async updateProduct(id: string, product: Partial<IProduct>) {
 		try {
 			const response = await ProductModel.findByIdAndUpdate(id, product, {
 				new: true,

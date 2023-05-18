@@ -1,13 +1,11 @@
 import { Router } from 'express';
+import statuses from 'http-status';
 
 // Repositories
 import { ProductRepository } from '@repositories';
 
 // Middlewares
-import { authenticateToken, validate } from '@middlewares';
-
-// TS
-import { IProduct, TQueryProduct } from '@ts';
+import { authenticateToken } from '@middlewares';
 
 // Schemas
 import {
@@ -18,83 +16,81 @@ import {
 	updateProductSchema,
 } from '@schemas';
 
+// Utils
+import { zParse } from '@utils';
+
 /** Responsável por gerenciar os produtos vendidos no e-commerce */
 const ProductController = Router();
 
-ProductController.get('/', validate(getProductsSchema), async (req, res) => {
+ProductController.get('/', async (req, res) => {
 	try {
-		const query: TQueryProduct = req.query;
+		const { query } = await zParse(getProductsSchema, req);
 
-		const products = await ProductRepository.getProducts(query);
+		const products = await ProductRepository.getProducts({
+			...query,
+			price: Number(query.price),
+			stock: Number(query.stock),
+		});
 
-		return res.send(products);
+		return res.status(statuses.OK).send(products);
 	} catch (error) {
 		console.error(error);
 	}
 });
 
-ProductController.get('/:id', validate(getProductSchema), async (req, res) => {
+ProductController.get('/:id', async (req, res) => {
 	try {
-		const { id } = req.params;
+		const {
+			params: { id },
+		} = await zParse(getProductSchema, req);
 
 		const product = await ProductRepository.getProduct(id);
 
-		return res.send(product);
+		return res.status(statuses.OK).send(product);
 	} catch (error) {
 		console.error(error);
 	}
 });
 
-ProductController.post(
-	'/',
-	authenticateToken,
-	validate(createProductSchema),
-	async (req, res) => {
-		try {
-			const data: IProduct = req.body;
+ProductController.post('/', authenticateToken, async (req, res) => {
+	try {
+		const { body: data } = await zParse(createProductSchema, req);
 
-			const response = await ProductRepository.createProduct(data);
+		const response = await ProductRepository.createProduct(data);
 
-			return res.send(response);
-		} catch (error) {
-			console.error(error);
-		}
+		return res.status(statuses.CREATED).send(response);
+	} catch (error) {
+		console.error(error);
 	}
-);
+});
 
-ProductController.put(
-	'/:id',
-	authenticateToken,
-	validate(updateProductSchema),
-	async (req, res) => {
-		try {
-			const { id } = req.params;
-			const data: IProduct = req.body;
+ProductController.put('/:id', authenticateToken, async (req, res) => {
+	try {
+		const {
+			params: { id },
+			body: data,
+		} = await zParse(updateProductSchema, req);
 
-			const response = await ProductRepository.updateProduct(id, data);
+		const response = await ProductRepository.updateProduct(id, data);
 
-			return res.send(response);
-		} catch (error) {
-			console.error(error);
-		}
+		return res.status(statuses.OK).send(response);
+	} catch (error) {
+		console.error(error);
 	}
-);
+});
 
-ProductController.delete(
-	'/:id',
-	authenticateToken,
-	validate(deleteProductSchema),
-	async (req, res) => {
-		try {
-			const { id } = req.params;
+ProductController.delete('/:id', authenticateToken, async (req, res) => {
+	try {
+		const {
+			params: { id },
+		} = await zParse(deleteProductSchema, req);
 
-			await ProductRepository.deleteProduct(id);
+		await ProductRepository.deleteProduct(id);
 
-			return res.send();
-		} catch (error) {
-			console.error(error);
-		}
+		return res.sendStatus(statuses.NO_CONTENT);
+	} catch (error) {
+		console.error(error);
 	}
-);
+});
 
 export { ProductController };

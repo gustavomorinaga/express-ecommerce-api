@@ -7,11 +7,9 @@ export interface IOrder extends TTimestamps {
 	deliveryAddress: IAddress;
 	totalPrice: number;
 	status: 'pending' | 'canceled' | 'delivered';
-	observation: string;
-	products: [
-		{
-			product: IProduct;
-			quantity: number;
-		}
-	];
+	observation?: string;
+	products: {
+		product: IProduct;
+		quantity: number;
+	}[];
 }

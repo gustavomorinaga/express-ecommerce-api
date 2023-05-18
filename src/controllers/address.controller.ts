@@ -1,24 +1,27 @@
 import { Router } from 'express';
+import statuses from 'http-status';
 
 // Repositories
 import { AddressRepository } from '@repositories';
 
-// Middlewares
-import { validate } from '@middlewares';
-
 // Schemas
 import { addressSchema } from '@schemas';
+
+// --- Utils ---
+import { zParse } from '@utils';
 
 /** Responsável por gerenciar a autenticação dos usuários */
 const AddressController = Router();
 
-AddressController.get('/:cep', validate(addressSchema), async (req, res) => {
+AddressController.get('/:cep', async (req, res) => {
 	try {
-		const { cep } = req.params;
+		const {
+			params: { cep },
+		} = await zParse(addressSchema, req);
 
 		const address = await AddressRepository.searchAddress(cep);
 
-		return res.status(200).send(address);
+		return res.status(statuses.OK).send(address);
 	} catch (error) {
 		console.error(error);
 	}

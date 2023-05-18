@@ -4,10 +4,8 @@ import type { ObjectId } from 'mongoose';
 
 export interface ICart extends TTimestamps {
 	user: ObjectId | string;
-	products: [
-		{
-			product: IProduct;
-			quantity: number;
-		}
-	];
+	products: {
+		product: IProduct | string;
+		quantity: number;
+	}[];
 }

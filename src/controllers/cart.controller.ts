@@ -1,13 +1,8 @@
 import { Router } from 'express';
+import statuses from 'http-status';
 
 // Repositories
 import { CartRepository } from '@repositories';
-
-// Middlewares
-import { validate } from '@middlewares';
-
-// TS
-import { ICart } from '@ts';
 
 // Schemas
 import {
@@ -17,53 +12,62 @@ import {
 	updateCartSchema,
 } from '@schemas';
 
+// Utils
+import { zParse } from '@utils';
+
 /** Responsável por gerenciar o carrinho de compras dos usuários */
 const CartController = Router();
 
-CartController.get('/:userId', validate(getCartSchema), async (req, res) => {
+CartController.get('/:userId', async (req, res) => {
 	try {
-		const { userId } = req.params;
+		const {
+			params: { userId },
+		} = await zParse(getCartSchema, req);
 
 		const cart = await CartRepository.getCart(userId);
 
-		return res.send(cart);
+		return res.status(statuses.OK).send(cart);
 	} catch (error) {
 		console.error(error);
 	}
 });
 
-CartController.post('/', validate(createCartSchema), async (req, res) => {
+CartController.post('/', async (req, res) => {
 	try {
-		const data: ICart = req.body;
+		const { body: data } = await zParse(createCartSchema, req);
 
 		const response = await CartRepository.createCart(data);
 
-		return res.send(response);
+		return res.status(statuses.CREATED).send(response);
 	} catch (error) {
 		console.error(error);
 	}
 });
 
-CartController.put('/:userId', validate(updateCartSchema), async (req, res) => {
+CartController.put('/:userId', async (req, res) => {
 	try {
-		const { userId } = req.params;
-		const data: ICart = req.body;
+		const {
+			params: { userId },
+			body: data,
+		} = await zParse(updateCartSchema, req);
 
 		const response = await CartRepository.updateCart(userId, data);
 
-		return res.send(response);
+		return res.status(statuses.OK).send(response);
 	} catch (error) {
 		console.error(error);
 	}
 });
 
-CartController.delete('/:userId', validate(deleteCartSchema), async (req, res) => {
+CartController.delete('/:userId', async (req, res) => {
 	try {
-		const { userId } = req.params;
+		const {
+			params: { userId },
+		} = await zParse(deleteCartSchema, req);
 
 		await CartRepository.deleteCart(userId);
 
-		return res.send();
+		return res.sendStatus(statuses.NO_CONTENT);
 	} catch (error) {
 		console.error(error);
 	}

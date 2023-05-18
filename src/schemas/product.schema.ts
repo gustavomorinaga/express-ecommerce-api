@@ -1,5 +1,5 @@
-import { isValidObjectId } from 'mongoose';
 import { z } from 'zod';
+import { ObjectId } from '@utils';
 
 export const getProductsSchema = z.object({
 	query: z.object({
@@ -11,7 +11,7 @@ export const getProductsSchema = z.object({
 
 export const getProductSchema = z.object({
 	params: z.object({
-		id: z.custom(isValidObjectId),
+		id: ObjectId,
 	}),
 });
 
@@ -32,12 +32,12 @@ export const updateProductSchema = z.object({
 		stock: z.number().min(0).optional(),
 	}),
 	params: z.object({
-		id: z.custom(isValidObjectId),
+		id: ObjectId,
 	}),
 });
 
 export const deleteProductSchema = z.object({
 	params: z.object({
-		id: z.custom(isValidObjectId),
+		id: ObjectId,
 	}),
 });
