@@ -8,7 +8,7 @@ import { environment } from '@config';
 // TS
 import { IUser } from '@ts';
 
-export const authenticateToken = (req: Request, res: Response, next: NextFunction) => {
+export const authMiddleware = (req: Request, res: Response, next: NextFunction) => {
 	if (!environment.JWT_SECRET) throw new Error('JWT_SECRET not found!');
 
 	const authHeader = req.headers['authorization'];

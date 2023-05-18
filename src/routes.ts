@@ -1,8 +1,6 @@
 import { Router } from 'express';
 import swaggerUi from 'swagger-ui-express';
-
-// Config
-import { swaggerSpec } from '@config';
+import swaggerFile from '../swagger-output.json';
 
 // Controllers
 import {
@@ -15,17 +13,17 @@ import {
 } from './controllers';
 
 // Middlewares
-import { authenticateToken } from '@middlewares';
+import { authMiddleware } from '@middlewares';
 
 const routes = Router();
 
 // Routes
-routes.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
+routes.use('/', swaggerUi.serve, swaggerUi.setup(swaggerFile));
 routes.use('/address', AddressController);
 routes.use('/auth', AuthController);
-routes.use('/carts', authenticateToken, CartController);
-routes.use('/orders', authenticateToken, OrderController);
+routes.use('/carts', authMiddleware, CartController);
+routes.use('/orders', authMiddleware, OrderController);
 routes.use('/products', ProductController);
-routes.use('/users', authenticateToken, UserController);
+routes.use('/users', authMiddleware, UserController);
 
 export default routes;

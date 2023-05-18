@@ -5,7 +5,7 @@ import statuses from 'http-status';
 import { ProductRepository } from '@repositories';
 
 // Middlewares
-import { authenticateToken } from '@middlewares';
+import { authMiddleware } from '@middlewares';
 
 // Schemas
 import {
@@ -52,7 +52,7 @@ ProductController.get('/:id', async (req, res, next) => {
 	}
 });
 
-ProductController.post('/', authenticateToken, async (req, res, next) => {
+ProductController.post('/', authMiddleware, async (req, res, next) => {
 	try {
 		const { body: data } = await zParse(createProductSchema, req);
 
@@ -64,7 +64,7 @@ ProductController.post('/', authenticateToken, async (req, res, next) => {
 	}
 });
 
-ProductController.put('/:id', authenticateToken, async (req, res, next) => {
+ProductController.put('/:id', authMiddleware, async (req, res, next) => {
 	try {
 		const {
 			params: { id },
@@ -79,7 +79,7 @@ ProductController.put('/:id', authenticateToken, async (req, res, next) => {
 	}
 });
 
-ProductController.delete('/:id', authenticateToken, async (req, res, next) => {
+ProductController.delete('/:id', authMiddleware, async (req, res, next) => {
 	try {
 		const {
 			params: { id },
