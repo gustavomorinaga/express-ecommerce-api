@@ -22,7 +22,7 @@ import { zParse } from '@utils';
 /** Responsável por gerenciar os produtos vendidos no e-commerce */
 const ProductController = Router();
 
-ProductController.get('/', async (req, res) => {
+ProductController.get('/', async (req, res, next) => {
 	try {
 		const { query } = await zParse(getProductsSchema, req);
 
@@ -34,11 +34,11 @@ ProductController.get('/', async (req, res) => {
 
 		return res.status(statuses.OK).send(products);
 	} catch (error) {
-		console.error(error);
+		next(error);
 	}
 });
 
-ProductController.get('/:id', async (req, res) => {
+ProductController.get('/:id', async (req, res, next) => {
 	try {
 		const {
 			params: { id },
@@ -48,11 +48,11 @@ ProductController.get('/:id', async (req, res) => {
 
 		return res.status(statuses.OK).send(product);
 	} catch (error) {
-		console.error(error);
+		next(error);
 	}
 });
 
-ProductController.post('/', authenticateToken, async (req, res) => {
+ProductController.post('/', authenticateToken, async (req, res, next) => {
 	try {
 		const { body: data } = await zParse(createProductSchema, req);
 
@@ -60,11 +60,11 @@ ProductController.post('/', authenticateToken, async (req, res) => {
 
 		return res.status(statuses.CREATED).send(response);
 	} catch (error) {
-		console.error(error);
+		next(error);
 	}
 });
 
-ProductController.put('/:id', authenticateToken, async (req, res) => {
+ProductController.put('/:id', authenticateToken, async (req, res, next) => {
 	try {
 		const {
 			params: { id },
@@ -75,11 +75,11 @@ ProductController.put('/:id', authenticateToken, async (req, res) => {
 
 		return res.status(statuses.OK).send(response);
 	} catch (error) {
-		console.error(error);
+		next(error);
 	}
 });
 
-ProductController.delete('/:id', authenticateToken, async (req, res) => {
+ProductController.delete('/:id', authenticateToken, async (req, res, next) => {
 	try {
 		const {
 			params: { id },
@@ -89,7 +89,7 @@ ProductController.delete('/:id', authenticateToken, async (req, res) => {
 
 		return res.sendStatus(statuses.NO_CONTENT);
 	} catch (error) {
-		console.error(error);
+		next(error);
 	}
 });
 

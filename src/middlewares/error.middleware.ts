@@ -1,13 +1,14 @@
-import { Request, Response } from 'express';
+import { NextFunction, Request, Response } from 'express';
 import statuses from 'http-status';
 
 export const errorLogger = (
-	error: Error & { status?: number },
+	err: Error & { status?: number },
 	req: Request,
-	res: Response
+	res: Response,
+	next: NextFunction
 ) => {
-	const status = error?.status || statuses.BAD_REQUEST;
+	const status = err?.status || statuses.BAD_REQUEST;
 
-	req.log.error(error);
-	return res.status(status).send(error);
+	req.log.error(err);
+	return res.status(status).json(err);
 };

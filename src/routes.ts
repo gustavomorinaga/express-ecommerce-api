@@ -15,7 +15,7 @@ import {
 } from './controllers';
 
 // Middlewares
-import { authenticateToken, errorLogger } from '@middlewares';
+import { authenticateToken } from '@middlewares';
 
 const routes = Router();
 
@@ -27,7 +27,5 @@ routes.use('/carts', authenticateToken, CartController);
 routes.use('/orders', authenticateToken, OrderController);
 routes.use('/products', ProductController);
 routes.use('/users', authenticateToken, UserController);
-
-routes.use(errorLogger);
 
 export default routes;

@@ -18,17 +18,17 @@ import { zParse } from '@utils';
 /** Responsável por gerenciar os pedidos feitos pelos usuários */
 const OrderController = Router();
 
-OrderController.get('/', async (req, res) => {
+OrderController.get('/', async (req, res, next) => {
 	try {
 		const orders = await OrderRepository.getOrders();
 
 		return res.status(statuses.OK).send(orders);
 	} catch (error) {
-		console.error(error);
+		next(error);
 	}
 });
 
-OrderController.get('/:id', async (req, res) => {
+OrderController.get('/:id', async (req, res, next) => {
 	try {
 		const {
 			params: { id },
@@ -38,11 +38,11 @@ OrderController.get('/:id', async (req, res) => {
 
 		return res.status(statuses.OK).send(order);
 	} catch (error) {
-		console.error(error);
+		next(error);
 	}
 });
 
-OrderController.post('/', async (req, res) => {
+OrderController.post('/', async (req, res, next) => {
 	try {
 		const { body: data } = await zParse(createOrderSchema, req);
 
@@ -63,11 +63,11 @@ OrderController.post('/', async (req, res) => {
 
 		return res.status(statuses.CREATED).send(response);
 	} catch (error) {
-		console.error(error);
+		next(error);
 	}
 });
 
-OrderController.put('/:id', async (req, res) => {
+OrderController.put('/:id', async (req, res, next) => {
 	try {
 		const {
 			params: { id },
@@ -86,11 +86,11 @@ OrderController.put('/:id', async (req, res) => {
 
 		return res.status(statuses.OK).send(response);
 	} catch (error) {
-		console.error(error);
+		next(error);
 	}
 });
 
-OrderController.patch('/:id/status', async (req, res) => {
+OrderController.patch('/:id/status', async (req, res, next) => {
 	try {
 		const {
 			params: { id },
@@ -107,7 +107,7 @@ OrderController.patch('/:id/status', async (req, res) => {
 
 		return res.status(statuses.OK).send(response);
 	} catch (error) {
-		console.error(error);
+		next(error);
 	}
 });
 

@@ -19,17 +19,17 @@ import { zParse } from '@utils';
 /** Responsável por gerenciar as contas dos usuários */
 const UserController = Router();
 
-UserController.get('/', async (req, res) => {
+UserController.get('/', async (req, res, next) => {
 	try {
 		const users = await UserRepository.getUsers();
 
 		return res.status(statuses.OK).send(users);
 	} catch (error) {
-		console.error(error);
+		next(error);
 	}
 });
 
-UserController.get('/:id', async (req, res) => {
+UserController.get('/:id', async (req, res, next) => {
 	try {
 		const {
 			params: { id },
@@ -39,11 +39,11 @@ UserController.get('/:id', async (req, res) => {
 
 		return res.status(statuses.OK).send(user);
 	} catch (error) {
-		console.error(error);
+		next(error);
 	}
 });
 
-UserController.post('/', async (req, res) => {
+UserController.post('/', async (req, res, next) => {
 	try {
 		const { body: data } = await zParse(createUserSchema, req);
 
@@ -51,11 +51,11 @@ UserController.post('/', async (req, res) => {
 
 		return res.status(statuses.CREATED).send(response);
 	} catch (error) {
-		console.error(error);
+		next(error);
 	}
 });
 
-UserController.put('/:id', async (req, res) => {
+UserController.put('/:id', async (req, res, next) => {
 	try {
 		const {
 			params: { id },
@@ -66,11 +66,11 @@ UserController.put('/:id', async (req, res) => {
 
 		return res.status(statuses.OK).send(response);
 	} catch (error) {
-		console.error(error);
+		next(error);
 	}
 });
 
-UserController.patch('/:id/password', async (req, res) => {
+UserController.patch('/:id/password', async (req, res, next) => {
 	try {
 		const {
 			params: { id },
@@ -81,11 +81,11 @@ UserController.patch('/:id/password', async (req, res) => {
 
 		return res.status(statuses.OK).send(response);
 	} catch (error) {
-		console.error(error);
+		next(error);
 	}
 });
 
-UserController.delete('/:id', async (req, res) => {
+UserController.delete('/:id', async (req, res, next) => {
 	try {
 		const {
 			params: { id },
@@ -95,7 +95,7 @@ UserController.delete('/:id', async (req, res) => {
 
 		return res.sendStatus(statuses.NO_CONTENT);
 	} catch (error) {
-		console.error(error);
+		next(error);
 	}
 });
 

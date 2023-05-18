@@ -8,6 +8,9 @@ import { connect, environment, logger } from './config';
 // Routes
 import routes from './routes';
 
+// Middlewares
+import { errorLogger } from '@middlewares';
+
 const app = express();
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
@@ -16,6 +19,9 @@ app.use(cors());
 
 // Routes
 app.use('/api', routes);
+
+// Error handler
+app.use(errorLogger);
 
 (async () => {
 	await connect();

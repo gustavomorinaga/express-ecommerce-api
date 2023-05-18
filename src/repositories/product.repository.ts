@@ -6,60 +6,40 @@ import { IProduct, TQueryProduct } from '@ts';
 
 export const ProductRepository = {
 	async getProducts(query: TQueryProduct) {
-		try {
-			const conditions: any = {};
+		const conditions: any = {};
 
-			if (query.name) conditions.name = { $regex: query.name, $options: 'i' };
-			if (query.price) conditions.price = Number(query.price);
-			if (query.stock) conditions.stock = Number(query.stock);
+		if (query.name) conditions.name = { $regex: query.name, $options: 'i' };
+		if (query.price) conditions.price = Number(query.price);
+		if (query.stock) conditions.stock = Number(query.stock);
 
-			const products = await ProductModel.find(conditions).lean();
+		const products = await ProductModel.find(conditions).lean();
 
-			return products;
-		} catch (error) {
-			console.error(error);
-		}
+		return products;
 	},
 
 	async getProduct(id: string) {
-		try {
-			const product = await ProductModel.findById(id).lean();
+		const product = await ProductModel.findById(id).lean();
 
-			return product;
-		} catch (error) {
-			console.error(error);
-		}
+		return product;
 	},
 
 	async createProduct(product: IProduct) {
-		try {
-			const response = (await ProductModel.create(product)).toObject();
+		const response = (await ProductModel.create(product)).toObject();
 
-			return response;
-		} catch (error) {
-			console.error(error);
-		}
+		return response;
 	},
 
 	async updateProduct(id: string, product: Partial<IProduct>) {
-		try {
-			const response = await ProductModel.findByIdAndUpdate(id, product, {
-				new: true,
-			}).lean();
+		const response = await ProductModel.findByIdAndUpdate(id, product, {
+			new: true,
+		}).lean();
 
-			return response;
-		} catch (error) {
-			console.error(error);
-		}
+		return response;
 	},
 
 	async deleteProduct(id: string) {
-		try {
-			const response = await ProductModel.findByIdAndDelete(id).lean();
+		const response = await ProductModel.findByIdAndDelete(id).lean();
 
-			return response;
-		} catch (error) {
-			console.error(error);
-		}
+		return response;
 	},
 };

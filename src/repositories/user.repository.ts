@@ -9,76 +9,52 @@ import { IUser } from '@ts';
 
 export const UserRepository = {
 	async getUsers() {
-		try {
-			const users = await UserModel.find().lean();
+		const users = await UserModel.find().lean();
 
-			return users;
-		} catch (error) {
-			console.error(error);
-		}
+		return users;
 	},
 
 	async getUser(id: string) {
-		try {
-			const user = await UserModel.findById(id).lean();
+		const user = await UserModel.findById(id).lean();
 
-			return user;
-		} catch (error) {
-			console.error(error);
-		}
+		return user;
 	},
 
 	async createUser(user: IUser) {
-		try {
-			const userExists = await UserModel.findOne({ email: user.email }).lean();
-			if (userExists) throw new Error('User already exists');
+		const userExists = await UserModel.findOne({ email: user.email }).lean();
+		if (userExists) throw new Error('User already exists');
 
-			user.avatar = `${environment.AVATAR_GENERATOR_URL}?seed=${user.name}`;
+		user.avatar = `${environment.AVATAR_GENERATOR_URL}?seed=${user.name}`;
 
-			const response = (await UserModel.create(user)).toObject();
+		const response = (await UserModel.create(user)).toObject();
 
-			return response;
-		} catch (error) {
-			console.error(error);
-		}
+		return response;
 	},
 
 	async updateUser(id: string, data: Partial<Omit<IUser, 'password'>>) {
-		try {
-			const user = await UserModel.findById(id).lean();
-			if (!user) throw new Error('User not found');
+		const user = await UserModel.findById(id).lean();
+		if (!user) throw new Error('User not found');
 
-			data.avatar = `${environment.AVATAR_GENERATOR_URL}?seed=${encodeURI(user.name)}`;
+		data.avatar = `${environment.AVATAR_GENERATOR_URL}?seed=${encodeURI(user.name)}`;
 
-			const response = await UserModel.findByIdAndUpdate(id, data, { new: true }).lean();
+		const response = await UserModel.findByIdAndUpdate(id, data, { new: true }).lean();
 
-			return response;
-		} catch (error) {
-			console.error(error);
-		}
+		return response;
 	},
 
 	async updateUserPassword(id: string, password: string) {
-		try {
-			const response = await UserModel.findByIdAndUpdate(
-				id,
-				{ password },
-				{ new: true }
-			).lean();
+		const response = await UserModel.findByIdAndUpdate(
+			id,
+			{ password },
+			{ new: true }
+		).lean();
 
-			return response;
-		} catch (error) {
-			console.error(error);
-		}
+		return response;
 	},
 
 	async deleteUser(id: string) {
-		try {
-			const response = await UserModel.findByIdAndDelete(id).lean();
+		const response = await UserModel.findByIdAndDelete(id).lean();
 
-			return response;
-		} catch (error) {
-			console.error(error);
-		}
+		return response;
 	},
 };

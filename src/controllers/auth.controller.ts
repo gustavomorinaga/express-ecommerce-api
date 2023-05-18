@@ -21,7 +21,7 @@ import { zParse } from '@utils';
 /** Responsável por gerenciar a autenticação dos usuários */
 const AuthController = Router();
 
-AuthController.post('/login', async (req, res) => {
+AuthController.post('/login', async (req, res, next) => {
 	try {
 		const { body: auth } = await zParse(loginAuthSchema, req);
 
@@ -34,11 +34,11 @@ AuthController.post('/login', async (req, res) => {
 
 		return res.status(statuses.OK).send({ ...user, token });
 	} catch (error) {
-		console.error(error);
+		next(error);
 	}
 });
 
-AuthController.post('/signup', async (req, res) => {
+AuthController.post('/signup', async (req, res, next) => {
 	try {
 		const { body: data } = await zParse(createUserSchema, req);
 
@@ -46,11 +46,11 @@ AuthController.post('/signup', async (req, res) => {
 
 		return res.status(statuses.OK).send(response);
 	} catch (error) {
-		console.error(error);
+		next(error);
 	}
 });
 
-AuthController.post('/retrieve', async (req, res) => {
+AuthController.post('/retrieve', async (req, res, next) => {
 	try {
 		const { body: auth } = await zParse(retrieveAuthSchema, req);
 
@@ -69,11 +69,11 @@ AuthController.post('/retrieve', async (req, res) => {
 
 		return res.sendStatus(statuses.OK);
 	} catch (error) {
-		console.error(error);
+		next(error);
 	}
 });
 
-AuthController.patch('/reset', async (req, res) => {
+AuthController.patch('/reset', async (req, res, next) => {
 	try {
 		const { body: auth } = await zParse(resetAuthSchema, req);
 
@@ -81,7 +81,7 @@ AuthController.patch('/reset', async (req, res) => {
 
 		return res.sendStatus(statuses.OK);
 	} catch (error) {
-		console.error(error);
+		next(error);
 	}
 });
 

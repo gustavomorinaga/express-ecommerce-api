@@ -17,11 +17,9 @@ export const authenticateToken = (req: Request, res: Response, next: NextFunctio
 	if (!token) return res.sendStatus(statuses.UNAUTHORIZED);
 
 	jwt.verify(token, environment.JWT_SECRET, (err: any, user: any) => {
-		console.error(err);
+		if (err) return next(err);
 
-		if (err) return res.sendStatus(statuses.FORBIDDEN);
-
-		req.body._user = user as IUser;
+		req._user = user as IUser;
 
 		next();
 	});

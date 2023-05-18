@@ -13,7 +13,7 @@ import { zParse } from '@utils';
 /** Responsável por gerenciar a autenticação dos usuários */
 const AddressController = Router();
 
-AddressController.get('/:cep', async (req, res) => {
+AddressController.get('/:cep', async (req, res, next) => {
 	try {
 		const {
 			params: { cep },
@@ -23,7 +23,7 @@ AddressController.get('/:cep', async (req, res) => {
 
 		return res.status(statuses.OK).send(address);
 	} catch (error) {
-		console.error(error);
+		next(error);
 	}
 });
 

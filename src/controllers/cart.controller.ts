@@ -18,7 +18,7 @@ import { zParse } from '@utils';
 /** Responsável por gerenciar o carrinho de compras dos usuários */
 const CartController = Router();
 
-CartController.get('/:userId', async (req, res) => {
+CartController.get('/:userId', async (req, res, next) => {
 	try {
 		const {
 			params: { userId },
@@ -28,11 +28,11 @@ CartController.get('/:userId', async (req, res) => {
 
 		return res.status(statuses.OK).send(cart);
 	} catch (error) {
-		console.error(error);
+		next(error);
 	}
 });
 
-CartController.post('/', async (req, res) => {
+CartController.post('/', async (req, res, next) => {
 	try {
 		const { body: data } = await zParse(createCartSchema, req);
 
@@ -40,26 +40,32 @@ CartController.post('/', async (req, res) => {
 
 		return res.status(statuses.CREATED).send(response);
 	} catch (error) {
-		console.error(error);
+		next(error);
 	}
 });
 
-CartController.put('/:userId', async (req, res) => {
+CartController.put('/:userId', async (req, res, next) => {
 	try {
 		const {
 			params: { userId },
 			body: data,
 		} = await zParse(updateCartSchema, req);
 
+		const hasValidProducts = await CartRepository.checkCart(data.products);
+		if (!hasValidProducts)
+			return res.status(statuses.BAD_REQUEST).send({
+				error: 'Invalid products',
+			});
+
 		const response = await CartRepository.updateCart(userId, data);
 
 		return res.status(statuses.OK).send(response);
 	} catch (error) {
-		console.error(error);
+		next(error);
 	}
 });
 
-CartController.delete('/:userId', async (req, res) => {
+CartController.delete('/:userId', async (req, res, next) => {
 	try {
 		const {
 			params: { userId },
@@ -69,7 +75,7 @@ CartController.delete('/:userId', async (req, res) => {
 
 		return res.sendStatus(statuses.NO_CONTENT);
 	} catch (error) {
-		console.error(error);
+		next(error);
 	}
 });
 
