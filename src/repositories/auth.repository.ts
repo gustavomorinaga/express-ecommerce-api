@@ -9,7 +9,12 @@ import { IAuth, IUser } from '@ts';
 
 export const AuthRepository = {
 	async login({ email, password }: IAuth) {
-		return await UserModel.findOne({ email, password }).lean();
+		const user = await UserModel.findOne({ email }).populate('password');
+		if (!user) return null;
+
+		const isMatch = await user.comparePassword(password);
+
+		return { user: user.toObject(), isMatch };
 	},
 
 	async signUp(user: IUser) {

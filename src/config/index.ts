@@ -3,4 +3,3 @@ export * from './email-sender.config';
 export * from './environment.config';
 export * from './jwt.config';
 export * from './logger.config';
-export * from './swagger.config';

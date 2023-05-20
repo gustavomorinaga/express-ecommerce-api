@@ -1,19 +1,21 @@
 import { z } from 'zod';
-import { ObjectId } from '@utils';
+
+// Schemas
+import { objectId } from '@schemas';
 
 export const getCartSchema = z.object({
 	params: z.object({
-		userId: ObjectId,
+		userId: objectId,
 	}),
 });
 
 export const createCartSchema = z.object({
 	body: z.object({
-		user: ObjectId,
+		user: objectId,
 		products: z
 			.array(
 				z.object({
-					product: ObjectId,
+					product: objectId,
 					quantity: z.number().min(1),
 				})
 			)
@@ -22,23 +24,23 @@ export const createCartSchema = z.object({
 });
 
 export const updateCartSchema = z.object({
+	params: z.object({
+		userId: objectId,
+	}),
 	body: z.object({
 		products: z
 			.array(
 				z.object({
-					product: ObjectId,
+					product: objectId,
 					quantity: z.number().min(1),
 				})
 			)
 			.min(1),
 	}),
-	params: z.object({
-		userId: ObjectId,
-	}),
 });
 
 export const deleteCartSchema = z.object({
 	params: z.object({
-		userId: ObjectId,
+		userId: objectId,
 	}),
 });

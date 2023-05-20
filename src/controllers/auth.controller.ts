@@ -25,14 +25,16 @@ AuthController.post('/login', async (req, res, next) => {
 	try {
 		const { body: auth } = await zParse(loginAuthSchema, req);
 
-		const user = await AuthRepository.login(auth);
-		if (!user) return res.sendStatus(statuses.UNAUTHORIZED);
+		const login = await AuthRepository.login(auth);
+		if (!login) return res.sendStatus(statuses.NOT_FOUND);
 
-		const { password, createdAt, updatedAt, ...access } = user;
+		if (!login.isMatch) return res.sendStatus(statuses.UNAUTHORIZED);
+
+		const { password, createdAt, updatedAt, ...access } = login.user;
 
 		const token = generateAccessToken(access, { expiresIn: '1h' });
 
-		return res.status(statuses.OK).send({ ...user, token });
+		return res.status(statuses.OK).send({ ...login.user, token });
 	} catch (error) {
 		next(error);
 	}

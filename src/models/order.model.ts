@@ -1,5 +1,8 @@
 import { model, Schema } from 'mongoose';
 
+// Models
+import { AddressSchema } from '@models';
+
 // TS
 import { IOrder } from '@ts';
 
@@ -10,39 +13,7 @@ const OrderSchema = new Schema<IOrder>(
 			ref: 'User',
 			required: true,
 		},
-		deliveryAddress: {
-			street: {
-				type: String,
-				required: true,
-			},
-			number: {
-				type: Number,
-				required: true,
-			},
-			complement: {
-				type: String,
-			},
-			neighborhood: {
-				type: String,
-				required: true,
-			},
-			city: {
-				type: String,
-				required: true,
-			},
-			state: {
-				type: String,
-				required: true,
-			},
-			country: {
-				type: String,
-				required: true,
-			},
-			zipCode: {
-				type: String,
-				required: true,
-			},
-		},
+		deliveryAddress: AddressSchema.obj,
 		totalPrice: {
 			type: Number,
 			required: true,

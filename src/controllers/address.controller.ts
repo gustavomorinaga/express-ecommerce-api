@@ -5,7 +5,7 @@ import statuses from 'http-status';
 import { AddressRepository } from '@repositories';
 
 // Schemas
-import { addressSchema } from '@schemas';
+import { getAddressByZipCodeSchema } from '@schemas';
 
 // --- Utils ---
 import { zParse } from '@utils';
@@ -17,7 +17,7 @@ AddressController.get('/:cep', async (req, res, next) => {
 	try {
 		const {
 			params: { cep },
-		} = await zParse(addressSchema, req);
+		} = await zParse(getAddressByZipCodeSchema, req);
 
 		const address = await AddressRepository.searchAddress(cep);
 

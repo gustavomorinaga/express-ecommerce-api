@@ -18,7 +18,7 @@ import { authMiddleware } from '@middlewares';
 const routes = Router();
 
 // Routes
-routes.use('/', swaggerUi.serve, swaggerUi.setup(swaggerFile));
+routes.use('/doc', swaggerUi.serve, swaggerUi.setup(swaggerFile));
 routes.use('/address', AddressController);
 routes.use('/auth', AuthController);
 routes.use('/carts', authMiddleware, CartController);

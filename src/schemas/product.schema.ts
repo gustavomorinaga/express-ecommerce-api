@@ -1,5 +1,7 @@
 import { z } from 'zod';
-import { ObjectId } from '@utils';
+
+// Schemas
+import { objectId } from '@schemas';
 
 export const getProductsSchema = z.object({
 	query: z.object({
@@ -11,7 +13,7 @@ export const getProductsSchema = z.object({
 
 export const getProductSchema = z.object({
 	params: z.object({
-		id: ObjectId,
+		id: objectId,
 	}),
 });
 
@@ -25,19 +27,19 @@ export const createProductSchema = z.object({
 });
 
 export const updateProductSchema = z.object({
+	params: z.object({
+		id: objectId,
+	}),
 	body: z.object({
 		name: z.string().min(3).max(50).optional(),
 		description: z.string().min(20).optional(),
 		price: z.number().min(0).optional(),
 		stock: z.number().min(0).optional(),
 	}),
-	params: z.object({
-		id: ObjectId,
-	}),
 });
 
 export const deleteProductSchema = z.object({
 	params: z.object({
-		id: ObjectId,
+		id: objectId,
 	}),
 });

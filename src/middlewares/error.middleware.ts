@@ -7,8 +7,13 @@ export const errorLogger = (
 	res: Response,
 	next: NextFunction
 ) => {
-	const status = err?.status || statuses.BAD_REQUEST;
+	const error = {
+		name: err.name,
+		message: err.message,
+		stack: err?.stack || null,
+		status: err?.status || statuses.BAD_REQUEST,
+	};
 
-	req.log.error(err);
-	return res.status(status).json(err);
+	req.log.error(error);
+	return res.status(error.status).send({ error });
 };
