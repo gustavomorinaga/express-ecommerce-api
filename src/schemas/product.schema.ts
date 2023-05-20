@@ -1,8 +1,17 @@
 import { z } from 'zod';
 
 // Schemas
-import { objectId } from '@schemas';
+import { objectIdGeneric } from '@schemas';
 
+// Generics
+export const productSchema = z.object({
+	name: z.string().min(10).max(100),
+	description: z.string().min(20),
+	price: z.number().min(0),
+	stock: z.number().min(0),
+});
+
+// Schemas
 export const getProductsSchema = z.object({
 	query: z.object({
 		name: z.string().optional(),
@@ -13,33 +22,28 @@ export const getProductsSchema = z.object({
 
 export const getProductSchema = z.object({
 	params: z.object({
-		id: objectId,
+		id: objectIdGeneric,
 	}),
 });
 
 export const createProductSchema = z.object({
-	body: z.object({
-		name: z.string().min(10).max(100),
-		description: z.string().min(20),
-		price: z.number().min(0),
-		stock: z.number().min(0),
-	}),
+	body: productSchema,
 });
 
 export const updateProductSchema = z.object({
 	params: z.object({
-		id: objectId,
+		id: objectIdGeneric,
 	}),
 	body: z.object({
-		name: z.string().min(3).max(50).optional(),
-		description: z.string().min(20).optional(),
-		price: z.number().min(0).optional(),
-		stock: z.number().min(0).optional(),
+		name: productSchema.shape.name.optional(),
+		description: productSchema.shape.description.optional(),
+		price: productSchema.shape.price.optional(),
+		stock: productSchema.shape.stock.optional(),
 	}),
 });
 
 export const deleteProductSchema = z.object({
 	params: z.object({
-		id: objectId,
+		id: objectIdGeneric,
 	}),
 });

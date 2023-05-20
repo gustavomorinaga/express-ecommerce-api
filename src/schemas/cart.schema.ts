@@ -1,46 +1,39 @@
 import { z } from 'zod';
 
 // Schemas
-import { objectId } from '@schemas';
+import { objectIdGeneric } from '@schemas';
 
+// Generics
+export const cartSchema = z.object({
+	user: objectIdGeneric,
+	products: z.array(
+		z.object({
+			product: objectIdGeneric,
+			quantity: z.number().min(1),
+		})
+	),
+});
+
+// Schemas
 export const getCartSchema = z.object({
 	params: z.object({
-		userId: objectId,
+		userId: objectIdGeneric,
 	}),
 });
 
 export const createCartSchema = z.object({
-	body: z.object({
-		user: objectId,
-		products: z
-			.array(
-				z.object({
-					product: objectId,
-					quantity: z.number().min(1),
-				})
-			)
-			.min(1),
-	}),
+	body: cartSchema,
 });
 
 export const updateCartSchema = z.object({
 	params: z.object({
-		userId: objectId,
+		userId: objectIdGeneric,
 	}),
-	body: z.object({
-		products: z
-			.array(
-				z.object({
-					product: objectId,
-					quantity: z.number().min(1),
-				})
-			)
-			.min(1),
-	}),
+	body: cartSchema,
 });
 
 export const deleteCartSchema = z.object({
 	params: z.object({
-		userId: objectId,
+		userId: objectIdGeneric,
 	}),
 });
