@@ -9,7 +9,7 @@ export const addressGeneric = z.object({
 	city: z.string().min(3).max(50),
 	state: z.string().min(2).max(2),
 	country: z.string().min(3).max(50),
-	zipCode: z.string().min(3).max(50),
+	zipCode: z.string().min(9).max(9),
 });
 
 // Schemas

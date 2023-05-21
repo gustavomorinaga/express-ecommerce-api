@@ -34,8 +34,8 @@ export const updateUserSchema = z.object({
 	body: z.object({
 		name: userGeneric.shape.name.optional(),
 		email: userGeneric.shape.email.optional(),
-		billingAddress: addressGeneric,
-		deliveryAddress: addressGeneric,
+		billingAddress: userGeneric.shape.billingAddress.optional(),
+		deliveryAddress: userGeneric.shape.deliveryAddress.optional(),
 	}),
 });
 

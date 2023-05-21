@@ -8,7 +8,7 @@ export const orderGeneric = z.object({
 	user: objectIdGeneric,
 	deliveryAddress: addressGeneric,
 	observation: z.string().max(100).optional(),
-	status: z.enum(['pending', 'canceled', 'delivered']),
+	status: z.enum(['pending', 'canceled', 'delivered']).default('pending'),
 });
 
 // Schemas
