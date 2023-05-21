@@ -1,5 +1,5 @@
 import { model, Schema } from 'mongoose';
-import bcrypt from 'bcrypt';
+import bcrypt from 'bcryptjs';
 
 // Config
 import { environment } from '@config';

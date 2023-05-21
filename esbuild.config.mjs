@@ -2,6 +2,9 @@ import { build } from 'esbuild';
 import esbuildPluginPino from 'esbuild-plugin-pino';
 
 (async () => {
+	console.log('📦 Building...');
+	console.time('Build time');
+
 	await build({
 		entryPoints: ['src/index.ts'],
 		bundle: true,
@@ -15,4 +18,7 @@ import esbuildPluginPino from 'esbuild-plugin-pino';
 			}),
 		],
 	});
+
+	console.log('✅ Build complete');
+	console.timeEnd('Build time');
 })();
