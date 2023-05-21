@@ -27,6 +27,6 @@ app.use(errorLogger);
 	await connect();
 
 	app.listen(environment.PORT, () => {
-		console.log(`Server started on port ${environment.PORT}!`);
+		console.log(`🌐 Server hosted on http://localhost:${environment.PORT}`);
 	});
 })();

@@ -17,8 +17,6 @@ export const ProductRepository = {
 			...(query.hasEmptyStock && { stock: { $lte: 0 } }),
 		};
 
-		console.log(conditions);
-
 		const products = await ProductModel.find(conditions).lean();
 
 		return products;
