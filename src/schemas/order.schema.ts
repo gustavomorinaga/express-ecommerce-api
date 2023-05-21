@@ -1,12 +1,12 @@
 import { z } from 'zod';
 
 // Schemas
-import { addressSchema, objectIdGeneric } from '@schemas';
+import { addressGeneric, objectIdGeneric } from '@schemas';
 
 // Generics
-export const orderSchema = z.object({
+export const orderGeneric = z.object({
 	user: objectIdGeneric,
-	deliveryAddress: addressSchema,
+	deliveryAddress: addressGeneric,
 	observation: z.string().max(100).optional(),
 	status: z.enum(['pending', 'canceled', 'delivered']),
 });
@@ -20,9 +20,9 @@ export const getOrderSchema = z.object({
 
 export const createOrderSchema = z.object({
 	body: z.object({
-		user: orderSchema.shape.user,
-		deliveryAddress: orderSchema.shape.deliveryAddress,
-		observation: orderSchema.shape.observation,
+		user: orderGeneric.shape.user,
+		deliveryAddress: orderGeneric.shape.deliveryAddress,
+		observation: orderGeneric.shape.observation,
 	}),
 });
 
@@ -31,8 +31,8 @@ export const updateOrderSchema = z.object({
 		id: objectIdGeneric,
 	}),
 	body: z.object({
-		deliveryAddress: addressSchema.optional(),
-		observation: orderSchema.shape.observation,
+		deliveryAddress: addressGeneric.optional(),
+		observation: orderGeneric.shape.observation,
 	}),
 });
 
@@ -41,6 +41,6 @@ export const setStatusOrderSchema = z.object({
 		id: objectIdGeneric,
 	}),
 	body: z.object({
-		status: orderSchema.shape.status,
+		status: orderGeneric.shape.status,
 	}),
 });

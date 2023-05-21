@@ -1,7 +1,7 @@
 import { z } from 'zod';
 
 // Generics
-export const addressSchema = z.object({
+export const addressGeneric = z.object({
 	street: z.string().min(3).max(50),
 	number: z.number().min(1),
 	complement: z.string().optional(),

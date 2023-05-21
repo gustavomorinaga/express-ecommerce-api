@@ -4,7 +4,7 @@ import { z } from 'zod';
 import { objectIdGeneric } from '@schemas';
 
 // Generics
-export const cartSchema = z.object({
+export const cartGeneric = z.object({
 	user: objectIdGeneric,
 	products: z.array(
 		z.object({
@@ -22,14 +22,14 @@ export const getCartSchema = z.object({
 });
 
 export const createCartSchema = z.object({
-	body: cartSchema,
+	body: cartGeneric,
 });
 
 export const updateCartSchema = z.object({
 	params: z.object({
 		userId: objectIdGeneric,
 	}),
-	body: cartSchema,
+	body: cartGeneric,
 });
 
 export const deleteCartSchema = z.object({

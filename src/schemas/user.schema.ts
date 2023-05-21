@@ -1,12 +1,16 @@
 import { z } from 'zod';
 
 // Schemas
-import { addressSchema, objectIdGeneric } from '@schemas';
+import { addressGeneric, objectIdGeneric } from '@schemas';
 
 // Generics
-export const userNameGeneric = z.string().min(3).max(50);
-export const userEmailGeneric = z.string().email();
-export const userPasswordGeneric = z.string().min(6).max(20);
+export const userGeneric = z.object({
+	name: z.string().min(3).max(50),
+	email: z.string().email(),
+	password: z.string().min(6).max(20),
+	billingAddress: addressGeneric.optional(),
+	deliveryAddress: addressGeneric.optional(),
+});
 
 // Schemas
 export const getUserSchema = z.object({
@@ -17,9 +21,9 @@ export const getUserSchema = z.object({
 
 export const createUserSchema = z.object({
 	body: z.object({
-		name: userNameGeneric,
-		email: userEmailGeneric,
-		password: userPasswordGeneric,
+		name: userGeneric.shape.name,
+		email: userGeneric.shape.email,
+		password: userGeneric.shape.password,
 	}),
 });
 
@@ -28,10 +32,10 @@ export const updateUserSchema = z.object({
 		id: objectIdGeneric,
 	}),
 	body: z.object({
-		name: userNameGeneric.optional(),
-		email: userEmailGeneric.optional(),
-		billingAddress: addressSchema.optional(),
-		deliveryAddress: addressSchema.optional(),
+		name: userGeneric.shape.name.optional(),
+		email: userGeneric.shape.email.optional(),
+		billingAddress: addressGeneric,
+		deliveryAddress: addressGeneric,
 	}),
 });
 
@@ -40,7 +44,7 @@ export const updateUserPasswordSchema = z.object({
 		id: objectIdGeneric,
 	}),
 	body: z.object({
-		password: userPasswordGeneric,
+		password: userGeneric.shape.password,
 	}),
 });
 

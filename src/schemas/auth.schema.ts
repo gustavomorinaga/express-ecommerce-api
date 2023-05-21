@@ -1,25 +1,25 @@
 import { z } from 'zod';
 
 // Schemas
-import { userEmailGeneric, userPasswordGeneric } from '@schemas';
+import { userGeneric } from '@schemas';
 
 // Generics
-export const authSchema = z.object({
-	email: userEmailGeneric,
-	password: userPasswordGeneric,
+export const authGeneric = z.object({
+	email: userGeneric.shape.email,
+	password: userGeneric.shape.password,
 });
 
 // Schemas
 export const loginAuthSchema = z.object({
-	body: authSchema,
+	body: authGeneric,
 });
 
 export const retrieveAuthSchema = z.object({
 	body: z.object({
-		email: authSchema.shape.email,
+		email: authGeneric.shape.email,
 	}),
 });
 
 export const resetAuthSchema = z.object({
-	body: authSchema,
+	body: authGeneric,
 });

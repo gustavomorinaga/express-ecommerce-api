@@ -4,7 +4,7 @@ import { z } from 'zod';
 import { objectIdGeneric } from '@schemas';
 
 // Generics
-export const productSchema = z.object({
+export const productGeneric = z.object({
 	name: z.string().min(10).max(100),
 	description: z.string().min(20),
 	price: z.number().min(0),
@@ -27,7 +27,7 @@ export const getProductSchema = z.object({
 });
 
 export const createProductSchema = z.object({
-	body: productSchema,
+	body: productGeneric,
 });
 
 export const updateProductSchema = z.object({
@@ -35,10 +35,10 @@ export const updateProductSchema = z.object({
 		id: objectIdGeneric,
 	}),
 	body: z.object({
-		name: productSchema.shape.name.optional(),
-		description: productSchema.shape.description.optional(),
-		price: productSchema.shape.price.optional(),
-		stock: productSchema.shape.stock.optional(),
+		name: productGeneric.shape.name.optional(),
+		description: productGeneric.shape.description.optional(),
+		price: productGeneric.shape.price.optional(),
+		stock: productGeneric.shape.stock.optional(),
 	}),
 });
 
