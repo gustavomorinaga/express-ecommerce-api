@@ -1,5 +1,6 @@
-import { IProduct } from '@ts';
-
-export type TQueryProduct = Partial<
-	Omit<IProduct, '_id' | 'description' | 'createdAt' | 'updatedAt'>
->;
+export type TQueryProduct = {
+	name?: string;
+	startPrice?: number;
+	endPrice?: number;
+	hasEmptyStock?: boolean;
+};

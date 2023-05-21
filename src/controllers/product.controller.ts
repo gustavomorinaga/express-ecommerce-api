@@ -26,11 +26,7 @@ ProductController.get('/', async (req, res, next) => {
 	try {
 		const { query } = await zParse(getProductsSchema, req);
 
-		const products = await ProductRepository.getProducts({
-			...query,
-			price: Number(query.price),
-			stock: Number(query.stock),
-		});
+		const products = await ProductRepository.getProducts(query);
 
 		return res.status(statuses.OK).send(products);
 	} catch (error) {

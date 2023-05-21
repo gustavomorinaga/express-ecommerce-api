@@ -15,8 +15,18 @@ export const productGeneric = z.object({
 export const getProductsSchema = z.object({
 	query: z.object({
 		name: z.string().optional(),
-		price: z.string().optional(),
-		stock: z.string().optional(),
+		startPrice: z
+			.string()
+			.optional()
+			.transform(value => (value ? Number(value) : undefined)),
+		endPrice: z
+			.string()
+			.optional()
+			.transform(value => (value ? Number(value) : undefined)),
+		hasEmptyStock: z
+			.string()
+			.optional()
+			.transform(value => value === 'true'),
 	}),
 });
 

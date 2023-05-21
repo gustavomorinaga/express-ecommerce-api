@@ -6,11 +6,18 @@ import { IProduct, TQueryProduct } from '@ts';
 
 export const ProductRepository = {
 	async getProducts(query: TQueryProduct) {
-		const conditions: any = {};
+		const conditions = {
+			...(query.name && { name: { $regex: query.name, $options: 'i' } }),
+			...((query.startPrice || query.endPrice) && {
+				price: {
+					...(query.startPrice && { $gte: query.startPrice }),
+					...(query.endPrice && { $lte: query.endPrice }),
+				},
+			}),
+			...(query.hasEmptyStock && { stock: { $lte: 0 } }),
+		};
 
-		if (query.name) conditions.name = { $regex: query.name, $options: 'i' };
-		if (query.price) conditions.price = Number(query.price);
-		if (query.stock) conditions.stock = Number(query.stock);
+		console.log(conditions);
 
 		const products = await ProductModel.find(conditions).lean();
 
