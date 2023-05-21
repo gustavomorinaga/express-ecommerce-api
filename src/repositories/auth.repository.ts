@@ -18,7 +18,7 @@ export const AuthRepository = {
 	},
 
 	async signUp(user: IUser) {
-		user.avatar = `${environment.AVATAR_GENERATOR_URL}?seed=${user.name}`;
+		user.avatar = `${environment.AVATAR_GENERATOR_URL}?seed=${encodeURI(user.name)}`;
 
 		const response = (await UserModel.create(user)).toObject();
 
