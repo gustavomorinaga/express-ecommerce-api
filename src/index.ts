@@ -29,6 +29,22 @@ app.use(errorLogger);
 	if (!connection) return;
 
 	app.listen(environment.PORT, () => {
-		console.log(`🌐 Server hosted on http://localhost:${environment.PORT}`);
+		console.log(`🚀 Server hosted on http://localhost:${environment.PORT}`);
+	});
+
+	app.on('error', error => {
+		console.error(`❌ Server error: ${error}`);
+	});
+
+	process.on('unhandledRejection', error => {
+		console.error(`❌ Unhandled rejection: ${error}`);
+	});
+
+	process.on('uncaughtException', error => {
+		console.error(`❌ Uncaught exception: ${error}`);
+	});
+
+	process.on('exit', () => {
+		console.log('👋 Bye bye!');
 	});
 })();
