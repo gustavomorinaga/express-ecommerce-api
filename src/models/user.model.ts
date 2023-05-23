@@ -1,4 +1,4 @@
-import { model, Schema } from 'mongoose';
+import { Document, Model, model, Schema } from 'mongoose';
 import bcrypt from 'bcryptjs';
 
 // Config
@@ -10,11 +10,14 @@ import { AddressSchema } from '@models';
 // TS
 import { IUser } from '@ts';
 
-interface IUserMethods {
-	comparePassword: (password: string) => Promise<boolean>;
+interface IUserDocument extends IUser, Document {}
+interface IUserModel extends Model<IUserDocument> {}
+interface IUserMethods extends IUserDocument {
+	comparePassword(password: string): Promise<boolean>;
+	changeActive(): Promise<IUser>;
 }
 
-const UserSchema = new Schema<IUser, {}, IUserMethods>(
+const UserSchema = new Schema<IUser, IUserModel, IUserMethods>(
 	{
 		name: {
 			type: String,
@@ -42,8 +45,15 @@ const UserSchema = new Schema<IUser, {}, IUserMethods>(
 			type: AddressSchema.obj,
 			required: false,
 		},
+		active: {
+			type: Boolean,
+			required: false,
+			default: true,
+		},
 	},
-	{ timestamps: true }
+	{
+		timestamps: true,
+	}
 );
 
 UserSchema.pre('save', function (next) {
@@ -64,7 +74,12 @@ UserSchema.pre('save', function (next) {
 });
 
 UserSchema.methods.comparePassword = function (password) {
-	return bcrypt.compare(password, this.password as string);
+	return bcrypt.compare(password, this.password);
+};
+UserSchema.methods.changeActive = function () {
+	this.active = !this.active;
+
+	return this.save();
 };
 
 export const UserModel = model('User', UserSchema);

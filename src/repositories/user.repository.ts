@@ -52,6 +52,15 @@ export const UserRepository = {
 		return response;
 	},
 
+	async changeUserActive(id: string) {
+		const response = await UserModel.findById(id);
+		if (!response) return null;
+
+		await response.changeActive();
+
+		return response.toObject();
+	},
+
 	async deleteUser(id: string) {
 		const response = await UserModel.findByIdAndDelete(id).lean();
 

@@ -1,10 +1,11 @@
-import { IAddress, TTimestamps } from '@ts';
+import { IAddress, TDocument } from '@ts';
 
-export interface IUser extends TTimestamps {
+export interface IUser extends TDocument {
 	name: string;
 	email: string;
 	avatar?: string;
 	password: string;
 	billingAddress?: IAddress;
 	deliveryAddress?: IAddress;
+	active?: boolean;
 }

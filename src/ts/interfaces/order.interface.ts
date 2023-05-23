@@ -1,8 +1,8 @@
-import { IAddress, TTimestamps } from '@ts';
+import { IAddress, TDocument } from '@ts';
 import { IProduct } from './product.interface';
 import type { ObjectId } from 'mongoose';
 
-export interface IOrder extends TTimestamps {
+export interface IOrder extends TDocument {
 	user: ObjectId | string;
 	deliveryAddress: IAddress;
 	totalPrice: number;

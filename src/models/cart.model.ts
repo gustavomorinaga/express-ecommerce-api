@@ -1,9 +1,13 @@
-import { model, Schema } from 'mongoose';
+import { Document, Model, model, Schema } from 'mongoose';
 
 // TS
 import { ICart } from '@ts';
 
-const CartSchema = new Schema<ICart>(
+interface ICartDocument extends ICart, Document {}
+interface ICartModel extends Model<ICartDocument> {}
+interface ICartMethods extends ICartDocument {}
+
+const CartSchema = new Schema<ICart, ICartModel, ICartMethods>(
 	{
 		user: {
 			type: Schema.Types.ObjectId,

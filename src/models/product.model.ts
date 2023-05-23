@@ -1,9 +1,13 @@
-import { model, Schema } from 'mongoose';
+import { Document, Model, model, Schema } from 'mongoose';
 
 // TS
 import { IProduct } from '@ts';
 
-const ProductSchema = new Schema<IProduct>(
+interface IProductDocument extends IProduct, Document {}
+interface IProductModel extends Model<IProductDocument> {}
+interface IProductMethods extends IProductDocument {}
+
+const ProductSchema = new Schema<IProduct, IProductModel, IProductMethods>(
 	{
 		name: {
 			type: String,

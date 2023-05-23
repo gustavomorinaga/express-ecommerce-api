@@ -48,6 +48,12 @@ export const updateUserPasswordSchema = z.object({
 	}),
 });
 
+export const updateUserActiveSchema = z.object({
+	params: z.object({
+		id: objectIdGeneric,
+	}),
+});
+
 export const deleteUserSchema = z.object({
 	params: z.object({
 		id: objectIdGeneric,

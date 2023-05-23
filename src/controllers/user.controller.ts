@@ -11,6 +11,7 @@ import {
 	updateUserSchema,
 	updateUserPasswordSchema,
 	deleteUserSchema,
+	updateUserActiveSchema,
 } from '@schemas';
 
 // Utils
@@ -78,6 +79,36 @@ UserController.patch('/:id/password', async (req, res, next) => {
 		} = await zParse(updateUserPasswordSchema, req);
 
 		const response = await UserRepository.updateUserPassword(id, password);
+
+		return res.status(statuses.OK).send(response);
+	} catch (error) {
+		next(error);
+	}
+});
+
+UserController.patch('/:id/activate', async (req, res, next) => {
+	try {
+		const {
+			params: { id },
+		} = await zParse(updateUserActiveSchema, req);
+
+		const response = await UserRepository.changeUserActive(id);
+		if (!response) return res.sendStatus(statuses.NOT_FOUND);
+
+		return res.status(statuses.OK).send(response);
+	} catch (error) {
+		next(error);
+	}
+});
+
+UserController.patch('/:id/change-active', async (req, res, next) => {
+	try {
+		const {
+			params: { id },
+		} = await zParse(updateUserActiveSchema, req);
+
+		const response = await UserRepository.changeUserActive(id);
+		if (!response) return res.sendStatus(statuses.NOT_FOUND);
 
 		return res.status(statuses.OK).send(response);
 	} catch (error) {

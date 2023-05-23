@@ -1,4 +1,4 @@
-import { model, Schema } from 'mongoose';
+import { Document, Model, model, Schema } from 'mongoose';
 
 // Models
 import { AddressSchema } from '@models';
@@ -6,7 +6,11 @@ import { AddressSchema } from '@models';
 // TS
 import { IOrder } from '@ts';
 
-const OrderSchema = new Schema<IOrder>(
+interface IOrderDocument extends IOrder, Document {}
+interface IOrderModel extends Model<IOrderDocument> {}
+interface IOrderMethods extends IOrderDocument {}
+
+const OrderSchema = new Schema<IOrder, IOrderModel, IOrderMethods>(
 	{
 		user: {
 			type: Schema.Types.ObjectId,
