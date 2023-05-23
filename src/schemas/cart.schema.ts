@@ -29,7 +29,9 @@ export const updateCartSchema = z.object({
 	params: z.object({
 		userId: objectIdGeneric,
 	}),
-	body: cartGeneric,
+	body: z.object({
+		products: cartGeneric.shape.products,
+	}),
 });
 
 export const deleteCartSchema = z.object({

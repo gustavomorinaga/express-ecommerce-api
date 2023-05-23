@@ -1,46 +1,55 @@
 // Schemas
-import { CartModel, ProductModel } from '@models';
+import { CartModel } from '@models';
+
+// Errors
+import { handlerError } from '@errors';
 
 // TS
 import { ICart, IProduct } from '@ts';
 
 export const CartRepository = {
-	async getCart(userId: string) {
+	async getCart(userId: ICart['user']) {
 		const cart = await CartModel.findOne({ user: userId })
 			.populate('user')
 			.populate({ path: 'products.product', select: '-stock' })
 			.lean();
+		if (!cart) return handlerError('Cart not found', 'NOT_FOUND');
 
-		return cart as Omit<typeof cart, 'products'> & {
+		return cart as Omit<ICart, 'products'> & {
 			products: { product: IProduct; quantity: number }[];
 		};
 	},
 
 	async createCart(cart: ICart) {
-		const response = (await CartModel.create(cart)).toObject();
-
-		return response;
+		return (await CartModel.create(cart)).toObject();
 	},
 
-	async checkCart(products: ICart['products']) {
-		const response = await ProductModel.find({
-			_id: { $in: products.map(p => p.product) },
-		}).lean();
+	async updateCart(userId: ICart['user'], cart: Omit<ICart, 'user'>) {
+		const existsCart = await CartModel.findOne({ user: userId });
+		if (!existsCart) return handlerError('Cart not found', 'NOT_FOUND');
 
-		return response.length === products.length;
-	},
+		const isValidCart = await existsCart.checkCart(cart);
+		if (!isValidCart) return handlerError('Cart has incorrect products', 'BAD_REQUEST');
 
-	async updateCart(userId: string, cart: Omit<ICart, 'user'>) {
-		const response = await CartModel.findOneAndUpdate({ user: userId }, cart, {
+		return await CartModel.findOneAndUpdate({ user: userId }, cart, {
 			new: true,
 		}).lean();
-
-		return response;
 	},
 
-	async deleteCart(userId: string) {
-		const response = await CartModel.findOneAndDelete({ user: userId }).lean();
+	async clearCart(userId: ICart['user']) {
+		const existsCart = await CartModel.findOne({ user: userId });
+		if (!existsCart) return handlerError('Cart not found', 'NOT_FOUND');
 
-		return response;
+		return (await CartModel.findOneAndUpdate(
+			{ user: userId },
+			{ products: [] },
+			{ new: true }
+		).lean()) as Omit<ICart, 'products'> & {
+			products: { product: IProduct; quantity: number }[];
+		};
+	},
+
+	async deleteCart(userId: ICart['user']) {
+		return await CartModel.findOneAndDelete({ user: userId }).lean();
 	},
 };

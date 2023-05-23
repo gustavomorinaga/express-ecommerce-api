@@ -6,7 +6,7 @@ import { AddressSchema } from '@models';
 // TS
 import { IOrder } from '@ts';
 
-interface IOrderDocument extends IOrder, Document {}
+interface IOrderDocument extends IOrder, Document<string> {}
 interface IOrderModel extends Model<IOrderDocument> {}
 interface IOrderMethods extends IOrderDocument {}
 
@@ -25,7 +25,7 @@ const OrderSchema = new Schema<IOrder, IOrderModel, IOrderMethods>(
 		},
 		status: {
 			type: String,
-			enum: ['pending', 'canceled', 'delivered'],
+			enum: ['pending', 'canceled', 'delivered', 'completed'],
 			required: true,
 			default: 'pending',
 		},
@@ -48,5 +48,18 @@ const OrderSchema = new Schema<IOrder, IOrderModel, IOrderMethods>(
 	},
 	{ timestamps: true }
 );
+
+OrderSchema.pre('save', async function (next) {
+	const order = this;
+
+	if (!order.isNew) return next();
+
+	order.totalPrice = order.products.reduce(
+		(acc, { product, quantity }) => acc + product.price * quantity,
+		0
+	);
+
+	next();
+});
 
 export const OrderModel = model('Order', OrderSchema);

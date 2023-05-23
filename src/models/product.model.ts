@@ -3,7 +3,7 @@ import { Document, Model, model, Schema } from 'mongoose';
 // TS
 import { IProduct } from '@ts';
 
-interface IProductDocument extends IProduct, Document {}
+interface IProductDocument extends IProduct, Document<string> {}
 interface IProductModel extends Model<IProductDocument> {}
 interface IProductMethods extends IProductDocument {}
 

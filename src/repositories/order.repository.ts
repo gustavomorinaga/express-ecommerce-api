@@ -1,47 +1,58 @@
 // Schemas
 import { OrderModel } from '@models';
 
+// Errors
+import { handlerError } from '@errors';
+
 // TS
 import { IOrder } from '@ts';
 
 export const OrderRepository = {
 	async getOrders() {
-		const products = await OrderModel.find()
+		return await OrderModel.find()
 			.populate('user')
 			.populate({ path: 'products.product', select: '-stock' })
 			.lean();
-
-		return products;
 	},
 
 	async getOrder(id: string) {
-		const product = await OrderModel.findById(id)
+		return await OrderModel.findById(id)
 			.populate('user')
 			.populate({ path: 'products.product', select: '-stock' })
 			.lean();
-
-		return product;
 	},
 
-	async createOrder(product: Omit<IOrder, 'status'>) {
-		const response = (await OrderModel.create(product)).toObject();
-
-		return response;
+	async createOrder(order: Omit<IOrder, 'totalPrice' | 'status'>) {
+		return (await OrderModel.create(order)).toObject();
 	},
 
 	async updateOrder(id: string, product: Partial<IOrder>) {
-		const response = await OrderModel.findByIdAndUpdate(id, product, {
+		const existsOrder = await OrderModel.findById(id).lean();
+		if (!existsOrder) return handlerError('Order not found', 'NOT_FOUND');
+		if (existsOrder.status === 'canceled')
+			return handlerError('Order is canceled', 'BAD_REQUEST');
+		if (existsOrder.status === 'delivered')
+			return handlerError('Order is delivered', 'BAD_REQUEST');
+		if (existsOrder.status === 'completed')
+			return handlerError('Order is completed', 'BAD_REQUEST');
+
+		return await OrderModel.findByIdAndUpdate(id, product, {
 			new: true,
 		}).lean();
-
-		return response;
 	},
 
 	async setStatusOrder(id: string, status: IOrder['status']) {
-		const response = await OrderModel.findByIdAndUpdate(id, {
+		const existsOrder = await OrderModel.findById(id).lean();
+		if (!existsOrder) return handlerError('Order not found', 'NOT_FOUND');
+		if (existsOrder.status === 'canceled')
+			return handlerError('Order is canceled', 'BAD_REQUEST');
+		if (existsOrder.status === 'delivered')
+			return handlerError('Order is delivered', 'BAD_REQUEST');
+		if (existsOrder.status === 'completed')
+			return handlerError('Order is completed', 'BAD_REQUEST');
+
+		return await OrderModel.findByIdAndUpdate(id, {
 			status,
 		}).lean();
-
-		return response;
 	},
 };

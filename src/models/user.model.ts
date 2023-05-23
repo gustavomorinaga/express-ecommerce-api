@@ -10,7 +10,7 @@ import { AddressSchema } from '@models';
 // TS
 import { IUser } from '@ts';
 
-interface IUserDocument extends IUser, Document {}
+interface IUserDocument extends IUser, Document<string> {}
 interface IUserModel extends Model<IUserDocument> {}
 interface IUserMethods extends IUserDocument {
 	comparePassword(password: string): Promise<boolean>;
@@ -59,7 +59,9 @@ const UserSchema = new Schema<IUser, IUserModel, IUserMethods>(
 UserSchema.pre('save', function (next) {
 	const user = this;
 
-	if (!this.isModified('password') || !this.isNew) return next();
+	user.avatar ??= `${environment.AVATAR_GENERATOR_URL}?seed=${encodeURI(user.name)}`;
+
+	if (!user.isModified('password') || !user.isNew) return next();
 
 	bcrypt.genSalt(environment.BCRYPT_SALT, function (error, salt) {
 		if (error) return next(error);

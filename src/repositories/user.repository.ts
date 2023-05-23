@@ -1,69 +1,52 @@
-// Configs
-import { environment } from '@config';
-
 // Schemas
 import { UserModel } from '@models';
 
 // TS
 import { IUser } from '@ts';
 
+// Errors
+import { handlerError } from '@errors';
+
 export const UserRepository = {
 	async getUsers() {
-		const users = await UserModel.find().lean();
-
-		return users;
+		return await UserModel.find().lean();
 	},
 
-	async getUser(id: string) {
-		const user = await UserModel.findById(id).lean();
+	async getUser(_id: IUser['_id']) {
+		const user = await UserModel.findById(_id).lean();
+		if (!user) return handlerError('User not found', 'NOT_FOUND');
 
 		return user;
 	},
 
 	async createUser(user: IUser) {
 		const userExists = await UserModel.findOne({ email: user.email }).lean();
-		if (userExists) throw new Error('User already exists');
+		if (userExists) return handlerError('User already exists', 'BAD_REQUEST');
 
-		user.avatar = `${environment.AVATAR_GENERATOR_URL}?seed=${encodeURI(user.name)}`;
-
-		const response = (await UserModel.create(user)).toObject();
-
-		return response;
+		return (await UserModel.create(user)).toObject();
 	},
 
-	async updateUser(id: string, data: Partial<Omit<IUser, 'password'>>) {
-		const user = await UserModel.findById(id).lean();
-		if (!user) throw new Error('User not found');
+	async updateUser(_id: IUser['_id'], data: Partial<Omit<IUser, 'password'>>) {
+		const user = await UserModel.findById(_id).lean();
+		if (!user) return handlerError('User not found', 'NOT_FOUND');
 
-		data.avatar = `${environment.AVATAR_GENERATOR_URL}?seed=${encodeURI(user.name)}`;
-
-		const response = await UserModel.findByIdAndUpdate(id, data, { new: true }).lean();
-
-		return response;
+		return await UserModel.findByIdAndUpdate(_id, data, { new: true }).lean();
 	},
 
-	async updateUserPassword(id: string, password: string) {
-		const response = await UserModel.findByIdAndUpdate(
-			id,
-			{ password },
-			{ new: true }
-		).lean();
-
-		return response;
+	async updateUserPassword(_id: IUser['_id'], password: string) {
+		return await UserModel.findByIdAndUpdate(_id, { password }, { new: true }).lean();
 	},
 
-	async changeUserActive(id: string) {
-		const response = await UserModel.findById(id);
-		if (!response) return null;
+	async changeUserActive(_id: IUser['_id']) {
+		const user = await UserModel.findById(_id);
+		if (!user) return handlerError('User not found', 'NOT_FOUND');
 
-		await response.changeActive();
+		await user.changeActive();
 
-		return response.toObject();
+		return user.toObject();
 	},
 
-	async deleteUser(id: string) {
-		const response = await UserModel.findByIdAndDelete(id).lean();
-
-		return response;
+	async deleteUser(_id: IUser['_id']) {
+		return await UserModel.findByIdAndDelete(_id).lean();
 	},
 };

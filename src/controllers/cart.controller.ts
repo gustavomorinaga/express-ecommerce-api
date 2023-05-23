@@ -51,12 +51,6 @@ CartController.put('/:userId', async (req, res, next) => {
 			body: data,
 		} = await zParse(updateCartSchema, req);
 
-		const hasValidProducts = await CartRepository.checkCart(data.products);
-		if (!hasValidProducts)
-			return res.status(statuses.BAD_REQUEST).send({
-				error: 'Invalid products',
-			});
-
 		const response = await CartRepository.updateCart(userId, data);
 
 		return res.status(statuses.OK).send(response);

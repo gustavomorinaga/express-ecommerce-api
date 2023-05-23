@@ -47,19 +47,14 @@ OrderController.post('/', async (req, res, next) => {
 		const { body: data } = await zParse(createOrderSchema, req);
 
 		const cart = await CartRepository.getCart(data.user);
-		if (!cart) return res.status(statuses.NOT_FOUND).send({ error: 'Cart not found' });
 
-		await CartRepository.deleteCart(data.user as string);
-
-		const totalPrice = cart.products.reduce((acc, { product, quantity }) => {
-			return acc + product.price * quantity;
-		}, 0);
-
-		const response = await OrderRepository.createOrder({
-			...data,
-			totalPrice,
-			products: cart.products,
-		});
+		const [response] = await Promise.all([
+			OrderRepository.createOrder({
+				...data,
+				products: cart.products,
+			}),
+			CartRepository.clearCart(data.user),
+		]);
 
 		return res.status(statuses.CREATED).send(response);
 	} catch (error) {
@@ -73,14 +68,6 @@ OrderController.put('/:id', async (req, res, next) => {
 			params: { id },
 			body: data,
 		} = await zParse(updateOrderSchema, req);
-
-		const order = await OrderRepository.getOrder(id);
-		if (!order)
-			return res.status(statuses.BAD_REQUEST).send({ error: 'Order not found' });
-		if (order?.status === 'canceled')
-			return res.status(statuses.BAD_REQUEST).send({ error: 'Order canceled' });
-		if (order?.status === 'delivered')
-			return res.status(statuses.BAD_REQUEST).send({ error: 'Order delivered' });
 
 		const response = await OrderRepository.updateOrder(id, data);
 
@@ -96,12 +83,6 @@ OrderController.patch('/:id/status', async (req, res, next) => {
 			params: { id },
 			body: { status },
 		} = await zParse(setStatusOrderSchema, req);
-
-		const order = await OrderRepository.getOrder(id);
-		if (order?.status === 'canceled')
-			return res.status(statuses.BAD_REQUEST).send({ error: 'Order canceled' });
-		if (order?.status === 'delivered')
-			return res.status(statuses.BAD_REQUEST).send({ error: 'Order delivered' });
 
 		const response = await OrderRepository.setStatusOrder(id, status);
 

@@ -6,7 +6,7 @@ export interface IOrder extends TDocument {
 	user: ObjectId | string;
 	deliveryAddress: IAddress;
 	totalPrice: number;
-	status: 'pending' | 'canceled' | 'delivered';
+	status: 'pending' | 'canceled' | 'delivered' | 'completed';
 	observation?: string;
 	products: {
 		product: IProduct;

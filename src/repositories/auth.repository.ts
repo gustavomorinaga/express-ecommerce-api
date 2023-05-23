@@ -1,8 +1,8 @@
-// Configs
-import { environment } from '@config';
-
 // Models
 import { UserModel } from '@models';
+
+// Errors
+import { handlerError } from '@errors';
 
 // TS
 import { IAuth, IUser } from '@ts';
@@ -10,28 +10,23 @@ import { IAuth, IUser } from '@ts';
 export const AuthRepository = {
 	async login({ email, password }: IAuth) {
 		const user = await UserModel.findOne({ email }).populate('password');
-		if (!user) return null;
+		if (!user) return handlerError('User not found', 'NOT_FOUND');
 
 		const isMatch = await user.comparePassword(password);
+		if (!isMatch) return handlerError('Invalid password', 'UNAUTHORIZED');
 
-		return { user: user.toObject(), isMatch };
+		return user.toObject();
 	},
 
 	async signUp(user: IUser) {
-		user.avatar = `${environment.AVATAR_GENERATOR_URL}?seed=${encodeURI(user.name)}`;
-
-		const response = (await UserModel.create(user)).toObject();
-
-		return response;
+		return (await UserModel.create(user)).toObject();
 	},
 
 	async resetPassword({ email, password }: IAuth) {
-		const response = await UserModel.findOneAndUpdate(
+		return await UserModel.findOneAndUpdate(
 			{ email },
 			{ password },
 			{ new: true }
 		).lean();
-
-		return response;
 	},
 };

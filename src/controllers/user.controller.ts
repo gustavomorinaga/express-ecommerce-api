@@ -93,7 +93,6 @@ UserController.patch('/:id/activate', async (req, res, next) => {
 		} = await zParse(updateUserActiveSchema, req);
 
 		const response = await UserRepository.changeUserActive(id);
-		if (!response) return res.sendStatus(statuses.NOT_FOUND);
 
 		return res.status(statuses.OK).send(response);
 	} catch (error) {
@@ -108,7 +107,6 @@ UserController.patch('/:id/change-active', async (req, res, next) => {
 		} = await zParse(updateUserActiveSchema, req);
 
 		const response = await UserRepository.changeUserActive(id);
-		if (!response) return res.sendStatus(statuses.NOT_FOUND);
 
 		return res.status(statuses.OK).send(response);
 	} catch (error) {

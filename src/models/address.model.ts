@@ -3,7 +3,7 @@ import { Document, Model, Schema } from 'mongoose';
 // TS
 import { IAddress } from '@ts';
 
-interface IAddressDocument extends IAddress, Document {}
+interface IAddressDocument extends IAddress, Document<string> {}
 interface IAddressModel extends Model<IAddressDocument> {}
 interface IAddressMethods extends IAddressDocument {}
 

@@ -25,16 +25,12 @@ AuthController.post('/login', async (req, res, next) => {
 	try {
 		const { body: auth } = await zParse(loginAuthSchema, req);
 
-		const login = await AuthRepository.login(auth);
-		if (!login) return res.sendStatus(statuses.NOT_FOUND);
-
-		if (!login.isMatch) return res.sendStatus(statuses.UNAUTHORIZED);
-
-		const { password, createdAt, updatedAt, ...access } = login.user;
+		const user = await AuthRepository.login(auth);
+		const { password, createdAt, updatedAt, ...access } = user;
 
 		const token = generateAccessToken(access, { expiresIn: '1h' });
 
-		return res.status(statuses.OK).send({ ...login.user, token });
+		return res.status(statuses.OK).send({ ...user, token });
 	} catch (error) {
 		next(error);
 	}
@@ -81,7 +77,7 @@ AuthController.patch('/reset', async (req, res, next) => {
 
 		await AuthRepository.resetPassword(auth);
 
-		return res.sendStatus(statuses.OK);
+		return res.sendStatus(statuses.NO_CONTENT);
 	} catch (error) {
 		next(error);
 	}
