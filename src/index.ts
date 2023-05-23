@@ -9,16 +9,17 @@ import { connect, environment, logger } from './config';
 import routes from './routes';
 
 // Middlewares
-import { errorLogger } from '@middlewares';
+import { errorLogger, rateLimiter } from '@middlewares';
 
 const app = express();
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 app.use(pino(logger));
 app.use(cors());
+app.set('trust proxy', 1);
 
 // Routes
-app.use('/api', routes);
+app.use('/api', rateLimiter, routes);
 
 // Error handler
 app.use(errorLogger);
