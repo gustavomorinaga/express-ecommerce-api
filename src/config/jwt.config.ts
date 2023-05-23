@@ -1,7 +1,7 @@
 import jwt, { type SignOptions } from 'jsonwebtoken';
 
-// Environment
-import { environment } from './environment.config';
+// Configs
+import { environment } from '@config';
 
 // TS
 import { IUser } from '@ts';

@@ -5,21 +5,21 @@ import { OrderModel } from '@models';
 import { handleError } from '@errors';
 
 // TS
-import { IOrder } from '@ts';
+import { IOrder, IOrderPopulated } from '@ts';
 
 export const OrderRepository = {
 	async getOrders() {
 		return await OrderModel.find()
 			.populate('user')
 			.populate({ path: 'products.product', select: '-stock' })
-			.lean();
+			.lean<IOrderPopulated>();
 	},
 
 	async getOrder(id: string) {
 		return await OrderModel.findById(id)
 			.populate('user')
 			.populate({ path: 'products.product', select: '-stock' })
-			.lean();
+			.lean<IOrderPopulated>();
 	},
 
 	async createOrder(order: Omit<IOrder, 'totalPrice' | 'status'>) {

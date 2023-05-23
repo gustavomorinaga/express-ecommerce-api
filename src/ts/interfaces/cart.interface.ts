@@ -1,11 +1,18 @@
-import { TDocument } from '@ts';
-import { IProduct } from './product.interface';
-import type { ObjectId } from 'mongoose';
+// TS
+import { TDocument, IProduct, IUser } from '@ts';
 
 export interface ICart extends TDocument {
-	user: ObjectId | string;
+	user: TDocument['_id'];
 	products: {
-		product: IProduct | string;
+		product: TDocument['_id'];
+		quantity: number;
+	}[];
+}
+
+export interface ICartPopulated extends Omit<ICart, 'user' | 'products'> {
+	user: IUser;
+	products: {
+		product: IProduct;
 		quantity: number;
 	}[];
 }

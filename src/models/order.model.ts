@@ -4,7 +4,7 @@ import { Document, Model, model, Schema } from 'mongoose';
 import { AddressSchema } from '@models';
 
 // TS
-import { IOrder } from '@ts';
+import { IOrder, IOrderPopulated } from '@ts';
 
 interface IOrderDocument extends IOrder, Document<string> {}
 interface IOrderModel extends Model<IOrderDocument> {}
@@ -50,7 +50,7 @@ const OrderSchema = new Schema<IOrder, IOrderModel, IOrderMethods>(
 );
 
 OrderSchema.pre('save', async function (next) {
-	const order = this;
+	const order = await this.populate<IOrderPopulated>('products.product');
 
 	if (!order.isNew) return next();
 

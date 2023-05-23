@@ -1,4 +1,6 @@
 import { Router } from 'express';
+
+// Swagger
 import swaggerUi from 'swagger-ui-express';
 import swaggerFile from '../swagger-output.json';
 
@@ -10,7 +12,7 @@ import {
 	OrderController,
 	ProductController,
 	UserController,
-} from './controllers';
+} from '@controllers';
 
 // Middlewares
 import { authMiddleware } from '@middlewares';

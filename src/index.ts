@@ -4,7 +4,7 @@ import cors from 'cors';
 import compression from 'compression';
 
 // Config
-import { connect, environment, logger } from './config';
+import { connect, environment, logger } from '@config';
 
 // Routes
 import routes from './routes';

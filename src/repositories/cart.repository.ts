@@ -5,19 +5,17 @@ import { CartModel } from '@models';
 import { handleError } from '@errors';
 
 // TS
-import { ICart, IProduct } from '@ts';
+import { ICart, ICartPopulated, IProduct } from '@ts';
 
 export const CartRepository = {
 	async getCart(userId: ICart['user']) {
 		const cart = await CartModel.findOne({ user: userId })
 			.populate('user')
 			.populate({ path: 'products.product', select: '-stock' })
-			.lean();
+			.lean<ICartPopulated>();
 		if (!cart) return handleError('Cart not found', 'NOT_FOUND');
 
-		return cart as Omit<ICart, 'products'> & {
-			products: { product: IProduct; quantity: number }[];
-		};
+		return cart;
 	},
 
 	async createCart(cart: ICart) {
