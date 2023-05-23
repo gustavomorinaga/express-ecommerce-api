@@ -2,7 +2,7 @@
 import { CartModel } from '@models';
 
 // Errors
-import { handlerError } from '@errors';
+import { handleError } from '@errors';
 
 // TS
 import { ICart, IProduct } from '@ts';
@@ -13,7 +13,7 @@ export const CartRepository = {
 			.populate('user')
 			.populate({ path: 'products.product', select: '-stock' })
 			.lean();
-		if (!cart) return handlerError('Cart not found', 'NOT_FOUND');
+		if (!cart) return handleError('Cart not found', 'NOT_FOUND');
 
 		return cart as Omit<ICart, 'products'> & {
 			products: { product: IProduct; quantity: number }[];
@@ -26,10 +26,10 @@ export const CartRepository = {
 
 	async updateCart(userId: ICart['user'], cart: Omit<ICart, 'user'>) {
 		const existsCart = await CartModel.findOne({ user: userId });
-		if (!existsCart) return handlerError('Cart not found', 'NOT_FOUND');
+		if (!existsCart) return handleError('Cart not found', 'NOT_FOUND');
 
 		const isValidCart = await existsCart.checkCart(cart);
-		if (!isValidCart) return handlerError('Cart has incorrect products', 'BAD_REQUEST');
+		if (!isValidCart) return handleError('Cart has incorrect products', 'BAD_REQUEST');
 
 		return await CartModel.findOneAndUpdate({ user: userId }, cart, {
 			new: true,
@@ -38,7 +38,7 @@ export const CartRepository = {
 
 	async clearCart(userId: ICart['user']) {
 		const existsCart = await CartModel.findOne({ user: userId });
-		if (!existsCart) return handlerError('Cart not found', 'NOT_FOUND');
+		if (!existsCart) return handleError('Cart not found', 'NOT_FOUND');
 
 		return (await CartModel.findOneAndUpdate(
 			{ user: userId },

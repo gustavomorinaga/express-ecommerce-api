@@ -5,7 +5,7 @@ import { UserModel } from '@models';
 import { IUser } from '@ts';
 
 // Errors
-import { handlerError } from '@errors';
+import { handleError } from '@errors';
 
 export const UserRepository = {
 	async getUsers() {
@@ -14,21 +14,21 @@ export const UserRepository = {
 
 	async getUser(_id: IUser['_id']) {
 		const user = await UserModel.findById(_id).lean();
-		if (!user) return handlerError('User not found', 'NOT_FOUND');
+		if (!user) return handleError('User not found', 'NOT_FOUND');
 
 		return user;
 	},
 
 	async createUser(user: IUser) {
 		const userExists = await UserModel.findOne({ email: user.email }).lean();
-		if (userExists) return handlerError('User already exists', 'BAD_REQUEST');
+		if (userExists) return handleError('User already exists', 'BAD_REQUEST');
 
 		return (await UserModel.create(user)).toObject();
 	},
 
 	async updateUser(_id: IUser['_id'], data: Partial<Omit<IUser, 'password'>>) {
 		const user = await UserModel.findById(_id).lean();
-		if (!user) return handlerError('User not found', 'NOT_FOUND');
+		if (!user) return handleError('User not found', 'NOT_FOUND');
 
 		return await UserModel.findByIdAndUpdate(_id, data, { new: true }).lean();
 	},
@@ -39,7 +39,7 @@ export const UserRepository = {
 
 	async changeUserActive(_id: IUser['_id']) {
 		const user = await UserModel.findById(_id);
-		if (!user) return handlerError('User not found', 'NOT_FOUND');
+		if (!user) return handleError('User not found', 'NOT_FOUND');
 
 		await user.changeActive();
 

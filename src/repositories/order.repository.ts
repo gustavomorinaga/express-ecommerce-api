@@ -2,7 +2,7 @@
 import { OrderModel } from '@models';
 
 // Errors
-import { handlerError } from '@errors';
+import { handleError } from '@errors';
 
 // TS
 import { IOrder } from '@ts';
@@ -28,13 +28,13 @@ export const OrderRepository = {
 
 	async updateOrder(id: string, product: Partial<IOrder>) {
 		const existsOrder = await OrderModel.findById(id).lean();
-		if (!existsOrder) return handlerError('Order not found', 'NOT_FOUND');
+		if (!existsOrder) return handleError('Order not found', 'NOT_FOUND');
 		if (existsOrder.status === 'canceled')
-			return handlerError('Order is canceled', 'BAD_REQUEST');
+			return handleError('Order is canceled', 'BAD_REQUEST');
 		if (existsOrder.status === 'delivered')
-			return handlerError('Order is delivered', 'BAD_REQUEST');
+			return handleError('Order is delivered', 'BAD_REQUEST');
 		if (existsOrder.status === 'completed')
-			return handlerError('Order is completed', 'BAD_REQUEST');
+			return handleError('Order is completed', 'BAD_REQUEST');
 
 		return await OrderModel.findByIdAndUpdate(id, product, {
 			new: true,
@@ -43,13 +43,13 @@ export const OrderRepository = {
 
 	async setStatusOrder(id: string, status: IOrder['status']) {
 		const existsOrder = await OrderModel.findById(id).lean();
-		if (!existsOrder) return handlerError('Order not found', 'NOT_FOUND');
+		if (!existsOrder) return handleError('Order not found', 'NOT_FOUND');
 		if (existsOrder.status === 'canceled')
-			return handlerError('Order is canceled', 'BAD_REQUEST');
+			return handleError('Order is canceled', 'BAD_REQUEST');
 		if (existsOrder.status === 'delivered')
-			return handlerError('Order is delivered', 'BAD_REQUEST');
+			return handleError('Order is delivered', 'BAD_REQUEST');
 		if (existsOrder.status === 'completed')
-			return handlerError('Order is completed', 'BAD_REQUEST');
+			return handleError('Order is completed', 'BAD_REQUEST');
 
 		return await OrderModel.findByIdAndUpdate(id, {
 			status,

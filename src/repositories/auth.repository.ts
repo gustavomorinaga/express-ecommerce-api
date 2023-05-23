@@ -2,7 +2,7 @@
 import { UserModel } from '@models';
 
 // Errors
-import { handlerError } from '@errors';
+import { handleError } from '@errors';
 
 // TS
 import { IAuth, IUser } from '@ts';
@@ -10,10 +10,10 @@ import { IAuth, IUser } from '@ts';
 export const AuthRepository = {
 	async login({ email, password }: IAuth) {
 		const user = await UserModel.findOne({ email }).populate('password');
-		if (!user) return handlerError('User not found', 'NOT_FOUND');
+		if (!user) return handleError('User not found', 'NOT_FOUND');
 
 		const isMatch = await user.comparePassword(password);
-		if (!isMatch) return handlerError('Invalid password', 'UNAUTHORIZED');
+		if (!isMatch) return handleError('Invalid password', 'UNAUTHORIZED');
 
 		return user.toObject();
 	},
