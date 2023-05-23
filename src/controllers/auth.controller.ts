@@ -61,7 +61,7 @@ AuthController.post('/retrieve', async (req, res, next) => {
 			html: `
 				<h1>Recuperação de senha</h1>
 				<p>Para recuperar sua senha, clique no link abaixo:</p>
-				<a href="${environment.APP_URL}/reset/${token}">Recuperar senha</a>
+				<a href="${req.headers.host}/reset/${token}">Recuperar senha</a>
 			`,
 		});
 

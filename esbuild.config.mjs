@@ -1,5 +1,6 @@
 import { build } from 'esbuild';
 import esbuildPluginPino from 'esbuild-plugin-pino';
+import { compress } from 'esbuild-plugin-compress';
 
 (async () => {
 	console.log('📦 Building...');
@@ -9,6 +10,7 @@ import esbuildPluginPino from 'esbuild-plugin-pino';
 		entryPoints: ['src/index.ts'],
 		bundle: true,
 		minify: true,
+		write: false,
 		platform: 'node',
 		target: 'node18',
 		outdir: 'dist',
@@ -16,6 +18,7 @@ import esbuildPluginPino from 'esbuild-plugin-pino';
 			esbuildPluginPino({
 				transports: ['pino-pretty'],
 			}),
+			compress(),
 		],
 	});
 
