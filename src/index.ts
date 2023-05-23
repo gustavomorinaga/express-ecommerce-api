@@ -24,7 +24,8 @@ app.use('/api', routes);
 app.use(errorLogger);
 
 (async () => {
-	await connect();
+	const connection = await connect();
+	if (!connection) return;
 
 	app.listen(environment.PORT, () => {
 		console.log(`🌐 Server hosted on http://localhost:${environment.PORT}`);
