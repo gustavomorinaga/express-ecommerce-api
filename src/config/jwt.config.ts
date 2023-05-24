@@ -1,6 +1,6 @@
 import jwt, { type SignOptions } from 'jsonwebtoken';
 
-// Configs
+// Config
 import { environment } from '@config';
 
 // TS

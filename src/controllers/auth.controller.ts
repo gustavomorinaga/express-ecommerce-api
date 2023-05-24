@@ -1,7 +1,7 @@
 import { Router } from 'express';
 import statuses from 'http-status';
 
-// Configs
+// Config
 import { environment, generateAccessToken, transporter } from '@config';
 
 // Repositories

@@ -1,3 +1,6 @@
+// Config
+import { paginateConfig } from '@config';
+
 // Schemas
 import { CartModel } from '@models';
 
@@ -8,6 +11,13 @@ import { handleError } from '@errors';
 import { ICart, ICartPopulated, IProduct } from '@ts';
 
 export const CartRepository = {
+	async getCarts() {
+		return await CartModel.paginate(
+			{},
+			{ ...paginateConfig, populate: 'user products.product' }
+		);
+	},
+
 	async getCart(userId: ICart['user']) {
 		const cart = await CartModel.findOne({ user: userId })
 			.populate('user')
@@ -25,9 +35,6 @@ export const CartRepository = {
 	async updateCart(userId: ICart['user'], cart: Omit<ICart, 'user'>) {
 		const existsCart = await CartModel.findOne({ user: userId });
 		if (!existsCart) return handleError('Cart not found', 'NOT_FOUND');
-
-		const isValidCart = await existsCart.checkCart(cart);
-		if (!isValidCart) return handleError('Cart has incorrect products', 'BAD_REQUEST');
 
 		return await CartModel.findOneAndUpdate({ user: userId }, cart, {
 			new: true,

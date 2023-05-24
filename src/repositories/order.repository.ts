@@ -1,3 +1,6 @@
+// Config
+import { paginateConfig } from '@config';
+
 // Schemas
 import { OrderModel } from '@models';
 
@@ -9,10 +12,10 @@ import { IOrder, IOrderPopulated } from '@ts';
 
 export const OrderRepository = {
 	async getOrders() {
-		return await OrderModel.find()
-			.populate('user')
-			.populate({ path: 'products.product', select: '-stock' })
-			.lean<IOrderPopulated>();
+		return await OrderModel.paginate(
+			{},
+			{ ...paginateConfig, populate: 'user products.product' }
+		);
 	},
 
 	async getOrder(id: string) {

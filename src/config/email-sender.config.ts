@@ -1,6 +1,6 @@
 import nodemailer from 'nodemailer';
 
-// Configs
+// Config
 import { environment } from '@config';
 
 export const transporter = nodemailer.createTransport({

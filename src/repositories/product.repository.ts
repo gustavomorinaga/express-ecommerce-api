@@ -17,34 +17,24 @@ export const ProductRepository = {
 			...(query.hasEmptyStock && { stock: { $lte: 0 } }),
 		};
 
-		const products = await ProductModel.find(conditions).lean();
-
-		return products;
+		return await ProductModel.paginate(conditions);
 	},
 
 	async getProduct(id: string) {
-		const product = await ProductModel.findById(id).lean();
-
-		return product;
+		return await ProductModel.findById(id).lean();
 	},
 
-	async createProduct(product: IProduct) {
-		const response = (await ProductModel.create(product)).toObject();
-
-		return response;
+	async createProduct(product: Omit<IProduct, 'slug'> & { slug?: string }) {
+		return (await ProductModel.create(product)).toObject();
 	},
 
 	async updateProduct(id: string, product: Partial<IProduct>) {
-		const response = await ProductModel.findByIdAndUpdate(id, product, {
+		return await ProductModel.findByIdAndUpdate(id, product, {
 			new: true,
 		}).lean();
-
-		return response;
 	},
 
 	async deleteProduct(id: string) {
-		const response = await ProductModel.findByIdAndDelete(id).lean();
-
-		return response;
+		return await ProductModel.findByIdAndDelete(id).lean();
 	},
 };

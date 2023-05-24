@@ -9,7 +9,7 @@ import { handleError } from '@errors';
 
 export const UserRepository = {
 	async getUsers() {
-		return await UserModel.find().lean();
+		return await UserModel.paginate();
 	},
 
 	async getUser(_id: IUser['_id']) {

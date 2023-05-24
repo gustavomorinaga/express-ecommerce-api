@@ -1,8 +1,8 @@
-import { Document, Model, model, Schema } from 'mongoose';
+import { Document, Model, model, PaginateModel, Schema } from 'mongoose';
 import bcrypt from 'bcryptjs';
 
 // Config
-import { environment } from '@config';
+import { environment, paginatePlugin } from '@config';
 
 // Models
 import { AddressSchema } from '@models';
@@ -16,6 +16,7 @@ interface IUserMethods extends IUserDocument {
 	comparePassword(password: string): Promise<boolean>;
 	changeActive(): Promise<IUser>;
 }
+interface IUserPaginateModel extends PaginateModel<IUserDocument, {}, IUserMethods> {}
 
 const UserSchema = new Schema<IUser, IUserModel, IUserMethods>(
 	{
@@ -56,6 +57,8 @@ const UserSchema = new Schema<IUser, IUserModel, IUserMethods>(
 	}
 );
 
+UserSchema.plugin(paginatePlugin);
+
 UserSchema.pre('save', function (next) {
 	const user = this;
 
@@ -84,4 +87,4 @@ UserSchema.methods.changeActive = function () {
 	return this.save();
 };
 
-export const UserModel = model('User', UserSchema);
+export const UserModel = model<IUserDocument, IUserPaginateModel>('User', UserSchema);

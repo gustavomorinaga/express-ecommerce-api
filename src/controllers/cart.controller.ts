@@ -18,6 +18,16 @@ import { zParse } from '@utils';
 /** Responsável por gerenciar o carrinho de compras dos usuários */
 const CartController = Router();
 
+CartController.get('/', async (req, res, next) => {
+	try {
+		const carts = await CartRepository.getCarts();
+
+		return res.status(statuses.OK).send(carts);
+	} catch (error) {
+		next(error);
+	}
+});
+
 CartController.get('/:userId', async (req, res, next) => {
 	try {
 		const {

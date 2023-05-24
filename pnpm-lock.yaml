@@ -28,6 +28,9 @@ dependencies:
   mongoose:
     specifier: 7.2.0
     version: 7.2.0
+  mongoose-paginate-v2:
+    specifier: 1.7.1
+    version: 1.7.1
   nodemailer:
     specifier: 6.9.2
     version: 6.9.2
@@ -3247,6 +3250,11 @@ packages:
       socks: 2.7.1
     optionalDependencies:
       saslprep: 1.0.3
+    dev: false
+
+  /mongoose-paginate-v2@1.7.1:
+    resolution: {integrity: sha512-J8DJw3zRXcXOKoZv+RvO9tt5HotRnbo2iCR3lke+TtsQsYwQvbY3EgUkPqZXw6qCX2IByvXrW5SGNdAB0od/Cw==}
+    engines: {node: '>=4.0.0'}
     dev: false
 
   /mongoose@7.2.0:

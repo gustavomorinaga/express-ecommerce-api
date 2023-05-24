@@ -5,6 +5,7 @@ import { objectIdGeneric } from '@schemas';
 
 // Generics
 export const productGeneric = z.object({
+	slug: z.string().min(10).max(100).optional(),
 	name: z.string().min(10).max(100),
 	description: z.string().min(20),
 	price: z.number().min(0),

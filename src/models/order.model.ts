@@ -1,7 +1,10 @@
-import { Document, Model, model, Schema } from 'mongoose';
+import { Document, Model, model, PaginateModel, Schema } from 'mongoose';
+
+// Config
+import { paginatePlugin } from '@config';
 
 // Models
-import { AddressSchema } from '@models';
+import { AddressSchema, ProductModel } from '@models';
 
 // TS
 import { IOrder, IOrderPopulated } from '@ts';
@@ -9,6 +12,7 @@ import { IOrder, IOrderPopulated } from '@ts';
 interface IOrderDocument extends IOrder, Document<string> {}
 interface IOrderModel extends Model<IOrderDocument> {}
 interface IOrderMethods extends IOrderDocument {}
+interface IOrderPaginateModel extends PaginateModel<IOrderDocument, {}, IOrderMethods> {}
 
 const OrderSchema = new Schema<IOrder, IOrderModel, IOrderMethods>(
 	{
@@ -31,6 +35,7 @@ const OrderSchema = new Schema<IOrder, IOrderModel, IOrderMethods>(
 		},
 		observation: {
 			type: String,
+			required: false,
 		},
 		products: [
 			{
@@ -49,17 +54,30 @@ const OrderSchema = new Schema<IOrder, IOrderModel, IOrderMethods>(
 	{ timestamps: true }
 );
 
+OrderSchema.plugin(paginatePlugin);
+
 OrderSchema.pre('save', async function (next) {
 	const order = await this.populate<IOrderPopulated>('products.product');
 
 	if (!order.isNew) return next();
 
 	order.totalPrice = order.products.reduce(
-		(acc, { product, quantity }) => acc + product.price * quantity,
+		(acc, { product: { price }, quantity }) => acc + price * quantity,
 		0
 	);
 
-	next();
+	await Promise.all(
+		order.products.map(({ product, quantity }) =>
+			ProductModel.findByIdAndUpdate(product._id, {
+				$inc: { stock: -quantity },
+			})
+		)
+	);
+
+	return next();
 });
 
-export const OrderModel = model('Order', OrderSchema);
+export const OrderModel = model<IOrderDocument, IOrderPaginateModel>(
+	'Order',
+	OrderSchema
+);

@@ -47,12 +47,13 @@ OrderController.post('/', async (req, res, next) => {
 		const { body: data } = await zParse(createOrderSchema, req);
 
 		const cart = await CartRepository.getCart(data.user);
+		const products = cart.products.map(({ product, quantity }) => ({
+			product: product._id,
+			quantity,
+		}));
 
 		const [response] = await Promise.all([
-			OrderRepository.createOrder({
-				...data,
-				products: cart.products,
-			}),
+			OrderRepository.createOrder({ ...data, products }),
 			CartRepository.clearCart(data.user),
 		]);
 
