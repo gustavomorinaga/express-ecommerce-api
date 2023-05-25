@@ -10,6 +10,8 @@ export const productGeneric = z.object({
 	description: z.string().min(20),
 	price: z.number().min(0),
 	stock: z.number().min(0),
+	status: z.enum(['low-stock', 'out-of-stock', 'in-stock']).optional(),
+	active: z.boolean().optional(),
 });
 
 // Schemas

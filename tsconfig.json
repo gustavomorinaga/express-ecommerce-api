@@ -34,6 +34,8 @@
 			"@config": ["./src/config"],
 			"@controllers": ["./src/controllers"],
 			"@errors": ["./src/errors"],
+			"@functions": ["./src/functions"],
+			"@hooks": ["./src/hooks"],
 			"@middlewares": ["./src/middlewares"],
 			"@models": ["./src/models"],
 			"@repositories": ["./src/repositories"],

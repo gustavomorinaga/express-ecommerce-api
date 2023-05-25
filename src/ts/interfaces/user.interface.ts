@@ -1,3 +1,6 @@
+import { Document, Model, PaginateModel } from 'mongoose';
+
+// TS
 import { IAddress, TDocument } from '@ts';
 
 export interface IUser extends TDocument {
@@ -9,3 +12,12 @@ export interface IUser extends TDocument {
 	deliveryAddress?: IAddress;
 	active?: boolean;
 }
+
+export interface IUserDocument extends IUser, Document<string> {}
+export interface IUserModel extends Model<IUserDocument> {}
+export interface IUserMethods extends IUserDocument {
+	comparePassword(password: string): Promise<boolean>;
+	changeActive(): Promise<IUser>;
+}
+export interface IUserPaginateModel
+	extends PaginateModel<IUserDocument, {}, IUserMethods> {}

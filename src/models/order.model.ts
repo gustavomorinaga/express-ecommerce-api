@@ -1,18 +1,22 @@
-import { Document, Model, model, PaginateModel, Schema } from 'mongoose';
+import { model, Schema } from 'mongoose';
 
 // Config
 import { paginatePlugin } from '@config';
 
 // Models
-import { AddressSchema, ProductModel } from '@models';
+import { AddressSchema } from '@models';
+
+// Hooks
+import { preSaveOrderHook } from '@hooks';
 
 // TS
-import { IOrder, IOrderPopulated } from '@ts';
-
-interface IOrderDocument extends IOrder, Document<string> {}
-interface IOrderModel extends Model<IOrderDocument> {}
-interface IOrderMethods extends IOrderDocument {}
-interface IOrderPaginateModel extends PaginateModel<IOrderDocument, {}, IOrderMethods> {}
+import {
+	IOrder,
+	IOrderDocument,
+	IOrderMethods,
+	IOrderModel,
+	IOrderPaginateModel,
+} from '@ts';
 
 const OrderSchema = new Schema<IOrder, IOrderModel, IOrderMethods>(
 	{
@@ -56,26 +60,7 @@ const OrderSchema = new Schema<IOrder, IOrderModel, IOrderMethods>(
 
 OrderSchema.plugin(paginatePlugin);
 
-OrderSchema.pre('save', async function (next) {
-	const order = await this.populate<IOrderPopulated>('products.product');
-
-	if (!order.isNew) return next();
-
-	order.totalPrice = order.products.reduce(
-		(acc, { product: { price }, quantity }) => acc + price * quantity,
-		0
-	);
-
-	await Promise.all(
-		order.products.map(({ product, quantity }) =>
-			ProductModel.findByIdAndUpdate(product._id, {
-				$inc: { stock: -quantity },
-			})
-		)
-	);
-
-	return next();
-});
+OrderSchema.pre('save', preSaveOrderHook);
 
 export const OrderModel = model<IOrderDocument, IOrderPaginateModel>(
 	'Order',

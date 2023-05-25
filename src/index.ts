@@ -31,7 +31,7 @@ app.use(errorLogger);
 	if (!connection) return;
 
 	app.listen(environment.PORT, () => {
-		console.log(`🚀 Server hosted on http://localhost:${environment.PORT}`);
+		console.log(`🚀 Server ready at http://localhost:${environment.PORT}`);
 	});
 
 	app.on('error', error => {

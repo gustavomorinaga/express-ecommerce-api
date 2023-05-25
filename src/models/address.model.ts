@@ -1,11 +1,7 @@
-import { Document, Model, Schema } from 'mongoose';
+import { Schema } from 'mongoose';
 
 // TS
-import { IAddress } from '@ts';
-
-interface IAddressDocument extends IAddress, Document<string> {}
-interface IAddressModel extends Model<IAddressDocument> {}
-interface IAddressMethods extends IAddressDocument {}
+import { IAddress, IAddressMethods, IAddressModel } from '@ts';
 
 export const AddressSchema = new Schema<IAddress, IAddressModel, IAddressMethods>({
 	street: {

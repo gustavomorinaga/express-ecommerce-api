@@ -1,3 +1,6 @@
+import { Document, Model, PaginateModel } from 'mongoose';
+
+// TS
 import { IAddress, IUser, IProduct, TDocument } from '@ts';
 
 export interface IOrder extends TDocument {
@@ -19,3 +22,9 @@ export interface IOrderPopulated extends Omit<IOrder, 'user' | 'products'> {
 		quantity: number;
 	}[];
 }
+
+export interface IOrderDocument extends IOrder, Document<string> {}
+export interface IOrderModel extends Model<IOrderDocument> {}
+export interface IOrderMethods extends IOrderDocument {}
+export interface IOrderPaginateModel
+	extends PaginateModel<IOrderDocument, {}, IOrderMethods> {}

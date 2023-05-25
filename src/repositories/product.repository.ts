@@ -24,7 +24,7 @@ export const ProductRepository = {
 		return await ProductModel.findById(id).lean();
 	},
 
-	async createProduct(product: Omit<IProduct, 'slug'> & { slug?: string }) {
+	async createProduct(product: Omit<IProduct, 'slug'> & Partial<Pick<IProduct, 'slug'>>) {
 		return (await ProductModel.create(product)).toObject();
 	},
 

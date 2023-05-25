@@ -1,19 +1,19 @@
-import { Document, Model, model, PaginateModel, Schema } from 'mongoose';
+import { model, Schema } from 'mongoose';
 
 // Config
 import { paginatePlugin } from '@config';
 
-// Utils
-import { slugify } from '@utils';
+// Hooks
+import { preSaveProductHook, preUpdateProductHook } from '@hooks';
 
 // TS
-import { IProduct } from '@ts';
-
-interface IProductDocument extends IProduct, Document<string> {}
-interface IProductModel extends Model<IProductDocument> {}
-interface IProductMethods extends IProductDocument {}
-interface IProductPaginateModel
-	extends PaginateModel<IProductDocument, {}, IProductMethods> {}
+import {
+	IProduct,
+	IProductDocument,
+	IProductMethods,
+	IProductModel,
+	IProductPaginateModel,
+} from '@ts';
 
 const ProductSchema = new Schema<IProduct, IProductModel, IProductMethods>(
 	{
@@ -32,10 +32,21 @@ const ProductSchema = new Schema<IProduct, IProductModel, IProductMethods>(
 		price: {
 			type: Number,
 			required: true,
+			default: 0,
 		},
 		stock: {
 			type: Number,
 			required: true,
+			default: 0,
+		},
+		status: {
+			type: String,
+			enum: ['low-stock', 'out-of-stock', 'in-stock'],
+			default: 'in-stock',
+		},
+		active: {
+			type: Boolean,
+			default: true,
 		},
 	},
 	{ timestamps: true }
@@ -43,15 +54,8 @@ const ProductSchema = new Schema<IProduct, IProductModel, IProductMethods>(
 
 ProductSchema.plugin(paginatePlugin);
 
-ProductSchema.pre('save', function (next) {
-	const product = this;
-
-	if (!product.isModified('name')) return next();
-
-	product.slug = slugify(product.name);
-
-	return next();
-});
+ProductSchema.pre('save', preSaveProductHook);
+ProductSchema.pre('findOneAndUpdate', preUpdateProductHook);
 
 export const ProductModel = model<IProductDocument, IProductPaginateModel>(
 	'Product',

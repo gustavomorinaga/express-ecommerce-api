@@ -1,3 +1,5 @@
+import { Document, Model } from 'mongoose';
+
 export interface IAddress {
 	street: string;
 	number: number;
@@ -8,6 +10,10 @@ export interface IAddress {
 	country: string;
 	zipCode: string;
 }
+
+export interface IAddressDocument extends IAddress, Document<string> {}
+export interface IAddressModel extends Model<IAddressDocument> {}
+export interface IAddressMethods extends IAddressDocument {}
 
 export interface IViaCEPAddress {
 	cep: string;
