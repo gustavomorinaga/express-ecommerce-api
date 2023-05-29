@@ -4,14 +4,14 @@ import { z } from 'zod';
 import { objectIdGeneric } from '@schemas';
 
 // Generics
+export const cartProductGeneric = z.object({
+	product: objectIdGeneric,
+	quantity: z.number().min(1),
+});
+
 export const cartGeneric = z.object({
 	user: objectIdGeneric,
-	products: z.array(
-		z.object({
-			product: objectIdGeneric,
-			quantity: z.number().min(1),
-		})
-	),
+	products: z.array(cartProductGeneric),
 });
 
 // Schemas

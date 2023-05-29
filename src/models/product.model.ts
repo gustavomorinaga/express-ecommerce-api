@@ -4,7 +4,7 @@ import { model, Schema } from 'mongoose';
 import { paginatePlugin } from '@config';
 
 // Hooks
-import { preSaveProductHook, preUpdateProductHook } from '@hooks';
+import { preSaveProductHook } from '@hooks';
 
 // TS
 import {
@@ -17,37 +17,23 @@ import {
 
 const ProductSchema = new Schema<IProduct, IProductModel, IProductMethods>(
 	{
-		slug: {
-			type: String,
-			unique: true,
-		},
 		name: {
 			type: String,
 			required: true,
+		},
+		slug: {
+			type: String,
+			unique: true,
 		},
 		description: {
 			type: String,
 			required: true,
 		},
-		price: {
-			type: Number,
-			required: true,
-			default: 0,
-		},
-		stock: {
-			type: Number,
-			required: true,
-			default: 0,
-		},
-		status: {
-			type: String,
-			enum: ['low-stock', 'out-of-stock', 'in-stock'],
-			default: 'in-stock',
-		},
 		active: {
 			type: Boolean,
 			default: true,
 		},
+		variants: [{ type: Schema.Types.ObjectId, ref: 'ProductVariant' }],
 	},
 	{ timestamps: true }
 );
@@ -55,7 +41,7 @@ const ProductSchema = new Schema<IProduct, IProductModel, IProductMethods>(
 ProductSchema.plugin(paginatePlugin);
 
 ProductSchema.pre('save', preSaveProductHook);
-ProductSchema.pre('findOneAndUpdate', preUpdateProductHook);
+// ProductSchema.pre('findOneAndUpdate', preUpdateProductHook);
 
 export const ProductModel = model<IProductDocument, IProductPaginateModel>(
 	'Product',

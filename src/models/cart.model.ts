@@ -9,6 +9,23 @@ import { preSaveCartHook } from '@hooks';
 // TS
 import { ICart, ICartDocument, ICartMethods, ICartModel, ICartPaginateModel } from '@ts';
 
+const CartProductSchema = new Schema({
+	product: {
+		type: Schema.Types.ObjectId,
+		ref: 'Product',
+		required: true,
+	},
+	variant: {
+		type: Schema.Types.ObjectId,
+		ref: 'ProductVariant',
+		required: true,
+	},
+	quantity: {
+		type: Number,
+		required: true,
+	},
+});
+
 const CartSchema = new Schema<ICart, ICartModel, ICartMethods>(
 	{
 		user: {
@@ -17,19 +34,7 @@ const CartSchema = new Schema<ICart, ICartModel, ICartMethods>(
 			required: true,
 			unique: true,
 		},
-		products: [
-			{
-				product: {
-					type: Schema.Types.ObjectId,
-					ref: 'Product',
-					required: true,
-				},
-				quantity: {
-					type: Number,
-					required: true,
-				},
-			},
-		],
+		products: [CartProductSchema],
 	},
 	{ timestamps: true }
 );

@@ -1,8 +1,11 @@
 // Schemas
-import { ProductModel } from '@models';
+import { ProductModel, ProductVariantModel } from '@models';
+
+// Functions
+import { getProductStatus } from '@functions';
 
 // TS
-import { IProduct, TQueryProduct } from '@ts';
+import { IProduct, IProductPopulated, TQueryProduct } from '@ts';
 
 export const ProductRepository = {
 	async getProducts(query: TQueryProduct) {
@@ -17,24 +20,39 @@ export const ProductRepository = {
 			...(query.hasEmptyStock && { stock: { $lte: 0 } }),
 		};
 
-		return await ProductModel.paginate(conditions);
+		return await ProductModel.paginate(conditions, { populate: 'variants' });
 	},
 
-	async getProduct(id: string) {
+	async getProduct(id: IProduct['_id']) {
 		return await ProductModel.findById(id).lean();
 	},
 
-	async createProduct(product: Omit<IProduct, 'slug'> & Partial<Pick<IProduct, 'slug'>>) {
-		return (await ProductModel.create(product)).toObject();
+	async createProduct(
+		product: Omit<IProductPopulated, 'slug'> & Partial<Pick<IProductPopulated, 'slug'>>
+	) {
+		let variants: IProduct['variants'] = [];
+
+		if (product.variants?.length) {
+			product.variants = product.variants.map(variant => ({
+				...variant,
+				status: getProductStatus(variant.stock),
+			}));
+
+			const createdVariants = await ProductVariantModel.insertMany(product.variants);
+
+			variants = createdVariants.map(variant => variant._id);
+		}
+
+		return (await ProductModel.create({ ...product, variants })).toObject();
 	},
 
-	async updateProduct(id: string, product: Partial<IProduct>) {
+	async updateProduct(id: IProduct['_id'], product: DeepPartial<IProduct>) {
 		return await ProductModel.findByIdAndUpdate(id, product, {
 			new: true,
 		}).lean();
 	},
 
-	async deleteProduct(id: string) {
+	async deleteProduct(id: IProduct['_id']) {
 		return await ProductModel.findByIdAndDelete(id).lean();
 	},
 };

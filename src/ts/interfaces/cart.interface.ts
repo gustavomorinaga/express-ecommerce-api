@@ -1,12 +1,13 @@
 import { Document, Model, PaginateModel } from 'mongoose';
 
 // TS
-import { TDocument, IProduct, IUser } from '@ts';
+import { TDocument, IProduct, IUser, IProductVariant } from '@ts';
 
 export interface ICart extends TDocument {
 	user: TDocument['_id'];
 	products: {
 		product: TDocument['_id'];
+		variant: TDocument['_id'];
 		quantity: number;
 	}[];
 }
@@ -15,6 +16,7 @@ export interface ICartPopulated extends Omit<ICart, 'user' | 'products'> {
 	user: IUser;
 	products: {
 		product: IProduct;
+		variant: IProductVariant;
 		quantity: number;
 	}[];
 }

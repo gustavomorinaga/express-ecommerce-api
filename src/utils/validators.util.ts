@@ -9,6 +9,6 @@ export async function zParse<T extends AnyZodObject>(
 	try {
 		return await schema.parseAsync(req);
 	} catch (error) {
-		return fromZodError(error as ZodError);
+		throw fromZodError(error as ZodError);
 	}
 }

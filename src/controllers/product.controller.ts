@@ -67,7 +67,7 @@ ProductController.put('/:id', authMiddleware, async (req, res, next) => {
 			body: data,
 		} = await zParse(updateProductSchema, req);
 
-		const response = await ProductRepository.updateProduct(id, data);
+		const response = await ProductRepository.updateProduct(id, {});
 
 		return res.status(statuses.OK).send(response);
 	} catch (error) {
