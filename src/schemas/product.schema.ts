@@ -36,7 +36,14 @@ export const getProductsSchema = z.object({
 		hasEmptyStock: z
 			.string()
 			.optional()
-			.transform(value => value === 'true'),
+			.transform(value => (value !== undefined ? value === 'true' : undefined)),
+		sortBy: z
+			.enum(['name', 'price', 'stock', 'status', 'createdAt', 'updatedAt'])
+			.default('name'),
+		orderBy: z
+			.enum(['asc', 'desc'])
+			.default('asc')
+			.transform(value => (value === 'asc' ? 1 : -1)),
 	}),
 });
 

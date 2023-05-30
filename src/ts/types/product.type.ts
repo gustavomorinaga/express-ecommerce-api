@@ -3,4 +3,6 @@ export type TQueryProduct = {
 	startPrice?: number;
 	endPrice?: number;
 	hasEmptyStock?: boolean;
+	sortBy: 'name' | 'price' | 'stock' | 'status' | 'createdAt' | 'updatedAt';
+	orderBy: 1 | -1;
 };

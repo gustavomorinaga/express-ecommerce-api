@@ -1,7 +1,7 @@
 import { model, Schema } from 'mongoose';
 
 // Config
-import { paginatePlugin } from '@config';
+import { aggregatePaginatePlugin } from '@config';
 
 // Hooks
 import { preSaveProductHook } from '@hooks';
@@ -38,10 +38,9 @@ const ProductSchema = new Schema<IProduct, IProductModel, IProductMethods>(
 	{ timestamps: true }
 );
 
-ProductSchema.plugin(paginatePlugin);
+ProductSchema.plugin(aggregatePaginatePlugin);
 
 ProductSchema.pre('save', preSaveProductHook);
-// ProductSchema.pre('findOneAndUpdate', preUpdateProductHook);
 
 export const ProductModel = model<IProductDocument, IProductPaginateModel>(
 	'Product',

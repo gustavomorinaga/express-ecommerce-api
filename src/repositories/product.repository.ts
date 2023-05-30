@@ -1,3 +1,8 @@
+import { PipelineStage } from 'mongoose';
+
+// Config
+import { paginateConfig } from '@config';
+
 // Schemas
 import { ProductModel, ProductVariantModel } from '@models';
 
@@ -9,22 +14,70 @@ import { IProduct, IProductPopulated, TQueryProduct } from '@ts';
 
 export const ProductRepository = {
 	async getProducts(query: TQueryProduct) {
-		const conditions = {
-			...(query.name && { name: { $regex: query.name, $options: 'i' } }),
-			...((query.startPrice || query.endPrice) && {
-				price: {
-					...(query.startPrice && { $gte: query.startPrice }),
-					...(query.endPrice && { $lte: query.endPrice }),
+		const conditions: PipelineStage[] = [
+			{
+				$lookup: {
+					from: 'productvariants',
+					localField: 'variants',
+					foreignField: '_id',
+					as: 'variants',
 				},
-			}),
-			...(query.hasEmptyStock && { stock: { $lte: 0 } }),
-		};
+			},
+			{
+				$unwind: '$variants',
+			},
+		];
 
-		return await ProductModel.paginate(conditions, { populate: 'variants' });
+		if (query.name)
+			conditions.push({
+				$match: {
+					name: { $regex: query.name, $options: 'i' },
+				},
+			});
+		if (query.startPrice || query.endPrice)
+			conditions.push({
+				$match: {
+					'variants.price': {
+						...(query.startPrice && { $gte: query.startPrice }),
+						...(query.endPrice && { $lte: query.endPrice }),
+					},
+				},
+			});
+		if (query.hasEmptyStock)
+			conditions.push({
+				$match: {
+					'variants.stock': { $lte: 0 },
+				},
+			});
+		if (query.sortBy)
+			conditions.push({
+				$sort: {
+					...(query.sortBy === 'name' && { name: query.orderBy }),
+					...(query.sortBy === 'price' && { 'variants.price': query.orderBy }),
+					...(query.sortBy === 'stock' && { 'variants.stock': query.orderBy }),
+					...(query.sortBy === 'status' && { 'variants.status': query.orderBy }),
+					...(query.sortBy === 'createdAt' && { createdAt: query.orderBy }),
+					...(query.sortBy === 'updatedAt' && { updatedAt: query.orderBy }),
+				},
+			});
+
+		conditions.push({
+			$group: {
+				_id: '$_id',
+				name: { $first: '$name' },
+				description: { $first: '$description' },
+				active: { $first: '$active' },
+				variants: { $push: '$variants' },
+			},
+		});
+
+		const aggregation = ProductModel.aggregate<IProductPopulated>(conditions);
+
+		return await ProductModel.aggregatePaginate(aggregation, paginateConfig);
 	},
 
 	async getProduct(id: IProduct['_id']) {
-		return await ProductModel.findById(id).lean();
+		return await ProductModel.findById(id).populate('variants').lean();
 	},
 
 	async createProduct(

@@ -1,4 +1,4 @@
-import { Document, Model, PaginateModel } from 'mongoose';
+import { Document, Model, AggregatePaginateModel } from 'mongoose';
 
 // TS
 import { TDocument } from '@ts';
@@ -27,8 +27,7 @@ export interface IProductVariant {
 export interface IProductDocument extends IProduct, Document<string> {}
 export interface IProductModel extends Model<IProductDocument> {}
 export interface IProductMethods extends IProductDocument {}
-export interface IProductPaginateModel
-	extends PaginateModel<IProductDocument, {}, IProductMethods> {}
+export interface IProductPaginateModel extends AggregatePaginateModel<IProductDocument> {}
 
 export interface IProductVariantDocument extends IProductVariant, Document<string> {}
 export interface IProductVariantModel extends Model<IProductVariantDocument> {}

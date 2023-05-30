@@ -1,4 +1,4 @@
-import type { CallbackWithoutResultAndOptionalError, Query } from 'mongoose';
+import type { CallbackWithoutResultAndOptionalError } from 'mongoose';
 
 // Models
 import { ProductModel } from '@models';
@@ -22,24 +22,3 @@ export const preSaveProductHook = async function (
 
 	return next();
 };
-
-// export const preUpdateProductHook = function (
-// 	this: Query<IProductDocument, IProductDocument>,
-// 	next: CallbackWithoutResultAndOptionalError
-// ) {
-// 	const query = this.getUpdate() as Partial<IProductDocument>;
-
-// 	const mutatedQuery = {
-// 		...query,
-// 		...(query?.variants?.length && {
-// 			variants: query.variants.map(variant => ({
-// 				...variant,
-// 				status: getProductStatus(variant.stock),
-// 			})),
-// 		}),
-// 	};
-
-// 	this.setUpdate(mutatedQuery);
-
-// 	return next();
-// };
