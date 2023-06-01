@@ -9,6 +9,7 @@ import {
 	AddressController,
 	AuthController,
 	CartController,
+	FavoriteController,
 	OrderController,
 	ProductController,
 	UserController,
@@ -24,6 +25,7 @@ routes.use('/doc', swaggerUi.serve, swaggerUi.setup(swaggerFile));
 routes.use('/address', AddressController);
 routes.use('/auth', AuthController);
 routes.use('/carts', authMiddleware, CartController);
+routes.use('/favorites', authMiddleware, FavoriteController);
 routes.use('/orders', authMiddleware, OrderController);
 routes.use('/products', ProductController);
 routes.use('/users', authMiddleware, UserController);

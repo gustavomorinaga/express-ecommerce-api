@@ -5,7 +5,7 @@ import { CartModel } from '@models';
 import { handleError } from '@errors';
 
 // TS
-import { ICart, ICartPopulated, IProduct } from '@ts';
+import { ICart, ICartPopulated } from '@ts';
 
 export const CartRepository = {
 	async getCarts() {
