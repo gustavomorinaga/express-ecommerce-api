@@ -27,4 +27,4 @@ export interface ICartMethods extends ICartDocument {
 	checkCart: (cart: Omit<ICart, 'user'>) => Promise<boolean>;
 }
 export interface ICartPaginateModel
-	extends PaginateModel<ICartDocument, {}, ICartMethods> {}
+	extends PaginateModel<ICartPopulated, {}, ICartMethods> {}

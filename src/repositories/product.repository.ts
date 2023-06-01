@@ -77,7 +77,7 @@ export const ProductRepository = {
 	},
 
 	async getProduct(id: IProduct['_id']) {
-		return await ProductModel.findById(id).populate('variants').lean();
+		return await ProductModel.findById(id).populate('variants').lean<IProductPopulated>();
 	},
 
 	async createProduct(
@@ -96,13 +96,19 @@ export const ProductRepository = {
 			variants = createdVariants.map(variant => variant._id);
 		}
 
-		return (await ProductModel.create({ ...product, variants })).toObject();
+		const createdProduct = await ProductModel.create({ ...product, variants }).then(doc =>
+			doc.populate('variants')
+		);
+
+		return createdProduct.toObject<IProductPopulated>();
 	},
 
-	async updateProduct(id: IProduct['_id'], product: DeepPartial<IProduct>) {
+	async updateProduct(id: IProduct['_id'], product: DeepPartial<IProductPopulated>) {
 		return await ProductModel.findByIdAndUpdate(id, product, {
 			new: true,
-		}).lean();
+		})
+			.populate('variants')
+			.lean<IProductPopulated>();
 	},
 
 	async deleteProduct(id: IProduct['_id']) {

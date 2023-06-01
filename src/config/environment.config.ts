@@ -10,6 +10,8 @@ export const environment: TEnvironment = {
 	PORT: Number(process.env.PORT) || 3000,
 
 	JWT_SECRET: process.env.JWT_SECRET || '',
+	JWT_REFRESH_SECRET: process.env.JWT_REFRESH_SECRET || '',
+
 	BCRYPT_SALT: Number(process.env.BCRYPT_SALT) || 10,
 
 	DATABASE_USER: process.env.DATABASE_USER || '',

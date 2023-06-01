@@ -1,7 +1,8 @@
 import express from 'express';
-import pino from 'pino-http';
+import cookieParser from 'cookie-parser';
 import cors from 'cors';
 import compression from 'compression';
+import pino from 'pino-http';
 
 // Config
 import { connect, environment, logger } from '@config';
@@ -15,6 +16,7 @@ import { errorLogger, rateLimiter } from '@middlewares';
 const app = express();
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
+app.use(cookieParser());
 app.use(cors());
 app.use(compression());
 app.use(pino(logger));

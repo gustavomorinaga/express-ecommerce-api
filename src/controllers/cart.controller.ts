@@ -6,6 +6,7 @@ import { CartRepository } from '@repositories';
 
 // Schemas
 import {
+	clearCartSchema,
 	createCartSchema,
 	deleteCartSchema,
 	getCartSchema,
@@ -62,6 +63,20 @@ CartController.put('/:userId', async (req, res, next) => {
 		} = await zParse(updateCartSchema, req);
 
 		const response = await CartRepository.updateCart(userId, data);
+
+		return res.status(statuses.OK).send(response);
+	} catch (error) {
+		next(error);
+	}
+});
+
+CartController.patch('/:userId/clear', async (req, res, next) => {
+	try {
+		const {
+			params: { userId },
+		} = await zParse(clearCartSchema, req);
+
+		const response = await CartRepository.clearCart(userId);
 
 		return res.status(statuses.OK).send(response);
 	} catch (error) {

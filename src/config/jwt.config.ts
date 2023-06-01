@@ -1,16 +1,32 @@
-import jwt, { type SignOptions } from 'jsonwebtoken';
+import jwt, { type JwtPayload, type SignOptions } from 'jsonwebtoken';
 
 // Config
 import { environment } from '@config';
+
+// Errors
+import { handleError } from '@errors';
 
 // TS
 import { IUser } from '@ts';
 
 export const generateAccessToken = (
 	user: Partial<Omit<IUser, 'password' | 'createdAt' | 'updatedAt'>>,
+	secretType: 'access' | 'refresh',
 	options?: SignOptions
 ) => {
-	if (!environment.JWT_SECRET) throw new Error('JWT_SECRET not found!');
+	if (secretType === 'access' && !environment.JWT_SECRET)
+		return handleError('JWT_SECRET not found');
+	if (secretType === 'refresh' && !environment.JWT_REFRESH_SECRET)
+		return handleError('JWT_REFRESH_SECRET not found');
 
-	return jwt.sign(user, environment.JWT_SECRET, options);
+	const secret =
+		secretType === 'access' ? environment.JWT_SECRET : environment.JWT_REFRESH_SECRET;
+
+	return jwt.sign(user, secret, options);
+};
+
+export const verifyAccessToken = (token: string) => {
+	if (!environment.JWT_REFRESH_SECRET) return handleError('JWT_REFRESH_SECRET not found');
+
+	return jwt.verify(token, environment.JWT_REFRESH_SECRET) as JwtPayload;
 };

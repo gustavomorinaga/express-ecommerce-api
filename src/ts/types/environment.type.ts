@@ -3,6 +3,8 @@ export type TEnvironment = {
 	PORT: number;
 
 	JWT_SECRET: string;
+	JWT_REFRESH_SECRET: string;
+
 	BCRYPT_SALT: number;
 
 	DATABASE_USER: string;

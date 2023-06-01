@@ -7,7 +7,7 @@ import { paginatePlugin } from '@config';
 import { AddressSchema } from '@models';
 
 // Hooks
-import { preSaveOrderHook } from '@hooks';
+import { preFindAndUpdateOrderHook, preSaveOrderHook } from '@hooks';
 
 // TS
 import {
@@ -18,14 +18,38 @@ import {
 	IOrderPaginateModel,
 } from '@ts';
 
+const OrderProductSchema = new Schema({
+	product: {
+		type: Schema.Types.ObjectId,
+		ref: 'Product',
+		required: true,
+	},
+	variant: {
+		type: Schema.Types.ObjectId,
+		ref: 'ProductVariant',
+		required: true,
+	},
+	quantity: {
+		type: Number,
+		required: true,
+	},
+});
+
 const OrderSchema = new Schema<IOrder, IOrderModel, IOrderMethods>(
 	{
+		orderID: {
+			type: String,
+			unique: true,
+		},
 		user: {
 			type: Schema.Types.ObjectId,
 			ref: 'User',
 			required: true,
 		},
-		deliveryAddress: AddressSchema.obj,
+		deliveryAddress: {
+			type: AddressSchema,
+			required: true,
+		},
 		totalPrice: {
 			type: Number,
 			required: true,
@@ -41,19 +65,7 @@ const OrderSchema = new Schema<IOrder, IOrderModel, IOrderMethods>(
 			type: String,
 			required: false,
 		},
-		products: [
-			{
-				product: {
-					type: Schema.Types.ObjectId,
-					ref: 'Product',
-					required: true,
-				},
-				quantity: {
-					type: Number,
-					required: true,
-				},
-			},
-		],
+		products: [OrderProductSchema],
 	},
 	{ timestamps: true }
 );
@@ -61,6 +73,7 @@ const OrderSchema = new Schema<IOrder, IOrderModel, IOrderMethods>(
 OrderSchema.plugin(paginatePlugin);
 
 OrderSchema.pre('save', preSaveOrderHook);
+OrderSchema.pre('findOneAndUpdate', preFindAndUpdateOrderHook);
 
 export const OrderModel = model<IOrderDocument, IOrderPaginateModel>(
 	'Order',

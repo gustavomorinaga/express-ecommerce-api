@@ -19,6 +19,13 @@ export const UserRepository = {
 		return user;
 	},
 
+	async getUserByEmail(email: IUser['email']) {
+		const user = await UserModel.findOne({ email }).lean();
+		if (!user) return handleError('User not found', 'NOT_FOUND');
+
+		return user;
+	},
+
 	async createUser(user: IUser) {
 		const userExists = await UserModel.findOne({ email: user.email }).lean();
 		if (userExists) return handleError('User already exists', 'BAD_REQUEST');

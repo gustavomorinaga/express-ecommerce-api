@@ -2,15 +2,21 @@ import { Router } from 'express';
 import statuses from 'http-status';
 
 // Config
-import { environment, generateAccessToken, transporter } from '@config';
+import {
+	environment,
+	generateAccessToken,
+	transporter,
+	verifyAccessToken,
+} from '@config';
 
 // Repositories
-import { AuthRepository } from '@repositories';
+import { AuthRepository, UserRepository } from '@repositories';
 
 // Schemas
 import {
 	createUserSchema,
 	loginAuthSchema,
+	refreshAuthSchema,
 	resetAuthSchema,
 	retrieveAuthSchema,
 } from '@schemas';
@@ -28,9 +34,52 @@ AuthController.post('/login', async (req, res, next) => {
 		const user = await AuthRepository.login(auth);
 		const { password, createdAt, updatedAt, ...access } = user;
 
-		const token = generateAccessToken(access, { expiresIn: '1h' });
+		const accessToken = generateAccessToken(access, 'access', { expiresIn: '1h' }); // 1 hour
+		const refreshToken = generateAccessToken({ email: access.email }, 'refresh', {
+			expiresIn: '1d',
+		}); // 1 day
 
-		return res.status(statuses.OK).send({ ...user, token });
+		const response = { accessToken, refreshToken };
+
+		res.cookie('jwt', refreshToken, {
+			httpOnly: true,
+			secure: true,
+			maxAge: 24 * 60 * 60 * 1000, // 1 day
+		});
+
+		return res.status(statuses.OK).send(response);
+	} catch (error) {
+		next(error);
+	}
+});
+
+AuthController.post('/refresh', async (req, res, next) => {
+	try {
+		const {
+			cookies: { jwt: refreshToken },
+		} = await zParse(refreshAuthSchema, req);
+
+		const accepted = verifyAccessToken(refreshToken);
+
+		const user = await UserRepository.getUserByEmail(accepted.email as string);
+		const { createdAt, updatedAt, ...access } = user;
+
+		const newAccessToken = generateAccessToken(access, 'access', { expiresIn: '1h' }); // 1 hour
+		const newRefreshToken = generateAccessToken(
+			{ email: accepted.email as string },
+			'refresh',
+			{ expiresIn: '1d' }
+		); // 1 day
+
+		const response = { accessToken: newAccessToken };
+
+		res.cookie('jwt', newRefreshToken, {
+			httpOnly: true,
+			secure: true,
+			maxAge: 24 * 60 * 60 * 1000, // 1 day
+		});
+
+		return res.status(statuses.OK).send(response);
 	} catch (error) {
 		next(error);
 	}
@@ -52,7 +101,7 @@ AuthController.post('/retrieve', async (req, res, next) => {
 	try {
 		const { body: auth } = await zParse(retrieveAuthSchema, req);
 
-		const token = generateAccessToken(auth, { expiresIn: '30m' });
+		const token = generateAccessToken(auth, 'refresh', { expiresIn: '30m' });
 
 		await transporter.sendMail({
 			from: environment.EMAIL_FROM,

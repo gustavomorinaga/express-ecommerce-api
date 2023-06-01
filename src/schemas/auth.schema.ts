@@ -14,6 +14,12 @@ export const loginAuthSchema = z.object({
 	body: authGeneric,
 });
 
+export const refreshAuthSchema = z.object({
+	cookies: z.object({
+		jwt: z.string(),
+	}),
+});
+
 export const retrieveAuthSchema = z.object({
 	body: z.object({
 		email: authGeneric.shape.email,

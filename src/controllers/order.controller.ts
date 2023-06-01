@@ -15,6 +15,9 @@ import {
 // Utils
 import { zParse } from '@utils';
 
+// Errors
+import { handleError } from '@errors';
+
 /** Responsável por gerenciar os pedidos feitos pelos usuários */
 const OrderController = Router();
 
@@ -47,10 +50,13 @@ OrderController.post('/', async (req, res, next) => {
 		const { body: data } = await zParse(createOrderSchema, req);
 
 		const cart = await CartRepository.getCart(data.user);
-		const products = cart.products.map(({ product, quantity }) => ({
+		const products = cart.products.map(({ product, variant, quantity }) => ({
 			product: product._id,
+			variant: variant._id,
 			quantity,
 		}));
+
+		if (!products.length) return handleError('Cart is empty', 'BAD_REQUEST');
 
 		const [response] = await Promise.all([
 			OrderRepository.createOrder({ ...data, products }),

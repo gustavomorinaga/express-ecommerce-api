@@ -11,17 +11,17 @@ export interface IProduct extends TDocument {
 	variants?: TDocument['_id'][];
 }
 
-export interface IProductPopulated extends Omit<IProduct, 'variants'> {
-	variants: IProductVariant[];
-}
-
-export interface IProductVariant {
+export interface IProductVariant extends TDocument {
 	name: string;
 	sku: string;
 	price: number;
 	stock: number;
 	status?: 'low-stock' | 'out-of-stock' | 'in-stock';
 	active?: boolean;
+}
+
+export interface IProductPopulated extends Omit<IProduct, 'variants'> {
+	variants: IProductVariant[];
 }
 
 export interface IProductDocument extends IProduct, Document<string> {}

@@ -27,11 +27,13 @@ const ProductVariantSchema = new Schema<
 		price: {
 			type: Number,
 			required: true,
+			min: 0,
 			default: 0,
 		},
 		stock: {
 			type: Number,
 			required: true,
+			min: 0,
 			default: 0,
 		},
 		status: {
