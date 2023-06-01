@@ -13,10 +13,10 @@ export const connect = async () => {
 			'DATABASE_PASS',
 			'DATABASE_HOST',
 			'DATABASE_NAME',
-		];
+		] as const;
 
 		for (const variable of variables)
-			if (!(environment as any)[variable])
+			if (!environment[variable])
 				return handleError(`${variable} not found`, 'INTERNAL_SERVER_ERROR');
 
 		const uri = `mongodb+srv://${environment.DATABASE_USER}:${environment.DATABASE_PASS}@${environment.DATABASE_HOST}/${environment.DATABASE_NAME}?retryWrites=true&w=majority`;
