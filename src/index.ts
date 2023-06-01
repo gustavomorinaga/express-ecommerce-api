@@ -51,4 +51,12 @@ app.use(errorLogger);
 	process.on('exit', () => {
 		console.log('👋 Bye bye!');
 	});
+
+	process.on('SIGINT', () => {
+		console.log('👋 Bye bye!');
+	});
+
+	process.on('SIGTERM', () => {
+		console.log('👋 Bye bye!');
+	});
 })();
