@@ -10,7 +10,7 @@ import { getAddressByZipCodeSchema } from '@schemas';
 // --- Utils ---
 import { zParse } from '@utils';
 
-/** Responsável por gerenciar a autenticação dos usuários */
+/** Responsável por gerenciar os endereços */
 const AddressController = Router();
 
 AddressController.get('/:cep', async (req, res, next) => {
