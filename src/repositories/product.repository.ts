@@ -81,7 +81,8 @@ export const ProductRepository = {
 	},
 
 	async createProduct(
-		product: Omit<IProductPopulated, 'slug'> & Partial<Pick<IProductPopulated, 'slug'>>
+		product: Omit<IProductPopulated, 'slug' | 'brand'> &
+			Partial<Pick<IProductPopulated, 'slug'>> & { brand: IProduct['brand'] }
 	) {
 		let variants: IProduct['variants'] = [];
 
@@ -103,7 +104,10 @@ export const ProductRepository = {
 		return createdProduct.toObject<IProductPopulated>();
 	},
 
-	async updateProduct(id: IProduct['_id'], product: DeepPartial<IProductPopulated>) {
+	async updateProduct(
+		id: IProduct['_id'],
+		product: DeepPartial<Omit<IProductPopulated, 'brand'>> & { brand?: IProduct['brand'] }
+	) {
 		return await ProductModel.findByIdAndUpdate(id, product, {
 			new: true,
 		})

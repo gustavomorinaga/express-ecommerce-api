@@ -71,7 +71,7 @@ AuthController.post('/refresh', async (req, res, next) => {
 			{ expiresIn: '1d' }
 		); // 1 day
 
-		const response = { accessToken: newAccessToken };
+		const response = { accessToken: newAccessToken, refreshToken: newRefreshToken };
 
 		res.cookie('jwt', newRefreshToken, {
 			httpOnly: true,

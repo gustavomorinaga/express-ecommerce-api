@@ -17,6 +17,7 @@ export const productGeneric = z.object({
 	slug: z.string().min(10).max(100).optional(),
 	name: z.string().min(10).max(100),
 	description: z.string().min(20),
+	brand: objectIdGeneric,
 	variants: z.array(productVariantGeneric).default([]),
 	active: z.boolean().default(true).optional(),
 });

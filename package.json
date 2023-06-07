@@ -18,7 +18,7 @@
 	"scripts": {
 		"dev": "tsx watch --ignore node_modules --ignore dist src",
 		"preview": "node dist/index.js",
-		"start": "pm2-runtime dist/index.js -i max",
+		"start": "pm2-runtime dist/index.js",
 		"build": "node esbuild.config.mjs",
 		"gen:docs": "node swagger.cjs",
 		"tsc": "tsc"

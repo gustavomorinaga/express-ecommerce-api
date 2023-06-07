@@ -29,6 +29,11 @@ const ProductSchema = new Schema<IProduct, IProductModel, IProductMethods>(
 			type: String,
 			required: true,
 		},
+		brand: {
+			type: Schema.Types.ObjectId,
+			ref: 'Brand',
+			required: true,
+		},
 		active: {
 			type: Boolean,
 			default: true,
