@@ -1,3 +1,5 @@
+import { PipelineStage } from 'mongoose';
+
 // Config
 import { paginateConfig } from '@config';
 
@@ -5,11 +7,11 @@ import { paginateConfig } from '@config';
 import { BrandModel } from '@models';
 
 // TS
-import { IBrand } from '@ts';
+import { IBrand, TBrandQuery } from '@ts';
 
 export const BrandRepository = {
-	async getBrands(query: any) {
-		const conditions = [];
+	async getBrands(query: TBrandQuery) {
+		const conditions: PipelineStage[] = [];
 
 		if (query.name)
 			conditions.push({
@@ -17,25 +19,25 @@ export const BrandRepository = {
 					name: { $regex: query.name, $options: 'i' },
 				},
 			});
-		if (query.sortBy)
-			conditions.push({
+
+		conditions.push(
+			{
 				$sort: {
 					...(query.sortBy === 'name' && { name: query.orderBy }),
 					...(query.sortBy === 'createdAt' && { createdAt: query.orderBy }),
 					...(query.sortBy === 'updatedAt' && { updatedAt: query.orderBy }),
 				},
-			});
-
-		conditions.push({
-			$group: {
-				_id: '$_id',
-				name: { $first: '$name' },
-				description: { $first: '$description' },
-				active: { $first: '$active' },
 			},
-		});
+			{
+				$group: {
+					_id: '$_id',
+					name: { $first: '$name' },
+					description: { $first: '$description' },
+				},
+			}
+		);
 
-		const aggregation = BrandModel.aggregate(conditions);
+		const aggregation = BrandModel.aggregate(conditions, { collation: { locale: 'en' } });
 
 		return await BrandModel.aggregatePaginate(aggregation, paginateConfig);
 	},

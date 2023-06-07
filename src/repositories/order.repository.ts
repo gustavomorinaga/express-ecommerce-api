@@ -1,9 +1,6 @@
 // Schemas
 import { OrderModel } from '@models';
 
-// Errors
-import { handleError } from '@errors';
-
 // TS
 import { IOrder, IOrderPopulated } from '@ts';
 
@@ -22,6 +19,9 @@ export const OrderRepository = {
 					{
 						path: 'products.product',
 						select: '-variants',
+						populate: {
+							path: 'brand',
+						},
 					},
 				],
 			}
@@ -31,7 +31,11 @@ export const OrderRepository = {
 	async getOrder(id: string) {
 		return await OrderModel.findById(id)
 			.populate('user products.variant')
-			.populate({ path: 'products.product', select: '-variants' })
+			.populate({
+				path: 'products.product',
+				select: '-variants',
+				populate: { path: 'brand' },
+			})
 			.lean<IOrderPopulated>();
 	},
 
@@ -42,6 +46,7 @@ export const OrderRepository = {
 				doc.populate({
 					path: 'products.product',
 					select: '-variants',
+					populate: { path: 'brand' },
 				})
 			);
 
@@ -54,14 +59,22 @@ export const OrderRepository = {
 	) {
 		return await OrderModel.findByIdAndUpdate(id, product, { new: true })
 			.populate('user products.variant')
-			.populate({ path: 'products.product', select: '-variants' })
+			.populate({
+				path: 'products.product',
+				select: '-variants',
+				populate: { path: 'brand' },
+			})
 			.lean<IOrderPopulated>();
 	},
 
 	async setStatusOrder(id: string, status: IOrder['status']) {
 		return await OrderModel.findByIdAndUpdate(id, { status }, { new: true })
 			.populate('user products.variant')
-			.populate({ path: 'products.product', select: '-variants' })
+			.populate({
+				path: 'products.product',
+				select: '-variants',
+				populate: { path: 'brand' },
+			})
 			.lean<IOrderPopulated>();
 	},
 };

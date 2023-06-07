@@ -1,5 +1,6 @@
 export * from './address.controller';
 export * from './auth.controller';
+export * from './brand.controller';
 export * from './cart.controller';
 export * from './favorite.controller';
 export * from './order.controller';

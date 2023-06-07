@@ -17,11 +17,14 @@ export const CartRepository = {
 						path: 'user',
 					},
 					{
-						path: 'products.product',
-						select: '-variants',
+						path: 'products.variant',
 					},
 					{
-						path: 'products.variant',
+						path: 'products.product',
+						select: '-variants',
+						populate: {
+							path: 'brand',
+						},
 					},
 				],
 			}
@@ -34,6 +37,7 @@ export const CartRepository = {
 			.populate({
 				path: 'products.product',
 				select: '-variants',
+				populate: { path: 'brand' },
 			})
 			.lean<ICartPopulated>();
 		if (!cart) return handleError('Cart not found', 'NOT_FOUND');
@@ -48,6 +52,7 @@ export const CartRepository = {
 				doc.populate({
 					path: 'products.product',
 					select: '-variants',
+					populate: { path: 'brand' },
 				})
 			);
 
@@ -65,6 +70,7 @@ export const CartRepository = {
 			.populate({
 				path: 'products.product',
 				select: '-variants',
+				populate: { path: 'brand' },
 			})
 			.lean<ICartPopulated>();
 	},

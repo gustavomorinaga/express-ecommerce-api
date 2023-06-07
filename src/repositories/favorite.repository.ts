@@ -19,6 +19,9 @@ export const FavoriteRepository = {
 					{
 						path: 'products',
 						select: '-variants',
+						populate: {
+							path: 'brand',
+						},
 					},
 				],
 			}
@@ -28,7 +31,7 @@ export const FavoriteRepository = {
 	async getUserFavorites(userId: IFavorite['user']) {
 		const favorite = await FavoriteModel.findOne({ user: userId })
 			.populate('user')
-			.populate({ path: 'products', select: '-variants' })
+			.populate({ path: 'products', select: '-variants', populate: { path: 'brand' } })
 			.lean<IFavoritePopulated>();
 		if (!favorite) return handleError('Favorites not found', 'NOT_FOUND');
 
@@ -38,7 +41,13 @@ export const FavoriteRepository = {
 	async createUserFavorites(favorites: IFavorite) {
 		const createdFavorite = await FavoriteModel.create(favorites)
 			.then(doc => doc.populate('user'))
-			.then(doc => doc.populate({ path: 'products', select: '-variants' }));
+			.then(doc =>
+				doc.populate({
+					path: 'products',
+					select: '-variants',
+					populate: { path: 'brand' },
+				})
+			);
 
 		return createdFavorite.toObject<IFavoritePopulated>();
 	},
@@ -54,7 +63,7 @@ export const FavoriteRepository = {
 			new: true,
 		})
 			.populate('user')
-			.populate({ path: 'products', select: '-variants' })
+			.populate({ path: 'products', select: '-variants', populate: { path: 'brand' } })
 			.lean<IFavoritePopulated>();
 	},
 

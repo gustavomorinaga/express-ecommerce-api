@@ -10,11 +10,22 @@ import { ProductModel, ProductVariantModel } from '@models';
 import { getProductStatus } from '@functions';
 
 // TS
-import { IProduct, IProductPopulated, TQueryProduct } from '@ts';
+import { IProduct, IProductPopulated, TProductQuery } from '@ts';
 
 export const ProductRepository = {
-	async getProducts(query: TQueryProduct) {
+	async getProducts(query: TProductQuery) {
 		const conditions: PipelineStage[] = [
+			{
+				$lookup: {
+					from: 'brands',
+					localField: 'brand',
+					foreignField: '_id',
+					as: 'brand',
+				},
+			},
+			{
+				$unwind: '$brand',
+			},
 			{
 				$lookup: {
 					from: 'productvariants',
@@ -49,8 +60,9 @@ export const ProductRepository = {
 					'variants.stock': { $lte: 0 },
 				},
 			});
-		if (query.sortBy)
-			conditions.push({
+
+		conditions.push(
+			{
 				$sort: {
 					...(query.sortBy === 'name' && { name: query.orderBy }),
 					...(query.sortBy === 'price' && { 'variants.price': query.orderBy }),
@@ -59,25 +71,30 @@ export const ProductRepository = {
 					...(query.sortBy === 'createdAt' && { createdAt: query.orderBy }),
 					...(query.sortBy === 'updatedAt' && { updatedAt: query.orderBy }),
 				},
-			});
-
-		conditions.push({
-			$group: {
-				_id: '$_id',
-				name: { $first: '$name' },
-				description: { $first: '$description' },
-				active: { $first: '$active' },
-				variants: { $push: '$variants' },
 			},
-		});
+			{
+				$group: {
+					_id: '$_id',
+					name: { $first: '$name' },
+					description: { $first: '$description' },
+					brand: { $first: '$brand' },
+					active: { $first: '$active' },
+					variants: { $push: '$variants' },
+				},
+			}
+		);
 
-		const aggregation = ProductModel.aggregate<IProductPopulated>(conditions);
+		const aggregation = ProductModel.aggregate<IProductPopulated>(conditions, {
+			collation: { locale: 'en' },
+		});
 
 		return await ProductModel.aggregatePaginate(aggregation, paginateConfig);
 	},
 
 	async getProduct(id: IProduct['_id']) {
-		return await ProductModel.findById(id).populate('variants').lean<IProductPopulated>();
+		return await ProductModel.findById(id)
+			.populate('brand variants')
+			.lean<IProductPopulated>();
 	},
 
 	async createProduct(
@@ -98,7 +115,7 @@ export const ProductRepository = {
 		}
 
 		const createdProduct = await ProductModel.create({ ...product, variants }).then(doc =>
-			doc.populate('variants')
+			doc.populate('brand variants')
 		);
 
 		return createdProduct.toObject<IProductPopulated>();
@@ -111,7 +128,7 @@ export const ProductRepository = {
 		return await ProductModel.findByIdAndUpdate(id, product, {
 			new: true,
 		})
-			.populate('variants')
+			.populate('brand variants')
 			.lean<IProductPopulated>();
 	},
 

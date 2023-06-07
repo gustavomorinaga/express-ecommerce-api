@@ -1,8 +1,6 @@
-export type TQueryProduct = {
-	name?: string;
-	startPrice?: number;
-	endPrice?: number;
-	hasEmptyStock?: boolean;
-	sortBy: 'name' | 'price' | 'stock' | 'status' | 'createdAt' | 'updatedAt';
-	orderBy: 1 | -1;
-};
+import { z } from 'zod';
+
+// Schemas
+import { getProductsSchema } from '@schemas';
+
+export type TProductQuery = z.infer<typeof getProductsSchema>['query'];

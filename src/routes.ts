@@ -8,6 +8,7 @@ import swaggerFile from '../swagger-output.json';
 import {
 	AddressController,
 	AuthController,
+	BrandController,
 	CartController,
 	FavoriteController,
 	OrderController,
@@ -24,6 +25,7 @@ const routes = Router();
 routes.use('/doc', swaggerUi.serve, swaggerUi.setup(swaggerFile));
 routes.use('/address', AddressController);
 routes.use('/auth', AuthController);
+routes.use('/brands', BrandController);
 routes.use('/carts', authMiddleware, CartController);
 routes.use('/favorites', authMiddleware, FavoriteController);
 routes.use('/orders', authMiddleware, OrderController);
