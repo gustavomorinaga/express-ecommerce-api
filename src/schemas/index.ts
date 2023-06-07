@@ -1,5 +1,6 @@
 export * from './environment.schema';
 export * from './id.schema';
+export * from './query.schema';
 export * from './address.schema';
 export * from './user.schema';
 export * from './auth.schema';

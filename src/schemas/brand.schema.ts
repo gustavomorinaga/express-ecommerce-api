@@ -1,7 +1,7 @@
 import { z } from 'zod';
 
 // Schemas
-import { objectIdGeneric } from '@schemas';
+import { objectIdGeneric, queryEnums, queryGeneric } from '@schemas';
 
 // Generics
 export const brandGeneric = z.object({
@@ -11,14 +11,14 @@ export const brandGeneric = z.object({
 
 // Schemas
 export const getBrandsSchema = z.object({
-	query: z.object({
-		name: z.string().optional(),
-		sortBy: z.enum(['name', 'createdAt', 'updatedAt']).default('name'),
-		orderBy: z
-			.enum(['asc', 'desc'])
-			.default('asc')
-			.transform(value => (value === 'asc' ? 1 : -1)),
-	}),
+	query: z
+		.object({
+			name: z.string().optional(),
+		})
+		.extend({
+			...queryGeneric.shape,
+			sortBy: z.enum(['name', ...queryEnums.sortBy]).default('name'),
+		}),
 });
 
 export const getBrandSchema = z.object({

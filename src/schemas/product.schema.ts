@@ -1,7 +1,7 @@
 import { z } from 'zod';
 
 // Schemas
-import { objectIdGeneric } from '@schemas';
+import { objectIdGeneric, queryEnums, queryGeneric } from '@schemas';
 
 // Generics
 export const productVariantGeneric = z.object({
@@ -24,28 +24,28 @@ export const productGeneric = z.object({
 
 // Schemas
 export const getProductsSchema = z.object({
-	query: z.object({
-		name: z.string().optional(),
-		startPrice: z
-			.string()
-			.optional()
-			.transform(value => (value ? Number(value) : undefined)),
-		endPrice: z
-			.string()
-			.optional()
-			.transform(value => (value ? Number(value) : undefined)),
-		hasEmptyStock: z
-			.string()
-			.optional()
-			.transform(value => (value !== undefined ? value === 'true' : undefined)),
-		sortBy: z
-			.enum(['name', 'price', 'stock', 'status', 'createdAt', 'updatedAt'])
-			.default('name'),
-		orderBy: z
-			.enum(['asc', 'desc'])
-			.default('asc')
-			.transform(value => (value === 'asc' ? 1 : -1)),
-	}),
+	query: z
+		.object({
+			name: z.string().optional(),
+			startPrice: z
+				.string()
+				.optional()
+				.transform(value => value && Number(value)),
+			endPrice: z
+				.string()
+				.optional()
+				.transform(value => value && Number(value)),
+			hasEmptyStock: z
+				.string()
+				.optional()
+				.transform(value => value && value === 'true'),
+		})
+		.extend({
+			...queryGeneric.shape,
+			sortBy: z
+				.enum(['name', 'price', 'stock', 'status', ...queryEnums.sortBy])
+				.default('name'),
+		}),
 });
 
 export const getProductSchema = z.object({
