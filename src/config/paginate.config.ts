@@ -4,7 +4,8 @@ import aggregatePaginate from 'mongoose-aggregate-paginate-v2';
 export const paginateConfig: typeof mongoosePaginate.paginate.options = {
 	lean: true,
 	leanWithId: false,
-	limit: 20,
+	limit: 10,
+	offset: 0,
 	customLabels: {
 		docs: 'data',
 		totalDocs: 'total',

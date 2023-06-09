@@ -1,7 +1,7 @@
 import { z } from 'zod';
 
 // Schemas
-import { addressGeneric, objectIdGeneric } from '@schemas';
+import { addressGeneric, objectIdGeneric, queryEnums, queryGeneric } from '@schemas';
 
 // Generics
 export const userGeneric = z.object({
@@ -13,6 +13,18 @@ export const userGeneric = z.object({
 });
 
 // Schemas
+export const getUsersSchema = z.object({
+	query: z
+		.object({
+			term: z.string().optional(),
+			showInactive: z.coerce.boolean().optional(),
+		})
+		.extend({
+			...queryGeneric.shape,
+			sortBy: z.enum(['term', ...queryEnums.sortBy]).default('term'),
+		}),
+});
+
 export const getUserSchema = z.object({
 	params: z.object({
 		id: objectIdGeneric,

@@ -1,15 +1,27 @@
+import { FilterQuery } from 'mongoose';
+
 // Schemas
 import { UserModel } from '@models';
 
 // TS
-import { IUser } from '@ts';
+import { IUser, IUserDocument, TUserQuery } from '@ts';
 
 // Errors
 import { handleError } from '@errors';
 
 export const UserRepository = {
-	async getUsers() {
-		return await UserModel.paginate();
+	async getUsers(query: TUserQuery) {
+		const conditions: FilterQuery<IUserDocument> = {
+			...(query.term && { $text: { $search: query.term } }),
+			...(!query.showInactive && { active: true }),
+		};
+
+		return await UserModel.paginate(conditions, {
+			page: query.page,
+			limit: query.limit,
+			sort: { [query.sortBy]: query.orderBy, active: -1 },
+			collation: { locale: 'en' },
+		});
 	},
 
 	async getUser(_id: IUser['_id']) {

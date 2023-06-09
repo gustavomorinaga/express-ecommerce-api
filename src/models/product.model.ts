@@ -20,6 +20,7 @@ const ProductSchema = new Schema<IProduct, IProductModel, IProductMethods>(
 		name: {
 			type: String,
 			required: true,
+			trim: true,
 		},
 		slug: {
 			type: String,
@@ -28,6 +29,7 @@ const ProductSchema = new Schema<IProduct, IProductModel, IProductMethods>(
 		description: {
 			type: String,
 			required: true,
+			trim: true,
 		},
 		brand: {
 			type: Schema.Types.ObjectId,
@@ -46,6 +48,8 @@ const ProductSchema = new Schema<IProduct, IProductModel, IProductMethods>(
 ProductSchema.plugin(aggregatePaginatePlugin);
 
 ProductSchema.pre('save', preSaveProductHook);
+
+ProductSchema.index({ name: 'text', description: 'text' });
 
 export const ProductModel = model<IProductDocument, IProductPaginateModel>(
 	'Product',

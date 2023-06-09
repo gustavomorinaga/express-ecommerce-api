@@ -16,6 +16,8 @@ export interface IUser extends TDocument {
 export interface IUserDocument extends IUser, Document<string> {}
 export interface IUserModel extends Model<IUserDocument> {}
 export interface IUserMethods extends IUserDocument {
+	generatePasswordHash(password: string): Promise<string>;
+	generateAvatar(seed: string): string;
 	comparePassword(password: string): Promise<boolean>;
 	changeActive(): Promise<IUser>;
 }

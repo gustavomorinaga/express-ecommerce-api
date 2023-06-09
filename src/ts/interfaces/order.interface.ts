@@ -1,4 +1,4 @@
-import { Document, Model, PaginateModel } from 'mongoose';
+import { AggregatePaginateModel, Document, Model } from 'mongoose';
 
 // TS
 import { IAddress, IUser, IProduct, TDocument, IProductVariant } from '@ts';
@@ -29,5 +29,4 @@ export interface IOrderPopulated extends Omit<IOrder, 'user' | 'products'> {
 export interface IOrderDocument extends IOrder, Document<string> {}
 export interface IOrderModel extends Model<IOrderDocument> {}
 export interface IOrderMethods extends IOrderDocument {}
-export interface IOrderPaginateModel
-	extends PaginateModel<IOrderPopulated, {}, IOrderMethods> {}
+export interface IOrderPaginateModel extends AggregatePaginateModel<IOrderDocument> {}

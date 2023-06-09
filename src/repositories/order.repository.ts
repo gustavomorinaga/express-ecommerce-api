@@ -1,31 +1,114 @@
+import { PipelineStage, Types } from 'mongoose';
+
+// Config
+import { paginateConfig } from '@config';
+
 // Schemas
 import { OrderModel } from '@models';
 
 // TS
-import { IOrder, IOrderPopulated } from '@ts';
+import { IOrder, IOrderPopulated, TOrderQuery } from '@ts';
 
 export const OrderRepository = {
-	async getOrders() {
-		return await OrderModel.paginate(
-			{},
+	async getOrders(query: TOrderQuery) {
+		const conditions: PipelineStage[] = [];
+
+		if (query.orderID)
+			conditions.unshift({ $match: { $text: { $search: query.orderID } } });
+		if (query.userID)
+			conditions.push({ $match: { user: new Types.ObjectId(query.userID) } });
+		if (query.status) conditions.push({ $match: { status: query.status } });
+
+		conditions.push(
 			{
-				populate: [
-					{
-						path: 'user',
+				$lookup: {
+					from: 'users',
+					localField: 'user',
+					foreignField: '_id',
+					as: 'user',
+				},
+			},
+			{
+				$unwind: '$user',
+			},
+			{
+				$unset: ['user.password'],
+			},
+			{
+				$unwind: '$products',
+			},
+			{
+				$lookup: {
+					from: 'products',
+					localField: 'products.product',
+					foreignField: '_id',
+					as: 'product',
+				},
+			},
+			{
+				$unwind: '$product',
+			},
+			{
+				$unset: ['product.variants'],
+			},
+			{
+				$lookup: {
+					from: 'productvariants',
+					localField: 'products.variant',
+					foreignField: '_id',
+					as: 'variant',
+				},
+			},
+			{
+				$unwind: '$variant',
+			},
+			{
+				$group: {
+					_id: {
+						_id: '$_id',
+						orderID: '$orderID',
 					},
-					{
-						path: 'products.variant',
-					},
-					{
-						path: 'products.product',
-						select: '-variants',
-						populate: {
-							path: 'brand',
+					user: { $first: '$user' },
+					deliveryAddress: { $first: '$deliveryAddress' },
+					totalPrice: { $first: '$totalPrice' },
+					status: { $first: '$status' },
+					observation: { $first: '$observation' },
+					products: {
+						$push: {
+							product: '$product',
+							variant: '$variant',
+							quantity: '$products.quantity',
 						},
 					},
-				],
+					createdAt: { $first: '$createdAt' },
+					updatedAt: { $first: '$updatedAt' },
+				},
+			},
+			{
+				$project: {
+					_id: '$_id._id',
+					orderID: '$_id.orderID',
+					user: '$user',
+					deliveryAddress: '$deliveryAddress',
+					totalPrice: '$totalPrice',
+					status: '$status',
+					observation: '$observation',
+					products: '$products',
+					createdAt: '$createdAt',
+					updatedAt: '$updatedAt',
+				},
 			}
 		);
+
+		const aggregation = OrderModel.aggregate<IOrderPopulated>(conditions);
+
+		return await OrderModel.aggregatePaginate(aggregation, {
+			...paginateConfig,
+			page: query.page,
+			limit: query.limit,
+			sort: { [query.sortBy]: query.orderBy },
+			collation: { locale: 'en' },
+		});
 	},
 
 	async getOrder(id: string) {

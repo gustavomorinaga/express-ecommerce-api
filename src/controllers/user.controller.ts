@@ -7,11 +7,12 @@ import { UserRepository } from '@repositories';
 // Schemas
 import {
 	createUserSchema,
+	getUsersSchema,
 	getUserSchema,
 	updateUserSchema,
 	updateUserPasswordSchema,
-	deleteUserSchema,
 	updateUserActiveSchema,
+	deleteUserSchema,
 } from '@schemas';
 
 // Utils
@@ -22,7 +23,9 @@ const UserController = Router();
 
 UserController.get('/', async (req, res, next) => {
 	try {
-		const users = await UserRepository.getUsers();
+		const { query } = await zParse(getUsersSchema, req);
+
+		const users = await UserRepository.getUsers(query);
 
 		return res.status(statuses.OK).send(users);
 	} catch (error) {

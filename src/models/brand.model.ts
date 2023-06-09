@@ -18,9 +18,12 @@ const BrandSchema = new Schema<IBrand, IBrandModel, IBrandMethods>(
 			type: String,
 			required: true,
 			unique: true,
+			trim: true,
 		},
 		description: {
 			type: String,
+			required: false,
+			trim: true,
 		},
 	},
 	{
@@ -29,6 +32,8 @@ const BrandSchema = new Schema<IBrand, IBrandModel, IBrandMethods>(
 );
 
 BrandSchema.plugin(aggregatePaginatePlugin);
+
+BrandSchema.index({ name: 'text' });
 
 export const BrandModel = model<IBrandDocument, IBrandPaginateModel>(
 	'Brand',

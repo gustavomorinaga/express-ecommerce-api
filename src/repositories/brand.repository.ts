@@ -13,12 +13,7 @@ export const BrandRepository = {
 	async getBrands(query: TBrandQuery) {
 		const conditions: PipelineStage[] = [];
 
-		if (query.name)
-			conditions.push({
-				$match: {
-					name: { $regex: query.name, $options: 'i' },
-				},
-			});
+		if (query.name) conditions.unshift({ $match: { $text: { $search: query.name } } });
 
 		conditions.push(
 			{

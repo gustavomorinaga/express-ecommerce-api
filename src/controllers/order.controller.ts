@@ -7,6 +7,7 @@ import { CartRepository, OrderRepository } from '@repositories';
 // Schemas
 import {
 	createOrderSchema,
+	getOrdersSchema,
 	getOrderSchema,
 	updateOrderSchema,
 	setStatusOrderSchema,
@@ -23,7 +24,9 @@ const OrderController = Router();
 
 OrderController.get('/', async (req, res, next) => {
 	try {
-		const orders = await OrderRepository.getOrders();
+		const { query } = await zParse(getOrdersSchema, req);
+
+		const orders = await OrderRepository.getOrders(query);
 
 		return res.status(statuses.OK).send(orders);
 	} catch (error) {

@@ -39,12 +39,7 @@ export const ProductRepository = {
 			},
 		];
 
-		if (query.name)
-			conditions.push({
-				$match: {
-					name: { $regex: query.name, $options: 'i' },
-				},
-			});
+		if (query.term) conditions.unshift({ $match: { $text: { $search: query.term } } });
 		if (query.startPrice || query.endPrice)
 			conditions.push({
 				$match: {
@@ -61,34 +56,35 @@ export const ProductRepository = {
 				},
 			});
 
-		conditions.push(
-			{
-				$sort: {
-					...(query.sortBy === 'name' && { name: query.orderBy }),
-					...(query.sortBy === 'price' && { 'variants.price': query.orderBy }),
-					...(query.sortBy === 'stock' && { 'variants.stock': query.orderBy }),
-					...(query.sortBy === 'status' && { 'variants.status': query.orderBy }),
-					...(query.sortBy === 'createdAt' && { createdAt: query.orderBy }),
-					...(query.sortBy === 'updatedAt' && { updatedAt: query.orderBy }),
-				},
-			},
-			{
-				$group: {
-					_id: '$_id',
-					name: { $first: '$name' },
-					description: { $first: '$description' },
-					brand: { $first: '$brand' },
-					active: { $first: '$active' },
-					variants: { $push: '$variants' },
-				},
-			}
-		);
+		const sortByDictionary = {
+			term: { name: query.orderBy },
+			price: { 'variants.price': query.orderBy },
+			stock: { 'variants.stock': query.orderBy },
+			status: { 'variants.status': query.orderBy },
+			createdAt: { createdAt: query.orderBy },
+			updatedAt: { updatedAt: query.orderBy },
+		} as const;
 
-		const aggregation = ProductModel.aggregate<IProductPopulated>(conditions, {
-			collation: { locale: 'en' },
+		conditions.push({
+			$group: {
+				_id: '$_id',
+				name: { $first: '$name' },
+				description: { $first: '$description' },
+				brand: { $first: '$brand' },
+				active: { $first: '$active' },
+				variants: { $push: '$variants' },
+			},
 		});
 
-		return await ProductModel.aggregatePaginate(aggregation, paginateConfig);
+		const aggregation = ProductModel.aggregate<IProductPopulated>(conditions);
+
+		return await ProductModel.aggregatePaginate(aggregation, {
+			...paginateConfig,
+			page: query.page,
+			limit: query.limit,
+			sort: sortByDictionary[query.sortBy],
+			collation: { locale: 'en' },
+		});
 	},
 
 	async getProduct(id: IProduct['_id']) {

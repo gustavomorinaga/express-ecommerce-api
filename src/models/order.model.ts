@@ -1,7 +1,7 @@
 import { model, Schema } from 'mongoose';
 
 // Config
-import { paginatePlugin } from '@config';
+import { aggregatePaginatePlugin } from '@config';
 
 // Models
 import { AddressSchema } from '@models';
@@ -64,16 +64,19 @@ const OrderSchema = new Schema<IOrder, IOrderModel, IOrderMethods>(
 		observation: {
 			type: String,
 			required: false,
+			trim: true,
 		},
 		products: [OrderProductSchema],
 	},
 	{ timestamps: true }
 );
 
-OrderSchema.plugin(paginatePlugin);
+OrderSchema.plugin(aggregatePaginatePlugin);
 
 OrderSchema.pre('save', preSaveOrderHook);
 OrderSchema.pre('findOneAndUpdate', preFindAndUpdateOrderHook);
+
+OrderSchema.index({ orderID: 'text' });
 
 export const OrderModel = model<IOrderDocument, IOrderPaginateModel>(
 	'Order',

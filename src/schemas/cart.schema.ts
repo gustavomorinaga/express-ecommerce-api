@@ -7,7 +7,7 @@ import { objectIdGeneric } from '@schemas';
 export const cartProductGeneric = z.object({
 	product: objectIdGeneric,
 	variant: objectIdGeneric,
-	quantity: z.number().min(1),
+	quantity: z.number().int().positive().min(1),
 });
 
 export const cartGeneric = z.object({
