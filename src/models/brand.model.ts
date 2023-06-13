@@ -1,16 +1,7 @@
 import { model, Schema } from 'mongoose';
 
-// Config
-import { aggregatePaginatePlugin } from '@config';
-
 // TS
-import {
-	IBrand,
-	IBrandDocument,
-	IBrandMethods,
-	IBrandModel,
-	IBrandPaginateModel,
-} from '@ts';
+import { IBrand, IBrandDocument, IBrandMethods, IBrandModel } from '@ts';
 
 const BrandSchema = new Schema<IBrand, IBrandModel, IBrandMethods>(
 	{
@@ -28,14 +19,10 @@ const BrandSchema = new Schema<IBrand, IBrandModel, IBrandMethods>(
 	},
 	{
 		timestamps: true,
+		collation: { locale: 'en' },
 	}
 );
 
-BrandSchema.plugin(aggregatePaginatePlugin);
-
 BrandSchema.index({ name: 'text' });
 
-export const BrandModel = model<IBrandDocument, IBrandPaginateModel>(
-	'Brand',
-	BrandSchema
-);
+export const BrandModel = model<IBrandDocument>('Brand', BrandSchema);

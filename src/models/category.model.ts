@@ -1,16 +1,7 @@
 import { model, Schema } from 'mongoose';
 
-// Config
-import { aggregatePaginatePlugin } from '@config';
-
 // TS
-import {
-	ICategory,
-	ICategoryDocument,
-	ICategoryMethods,
-	ICategoryModel,
-	ICategoryPaginateModel,
-} from '@ts';
+import { ICategory, ICategoryDocument, ICategoryMethods, ICategoryModel } from '@ts';
 
 const CategorySchema = new Schema<ICategory, ICategoryModel, ICategoryMethods>(
 	{
@@ -28,15 +19,11 @@ const CategorySchema = new Schema<ICategory, ICategoryModel, ICategoryMethods>(
 	},
 	{
 		timestamps: true,
+		collation: { locale: 'en' },
 	}
 );
 CategorySchema.add({ subCategories: [CategorySchema] });
 
-CategorySchema.plugin(aggregatePaginatePlugin);
-
 CategorySchema.index({ name: 'text' });
 
-export const CategoryModel = model<ICategoryDocument, ICategoryPaginateModel>(
-	'Category',
-	CategorySchema
-);
+export const CategoryModel = model<ICategoryDocument>('Category', CategorySchema);

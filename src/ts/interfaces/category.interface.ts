@@ -15,5 +15,3 @@ export interface ICategory extends IBaseCategory {
 export interface ICategoryDocument extends ICategory, Document<string> {}
 export interface ICategoryModel extends Model<ICategoryDocument> {}
 export interface ICategoryMethods extends ICategoryDocument {}
-export interface ICategoryPaginateModel
-	extends AggregatePaginateModel<ICategoryDocument> {}

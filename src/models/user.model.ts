@@ -52,6 +52,7 @@ const UserSchema = new Schema<IUser, IUserModel, IUserMethods>(
 	},
 	{
 		timestamps: true,
+		collation: { locale: 'en' },
 	}
 );
 

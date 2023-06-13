@@ -107,7 +107,6 @@ export const OrderRepository = {
 			page: query.page,
 			limit: query.limit,
 			sort: { [query.sortBy]: query.orderBy },
-			collation: { locale: 'en' },
 		});
 	},
 

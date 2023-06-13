@@ -68,7 +68,7 @@ const OrderSchema = new Schema<IOrder, IOrderModel, IOrderMethods>(
 		},
 		products: [OrderProductSchema],
 	},
-	{ timestamps: true }
+	{ timestamps: true, collation: { locale: 'en' } }
 );
 
 OrderSchema.plugin(aggregatePaginatePlugin);

@@ -1,4 +1,4 @@
-import { PipelineStage } from 'mongoose';
+import { FilterQuery, PipelineStage } from 'mongoose';
 
 // Config
 import { paginateConfig } from '@config';
@@ -7,36 +7,17 @@ import { paginateConfig } from '@config';
 import { BrandModel } from '@models';
 
 // TS
-import { IBrand, TBrandCreate, TBrandQuery, TBrandUpdate } from '@ts';
+import { IBrand, IBrandDocument, TBrandCreate, TBrandQuery, TBrandUpdate } from '@ts';
 
 export const BrandRepository = {
 	async getBrands(query: TBrandQuery) {
-		const conditions: PipelineStage[] = [];
-
-		if (query.name) conditions.unshift({ $match: { $text: { $search: query.name } } });
-
-		const sortByDictionary = {
-			name: { name: query.orderBy },
-			createdAt: { createdAt: query.orderBy },
-			updatedAt: { updatedAt: query.orderBy },
+		const conditions: FilterQuery<IBrandDocument> = {
+			...(query.name && { $text: { $search: query.name } }),
 		};
 
-		conditions.push(
-			{
-				$sort: sortByDictionary[query.sortBy],
-			},
-			{
-				$group: {
-					_id: '$_id',
-					name: { $first: '$name' },
-					description: { $first: '$description' },
-				},
-			}
-		);
-
-		const aggregation = BrandModel.aggregate(conditions, { collation: { locale: 'en' } });
-
-		return await BrandModel.aggregatePaginate(aggregation, paginateConfig);
+		return await BrandModel.find(conditions)
+			.sort({ [query.sortBy]: query.orderBy })
+			.lean();
 	},
 
 	async getBrand(id: IBrand['_id']) {

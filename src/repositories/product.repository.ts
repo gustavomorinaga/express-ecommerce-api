@@ -17,7 +17,11 @@ import {
 
 export const ProductRepository = {
 	async getProducts(query: TProductQuery) {
-		const conditions: PipelineStage[] = [
+		const conditions: PipelineStage[] = [];
+
+		if (query.term) conditions.unshift({ $match: { $text: { $search: query.term } } });
+
+		conditions.push(
 			{
 				$lookup: {
 					from: 'brands',
@@ -28,7 +32,12 @@ export const ProductRepository = {
 			},
 			{
 				$unwind: '$brand',
-			},
+			}
+		);
+
+		if (query.brand) conditions.push({ $match: { 'brand.name': query.brand } });
+
+		conditions.push(
 			{
 				$lookup: {
 					from: 'categories',
@@ -42,7 +51,12 @@ export const ProductRepository = {
 					path: '$category',
 					preserveNullAndEmptyArrays: true,
 				},
-			},
+			}
+		);
+
+		if (query.category) conditions.push({ $match: { 'category.name': query.category } });
+
+		conditions.push(
 			{
 				$lookup: {
 					from: 'productvariants',
@@ -53,10 +67,9 @@ export const ProductRepository = {
 			},
 			{
 				$unwind: '$variants',
-			},
-		];
+			}
+		);
 
-		if (query.term) conditions.unshift({ $match: { $text: { $search: query.term } } });
 		if (query.startPrice || query.endPrice)
 			conditions.push({
 				$match: {
@@ -101,7 +114,6 @@ export const ProductRepository = {
 			page: query.page,
 			limit: query.limit,
 			sort: sortByDictionary[query.sortBy],
-			collation: { locale: 'en' },
 		});
 	},
 

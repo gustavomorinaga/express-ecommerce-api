@@ -48,7 +48,7 @@ const ProductVariantSchema = new Schema<
 			default: true,
 		},
 	},
-	{ timestamps: true }
+	{ timestamps: true, collation: { locale: 'en' } }
 );
 
 ProductVariantSchema.pre('save', preSaveProductVariantHook);

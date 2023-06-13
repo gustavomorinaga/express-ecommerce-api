@@ -20,7 +20,6 @@ export const UserRepository = {
 			page: query.page,
 			limit: query.limit,
 			sort: { [query.sortBy]: query.orderBy, active: -1 },
-			collation: { locale: 'en' },
 		});
 	},
 

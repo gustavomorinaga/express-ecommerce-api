@@ -26,9 +26,9 @@ BrandController.get('/', async (req, res, next) => {
 	try {
 		const { query } = await zParse(getBrandsSchema, req);
 
-		const carts = await BrandRepository.getBrands(query);
+		const brands = await BrandRepository.getBrands(query);
 
-		return res.status(statuses.OK).send(carts);
+		return res.status(statuses.OK).send(brands);
 	} catch (error) {
 		next(error);
 	}
@@ -40,9 +40,9 @@ BrandController.get('/:id', async (req, res, next) => {
 			params: { id },
 		} = await zParse(getBrandSchema, req);
 
-		const cart = await BrandRepository.getBrand(id);
+		const brand = await BrandRepository.getBrand(id);
 
-		return res.status(statuses.OK).send(cart);
+		return res.status(statuses.OK).send(brand);
 	} catch (error) {
 		next(error);
 	}

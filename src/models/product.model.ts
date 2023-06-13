@@ -47,7 +47,7 @@ const ProductSchema = new Schema<IProduct, IProductModel, IProductMethods>(
 		},
 		variants: [{ type: Schema.Types.ObjectId, ref: 'ProductVariant' }],
 	},
-	{ timestamps: true }
+	{ timestamps: true, collation: { locale: 'en' } }
 );
 
 ProductSchema.plugin(aggregatePaginatePlugin);
