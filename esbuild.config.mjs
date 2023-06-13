@@ -18,7 +18,7 @@ import { compress } from 'esbuild-plugin-compress';
 		plugins: [
 			copy({ assets: [{ from: './public/**/*', to: './public' }] }),
 			esbuildPluginPino({
-				transports: ['pino-pretty'],
+				transports: ['pino-pretty', 'pino-mongodb'],
 			}),
 			compress(),
 		],
