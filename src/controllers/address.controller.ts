@@ -13,13 +13,13 @@ import { zParse } from '@utils';
 /** Responsável por gerenciar os endereços */
 const AddressController = Router();
 
-AddressController.get('/:cep', async (req, res, next) => {
+AddressController.get('/:zipCode', async (req, res, next) => {
 	try {
 		const {
-			params: { cep },
+			params: { zipCode },
 		} = await zParse(getAddressByZipCodeSchema, req);
 
-		const address = await AddressRepository.searchAddress(cep);
+		const address = await AddressRepository.searchAddress(zipCode);
 
 		return res.status(statuses.OK).send(address);
 	} catch (error) {

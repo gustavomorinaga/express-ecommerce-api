@@ -4,7 +4,7 @@ import { FilterQuery } from 'mongoose';
 import { UserModel } from '@models';
 
 // TS
-import { IUser, IUserDocument, TUserQuery } from '@ts';
+import { IUser, IUserDocument, TUserCreate, TUserQuery, TUserUpdate } from '@ts';
 
 // Errors
 import { handleError } from '@errors';
@@ -38,21 +38,21 @@ export const UserRepository = {
 		return user;
 	},
 
-	async createUser(user: IUser) {
+	async createUser(user: TUserCreate) {
 		const userExists = await UserModel.findOne({ email: user.email }).lean();
 		if (userExists) return handleError('User already exists', 'BAD_REQUEST');
 
 		return (await UserModel.create(user)).toObject();
 	},
 
-	async updateUser(_id: IUser['_id'], data: Partial<Omit<IUser, 'password'>>) {
+	async updateUser(_id: IUser['_id'], data: TUserUpdate) {
 		const user = await UserModel.findById(_id).lean();
 		if (!user) return handleError('User not found', 'NOT_FOUND');
 
 		return await UserModel.findByIdAndUpdate(_id, data, { new: true }).lean();
 	},
 
-	async updateUserPassword(_id: IUser['_id'], password: string) {
+	async updateUserPassword(_id: IUser['_id'], password: IUser['password']) {
 		return await UserModel.findByIdAndUpdate(_id, { password }, { new: true }).lean();
 	},
 

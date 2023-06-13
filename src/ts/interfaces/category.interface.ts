@@ -1,18 +1,19 @@
 import { AggregatePaginateModel, Document, Model } from 'mongoose';
 
-export interface ICategory {
+// TS
+import { TDocument } from '@ts';
+
+export interface IBaseCategory extends TDocument {
 	name: string;
-	subCategories?: ISubCategory[];
+	description?: string;
 }
 
-export interface ISubCategory extends Pick<ICategory, 'name'> {}
+export interface ICategory extends IBaseCategory {
+	subCategories?: IBaseCategory[];
+}
 
 export interface ICategoryDocument extends ICategory, Document<string> {}
 export interface ICategoryModel extends Model<ICategoryDocument> {}
 export interface ICategoryMethods extends ICategoryDocument {}
 export interface ICategoryPaginateModel
 	extends AggregatePaginateModel<ICategoryDocument> {}
-
-export interface ISubCategoryDocument extends ISubCategory, Document<string> {}
-export interface ISubCategoryModel extends Model<ISubCategoryDocument> {}
-export interface ISubCategoryMethods extends ISubCategoryDocument {}

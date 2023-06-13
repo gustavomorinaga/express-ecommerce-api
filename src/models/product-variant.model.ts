@@ -1,5 +1,8 @@
 import { model, Schema } from 'mongoose';
 
+// Hooks
+import { preSaveProductVariantHook } from '@hooks';
+
 // TS
 import {
 	IProductVariant,
@@ -23,7 +26,6 @@ const ProductVariantSchema = new Schema<
 			type: String,
 			required: true,
 			unique: true,
-			sparse: true,
 		},
 		price: {
 			type: Number,
@@ -48,6 +50,10 @@ const ProductVariantSchema = new Schema<
 	},
 	{ timestamps: true }
 );
+
+ProductVariantSchema.pre('save', preSaveProductVariantHook);
+
+ProductVariantSchema.index({ name: 'text', sku: 'text' });
 
 export const ProductVariantModel = model<IProductVariantDocument>(
 	'ProductVariant',

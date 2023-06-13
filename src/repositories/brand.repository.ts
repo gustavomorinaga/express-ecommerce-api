@@ -7,7 +7,7 @@ import { paginateConfig } from '@config';
 import { BrandModel } from '@models';
 
 // TS
-import { IBrand, TBrandQuery } from '@ts';
+import { IBrand, TBrandCreate, TBrandQuery, TBrandUpdate } from '@ts';
 
 export const BrandRepository = {
 	async getBrands(query: TBrandQuery) {
@@ -15,13 +15,15 @@ export const BrandRepository = {
 
 		if (query.name) conditions.unshift({ $match: { $text: { $search: query.name } } });
 
+		const sortByDictionary = {
+			name: { name: query.orderBy },
+			createdAt: { createdAt: query.orderBy },
+			updatedAt: { updatedAt: query.orderBy },
+		};
+
 		conditions.push(
 			{
-				$sort: {
-					...(query.sortBy === 'name' && { name: query.orderBy }),
-					...(query.sortBy === 'createdAt' && { createdAt: query.orderBy }),
-					...(query.sortBy === 'updatedAt' && { updatedAt: query.orderBy }),
-				},
+				$sort: sortByDictionary[query.sortBy],
 			},
 			{
 				$group: {
@@ -41,11 +43,11 @@ export const BrandRepository = {
 		return await BrandModel.findById(id).lean();
 	},
 
-	async createBrand(brand: IBrand) {
+	async createBrand(brand: TBrandCreate) {
 		return (await BrandModel.create(brand)).toObject();
 	},
 
-	async updateBrand(id: IBrand['_id'], brand: IBrand) {
+	async updateBrand(id: IBrand['_id'], brand: TBrandUpdate) {
 		return await BrandModel.findByIdAndUpdate(id, brand, { new: true }).lean();
 	},
 

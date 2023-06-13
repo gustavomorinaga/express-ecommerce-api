@@ -20,19 +20,21 @@ const CategorySchema = new Schema<ICategory, ICategoryModel, ICategoryMethods>(
 			unique: true,
 			trim: true,
 		},
-		subCategories: [
-			{
-				type: Schema.Types.ObjectId,
-				ref: 'SubCategory',
-			},
-		],
+		description: {
+			type: String,
+			required: false,
+			trim: true,
+		},
 	},
 	{
 		timestamps: true,
 	}
 );
+CategorySchema.add({ subCategories: [CategorySchema] });
 
 CategorySchema.plugin(aggregatePaginatePlugin);
+
+CategorySchema.index({ name: 'text' });
 
 export const CategoryModel = model<ICategoryDocument, ICategoryPaginateModel>(
 	'Category',

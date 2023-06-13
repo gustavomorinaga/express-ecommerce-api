@@ -4,7 +4,7 @@ import { model, Schema } from 'mongoose';
 import { aggregatePaginatePlugin } from '@config';
 
 // Hooks
-import { preSaveProductHook } from '@hooks';
+import { preSaveProductHook, preUpdateProductHook } from '@hooks';
 
 // TS
 import {
@@ -36,6 +36,11 @@ const ProductSchema = new Schema<IProduct, IProductModel, IProductMethods>(
 			ref: 'Brand',
 			required: true,
 		},
+		category: {
+			type: Schema.Types.ObjectId,
+			ref: 'Category',
+			required: true,
+		},
 		active: {
 			type: Boolean,
 			default: true,
@@ -48,6 +53,7 @@ const ProductSchema = new Schema<IProduct, IProductModel, IProductMethods>(
 ProductSchema.plugin(aggregatePaginatePlugin);
 
 ProductSchema.pre('save', preSaveProductHook);
+ProductSchema.pre('findOneAndUpdate', preUpdateProductHook);
 
 ProductSchema.index({ name: 'text', description: 'text' });
 

@@ -10,6 +10,7 @@ import {
 	AuthController,
 	BrandController,
 	CartController,
+	CategoryController,
 	FavoriteController,
 	OrderController,
 	ProductController,
@@ -27,6 +28,7 @@ routes.use('/address', AddressController);
 routes.use('/auth', AuthController);
 routes.use('/brands', BrandController);
 routes.use('/carts', authMiddleware, CartController);
+routes.use('/categories', CategoryController);
 routes.use('/favorites', authMiddleware, FavoriteController);
 routes.use('/orders', authMiddleware, OrderController);
 routes.use('/products', ProductController);

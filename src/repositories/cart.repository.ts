@@ -5,7 +5,7 @@ import { CartModel } from '@models';
 import { handleError } from '@errors';
 
 // TS
-import { ICart, ICartPopulated } from '@ts';
+import { ICart, ICartPopulated, TCartCreate, TCartUpdate } from '@ts';
 
 export const CartRepository = {
 	async getCarts() {
@@ -23,7 +23,7 @@ export const CartRepository = {
 						path: 'products.product',
 						select: '-variants',
 						populate: {
-							path: 'brand',
+							path: 'brand category',
 						},
 					},
 				],
@@ -37,7 +37,7 @@ export const CartRepository = {
 			.populate({
 				path: 'products.product',
 				select: '-variants',
-				populate: { path: 'brand' },
+				populate: { path: 'brand category' },
 			})
 			.lean<ICartPopulated>();
 		if (!cart) return handleError('Cart not found', 'NOT_FOUND');
@@ -45,21 +45,21 @@ export const CartRepository = {
 		return cart;
 	},
 
-	async createCart(cart: ICart) {
+	async createCart(cart: TCartCreate) {
 		const createdCart = await CartModel.create(cart)
 			.then(doc => doc.populate('user products.variant'))
 			.then(doc =>
 				doc.populate({
 					path: 'products.product',
 					select: '-variants',
-					populate: { path: 'brand' },
+					populate: { path: 'brand category' },
 				})
 			);
 
 		return createdCart.toObject<ICartPopulated>();
 	},
 
-	async updateCart(userId: ICart['user'], cart: Omit<ICart, 'user'>) {
+	async updateCart(userId: ICart['user'], cart: TCartUpdate) {
 		const existsCart = await CartModel.findOne({ user: userId });
 		if (!existsCart) return handleError('Cart not found', 'NOT_FOUND');
 
@@ -70,7 +70,7 @@ export const CartRepository = {
 			.populate({
 				path: 'products.product',
 				select: '-variants',
-				populate: { path: 'brand' },
+				populate: { path: 'brand category' },
 			})
 			.lean<ICartPopulated>();
 	},

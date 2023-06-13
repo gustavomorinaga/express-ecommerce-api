@@ -5,7 +5,7 @@ import { FavoriteModel } from '@models';
 import { handleError } from '@errors';
 
 // TS
-import { IFavorite, IFavoritePopulated } from '@ts';
+import { IFavorite, IFavoritePopulated, TFavoriteCreate, TFavoriteUpdate } from '@ts';
 
 export const FavoriteRepository = {
 	async getFavorites() {
@@ -20,7 +20,7 @@ export const FavoriteRepository = {
 						path: 'products',
 						select: '-variants',
 						populate: {
-							path: 'brand',
+							path: 'brand category',
 						},
 					},
 				],
@@ -31,31 +31,32 @@ export const FavoriteRepository = {
 	async getUserFavorites(userId: IFavorite['user']) {
 		const favorite = await FavoriteModel.findOne({ user: userId })
 			.populate('user')
-			.populate({ path: 'products', select: '-variants', populate: { path: 'brand' } })
+			.populate({
+				path: 'products',
+				select: '-variants',
+				populate: { path: 'brand category' },
+			})
 			.lean<IFavoritePopulated>();
 		if (!favorite) return handleError('Favorites not found', 'NOT_FOUND');
 
 		return favorite;
 	},
 
-	async createUserFavorites(favorites: IFavorite) {
+	async createUserFavorites(favorites: TFavoriteCreate) {
 		const createdFavorite = await FavoriteModel.create(favorites)
 			.then(doc => doc.populate('user'))
 			.then(doc =>
 				doc.populate({
 					path: 'products',
 					select: '-variants',
-					populate: { path: 'brand' },
+					populate: { path: 'brand category' },
 				})
 			);
 
 		return createdFavorite.toObject<IFavoritePopulated>();
 	},
 
-	async updateUserFavorites(
-		userId: IFavorite['user'],
-		favorites: Omit<IFavorite, 'user'>
-	) {
+	async updateUserFavorites(userId: IFavorite['user'], favorites: TFavoriteUpdate) {
 		const existsFavorite = await FavoriteModel.findOne({ user: userId });
 		if (!existsFavorite) return handleError('Favorites not found', 'NOT_FOUND');
 
@@ -63,7 +64,11 @@ export const FavoriteRepository = {
 			new: true,
 		})
 			.populate('user')
-			.populate({ path: 'products', select: '-variants', populate: { path: 'brand' } })
+			.populate({
+				path: 'products',
+				select: '-variants',
+				populate: { path: 'brand category' },
+			})
 			.lean<IFavoritePopulated>();
 	},
 

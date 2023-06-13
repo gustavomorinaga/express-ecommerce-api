@@ -1,4 +1,4 @@
-import { PipelineStage } from 'mongoose';
+import { PipelineStage, Types } from 'mongoose';
 
 // Config
 import { paginateConfig } from '@config';
@@ -6,11 +6,14 @@ import { paginateConfig } from '@config';
 // Schemas
 import { ProductModel, ProductVariantModel } from '@models';
 
-// Functions
-import { getProductStatus } from '@functions';
-
 // TS
-import { IProduct, IProductPopulated, TProductQuery } from '@ts';
+import {
+	IProduct,
+	IProductPopulated,
+	TProductCreate,
+	TProductQuery,
+	TProductUpdate,
+} from '@ts';
 
 export const ProductRepository = {
 	async getProducts(query: TProductQuery) {
@@ -25,6 +28,20 @@ export const ProductRepository = {
 			},
 			{
 				$unwind: '$brand',
+			},
+			{
+				$lookup: {
+					from: 'categories',
+					localField: 'category',
+					foreignField: '_id',
+					as: 'category',
+				},
+			},
+			{
+				$unwind: {
+					path: '$category',
+					preserveNullAndEmptyArrays: true,
+				},
 			},
 			{
 				$lookup: {
@@ -71,6 +88,7 @@ export const ProductRepository = {
 				name: { $first: '$name' },
 				description: { $first: '$description' },
 				brand: { $first: '$brand' },
+				category: { $first: '$category' },
 				active: { $first: '$active' },
 				variants: { $push: '$variants' },
 			},
@@ -89,42 +107,54 @@ export const ProductRepository = {
 
 	async getProduct(id: IProduct['_id']) {
 		return await ProductModel.findById(id)
-			.populate('brand variants')
+			.populate('brand category variants')
 			.lean<IProductPopulated>();
 	},
 
-	async createProduct(
-		product: Omit<IProductPopulated, 'slug' | 'brand'> &
-			Partial<Pick<IProductPopulated, 'slug'>> & { brand: IProduct['brand'] }
-	) {
+	async createProduct(product: TProductCreate) {
 		let variants: IProduct['variants'] = [];
 
-		if (product.variants?.length) {
-			product.variants = product.variants.map(variant => ({
-				...variant,
-				status: getProductStatus(variant.stock),
-			}));
-
-			const createdVariants = await ProductVariantModel.insertMany(product.variants);
+		if (product?.variants?.length) {
+			const createdVariants = await ProductVariantModel.create(product.variants);
 
 			variants = createdVariants.map(variant => variant._id);
 		}
 
 		const createdProduct = await ProductModel.create({ ...product, variants }).then(doc =>
-			doc.populate('brand variants')
+			doc.populate('brand category variants')
 		);
 
 		return createdProduct.toObject<IProductPopulated>();
 	},
 
-	async updateProduct(
-		id: IProduct['_id'],
-		product: DeepPartial<Omit<IProductPopulated, 'brand'>> & { brand?: IProduct['brand'] }
-	) {
-		return await ProductModel.findByIdAndUpdate(id, product, {
+	async updateProduct(id: IProduct['_id'], product: TProductUpdate) {
+		let variants: IProduct['variants'] = [];
+
+		if (product?.variants?.length) {
+			const upsertedVariants = await ProductVariantModel.bulkWrite(
+				product.variants.map(({ _id, ...variant }) => ({
+					updateOne: {
+						filter: { sku: variant.sku },
+						update: { $set: variant },
+						upsert: true,
+					},
+				}))
+			);
+
+			const upsertedVariantsIds: Types.ObjectId[] = Object.values(
+				upsertedVariants.upsertedIds
+			);
+
+			if (upsertedVariantsIds.length)
+				variants = upsertedVariantsIds.map(upsertedIds => upsertedIds.toString());
+		}
+
+		const data = { ...product, variants: variants.length ? variants : undefined };
+
+		return await ProductModel.findByIdAndUpdate(id, data, {
 			new: true,
 		})
-			.populate('brand variants')
+			.populate('brand category variants')
 			.lean<IProductPopulated>();
 	},
 

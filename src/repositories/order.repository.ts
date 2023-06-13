@@ -7,7 +7,7 @@ import { paginateConfig } from '@config';
 import { OrderModel } from '@models';
 
 // TS
-import { IOrder, IOrderPopulated, TOrderQuery } from '@ts';
+import { IOrder, IOrderPopulated, TOrderCreate, TOrderQuery, TOrderUpdate } from '@ts';
 
 export const OrderRepository = {
 	async getOrders(query: TOrderQuery) {
@@ -111,7 +111,7 @@ export const OrderRepository = {
 		});
 	},
 
-	async getOrder(id: string) {
+	async getOrder(id: IOrder['_id']) {
 		return await OrderModel.findById(id)
 			.populate('user products.variant')
 			.populate({
@@ -122,7 +122,7 @@ export const OrderRepository = {
 			.lean<IOrderPopulated>();
 	},
 
-	async createOrder(order: Omit<IOrder, 'orderID' | 'status' | 'totalPrice'>) {
+	async createOrder(order: TOrderCreate) {
 		const createdOrder = await OrderModel.create(order)
 			.then(doc => doc.populate('user products.variant'))
 			.then(doc =>
@@ -136,10 +136,7 @@ export const OrderRepository = {
 		return createdOrder.toObject<IOrderPopulated>();
 	},
 
-	async updateOrder(
-		id: string,
-		product: Partial<Pick<IOrder, 'deliveryAddress' | 'observation'>>
-	) {
+	async updateOrder(id: IOrder['_id'], product: TOrderUpdate) {
 		return await OrderModel.findByIdAndUpdate(id, product, { new: true })
 			.populate('user products.variant')
 			.populate({
@@ -150,7 +147,7 @@ export const OrderRepository = {
 			.lean<IOrderPopulated>();
 	},
 
-	async setStatusOrder(id: string, status: IOrder['status']) {
+	async setStatusOrder(id: IOrder['_id'], status: IOrder['status']) {
 		return await OrderModel.findByIdAndUpdate(id, { status }, { new: true })
 			.populate('user products.variant')
 			.populate({

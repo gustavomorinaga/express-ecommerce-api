@@ -4,10 +4,10 @@ import { IAddress, IViaCEPAddress } from '@ts';
 const ADDRESS_API = 'https://viacep.com.br/ws';
 
 export const AddressRepository = {
-	async searchAddress(cep: string) {
-		const address: IViaCEPAddress = await (
-			await fetch(`${ADDRESS_API}/${cep}/json`)
-		).json();
+	async searchAddress(zipCode: string) {
+		const address: IViaCEPAddress = await fetch(`${ADDRESS_API}/${zipCode}/json`).then(
+			res => res.json()
+		);
 
 		const mappedAddress: Omit<IAddress, 'number'> = {
 			street: address.logradouro,

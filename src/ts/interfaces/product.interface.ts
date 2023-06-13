@@ -1,13 +1,14 @@
 import { Document, Model, AggregatePaginateModel } from 'mongoose';
 
 // TS
-import { IBrand, TDocument } from '@ts';
+import { IBrand, ICategory, TDocument } from '@ts';
 
 export interface IProduct extends TDocument {
 	slug: string;
 	name: string;
 	description: string;
 	brand: TDocument['_id'];
+	category: TDocument['_id'];
 	active?: boolean;
 	variants?: TDocument['_id'][];
 }
@@ -21,8 +22,10 @@ export interface IProductVariant extends TDocument {
 	active?: boolean;
 }
 
-export interface IProductPopulated extends Omit<IProduct, 'brand' | 'variants'> {
+export interface IProductPopulated
+	extends Omit<IProduct, 'brand' | 'category' | 'variants'> {
 	brand: IBrand;
+	category: ICategory;
 	variants: IProductVariant[];
 }
 

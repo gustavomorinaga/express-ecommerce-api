@@ -15,6 +15,6 @@ export const addressGeneric = z.object({
 // Schemas
 export const getAddressByZipCodeSchema = z.object({
 	params: z.object({
-		cep: z.string().min(8).max(8),
+		zipCode: z.string().min(8).max(8),
 	}),
 });
