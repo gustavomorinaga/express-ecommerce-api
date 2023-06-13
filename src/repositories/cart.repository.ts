@@ -89,6 +89,6 @@ export const CartRepository = {
 	},
 
 	async deleteCart(userId: ICart['user']) {
-		return await CartModel.findOneAndDelete({ user: userId }).lean();
+		return await CartModel.findOneAndDelete({ user: userId }).lean<ICart>();
 	},
 };

@@ -17,22 +17,22 @@ export const BrandRepository = {
 
 		return await BrandModel.find(conditions)
 			.sort({ [query.sortBy]: query.orderBy })
-			.lean();
+			.lean<IBrand>();
 	},
 
 	async getBrand(id: IBrand['_id']) {
-		return await BrandModel.findById(id).lean();
+		return await BrandModel.findById(id).lean<IBrand>();
 	},
 
 	async createBrand(brand: TBrandCreate) {
-		return (await BrandModel.create(brand)).toObject();
+		return (await BrandModel.create(brand)).toObject<IBrand>();
 	},
 
 	async updateBrand(id: IBrand['_id'], brand: TBrandUpdate) {
-		return await BrandModel.findByIdAndUpdate(id, brand, { new: true }).lean();
+		return await BrandModel.findByIdAndUpdate(id, brand, { new: true }).lean<IBrand>();
 	},
 
 	async deleteBrand(id: IBrand['_id']) {
-		return await BrandModel.findByIdAndDelete(id).lean();
+		return await BrandModel.findByIdAndDelete(id).lean<IBrand>();
 	},
 };

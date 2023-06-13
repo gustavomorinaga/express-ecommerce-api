@@ -24,35 +24,39 @@ export const UserRepository = {
 	},
 
 	async getUser(_id: IUser['_id']) {
-		const user = await UserModel.findById(_id).lean();
+		const user = await UserModel.findById(_id).lean<IUser>();
 		if (!user) return handleError('User not found', 'NOT_FOUND');
 
 		return user;
 	},
 
 	async getUserByEmail(email: IUser['email']) {
-		const user = await UserModel.findOne({ email }).lean();
+		const user = await UserModel.findOne({ email }).lean<IUser>();
 		if (!user) return handleError('User not found', 'NOT_FOUND');
 
 		return user;
 	},
 
 	async createUser(user: TUserCreate) {
-		const userExists = await UserModel.findOne({ email: user.email }).lean();
+		const userExists = await UserModel.findOne({ email: user.email }).lean<IUser>();
 		if (userExists) return handleError('User already exists', 'BAD_REQUEST');
 
-		return (await UserModel.create(user)).toObject();
+		return (await UserModel.create(user)).toObject<IUser>();
 	},
 
 	async updateUser(_id: IUser['_id'], data: TUserUpdate) {
-		const user = await UserModel.findById(_id).lean();
+		const user = await UserModel.findById(_id).lean<IUser>();
 		if (!user) return handleError('User not found', 'NOT_FOUND');
 
-		return await UserModel.findByIdAndUpdate(_id, data, { new: true }).lean();
+		return await UserModel.findByIdAndUpdate(_id, data, { new: true }).lean<IUser>();
 	},
 
 	async updateUserPassword(_id: IUser['_id'], password: IUser['password']) {
-		return await UserModel.findByIdAndUpdate(_id, { password }, { new: true }).lean();
+		return await UserModel.findByIdAndUpdate(
+			_id,
+			{ password },
+			{ new: true }
+		).lean<IUser>();
 	},
 
 	async changeUserActive(_id: IUser['_id']) {
@@ -61,10 +65,10 @@ export const UserRepository = {
 
 		await user.changeActive();
 
-		return user.toObject();
+		return user.toObject<IUser>();
 	},
 
 	async deleteUser(_id: IUser['_id']) {
-		return await UserModel.findByIdAndDelete(_id).lean();
+		return await UserModel.findByIdAndDelete(_id).lean<IUser>();
 	},
 };

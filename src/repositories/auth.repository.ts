@@ -15,11 +15,11 @@ export const AuthRepository = {
 		const isMatch = await user.comparePassword(password);
 		if (!isMatch) return handleError('Invalid password', 'UNAUTHORIZED');
 
-		return user.toObject();
+		return user.toObject<IUser>();
 	},
 
 	async signUp(user: IUser) {
-		return (await UserModel.create(user)).toObject();
+		return (await UserModel.create(user)).toObject<IUser>();
 	},
 
 	async resetPassword({ email, password }: IAuth) {
@@ -27,6 +27,6 @@ export const AuthRepository = {
 			{ email },
 			{ password },
 			{ new: true }
-		).lean();
+		).lean<IUser>();
 	},
 };

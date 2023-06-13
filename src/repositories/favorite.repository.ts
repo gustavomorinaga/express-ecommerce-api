@@ -86,6 +86,6 @@ export const FavoriteRepository = {
 	},
 
 	async deleteUserFavorites(userId: IFavorite['user']) {
-		return await FavoriteModel.findOneAndDelete({ user: userId }).lean();
+		return await FavoriteModel.findOneAndDelete({ user: userId }).lean<IFavorite>();
 	},
 };

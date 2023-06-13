@@ -20,22 +20,24 @@ export const CategoryRepository = {
 
 		return await CategoryModel.find(conditions)
 			.sort({ [query.sortBy]: query.orderBy })
-			.lean();
+			.lean<ICategory>();
 	},
 
 	async getCategory(id: ICategory['_id']) {
-		return await CategoryModel.findById(id).lean();
+		return await CategoryModel.findById(id).lean<ICategory>();
 	},
 
 	async createCategory(category: TCategoryCreate) {
-		return (await CategoryModel.create(category)).toObject();
+		return (await CategoryModel.create(category)).toObject<ICategory>();
 	},
 
 	async updateCategory(id: ICategory['_id'], category: TCategoryUpdate) {
-		return await CategoryModel.findByIdAndUpdate(id, category, { new: true }).lean();
+		return await CategoryModel.findByIdAndUpdate(id, category, {
+			new: true,
+		}).lean<ICategory>();
 	},
 
 	async deleteCategory(id: ICategory['_id']) {
-		return await CategoryModel.findByIdAndDelete(id).lean();
+		return await CategoryModel.findByIdAndDelete(id).lean<ICategory>();
 	},
 };
