@@ -1,4 +1,5 @@
 import { build } from 'esbuild';
+import { copy } from 'esbuild-plugin-copy';
 import esbuildPluginPino from 'esbuild-plugin-pino';
 import { compress } from 'esbuild-plugin-compress';
 
@@ -15,6 +16,7 @@ import { compress } from 'esbuild-plugin-compress';
 		target: 'node18',
 		outdir: 'dist',
 		plugins: [
+			copy({ assets: [{ from: './public/**/*', to: './public' }] }),
 			esbuildPluginPino({
 				transports: ['pino-pretty'],
 			}),
