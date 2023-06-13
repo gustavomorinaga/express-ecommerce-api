@@ -10,6 +10,7 @@ import { ProductModel, ProductVariantModel } from '@models';
 import {
 	IProduct,
 	IProductPopulated,
+	IProductVariant,
 	TProductCreate,
 	TProductQuery,
 	TProductUpdate,
@@ -195,5 +196,16 @@ export const ProductRepository = {
 
 	async deleteProduct(id: IProduct['_id']) {
 		return await ProductModel.findByIdAndDelete(id).lean<IProduct>();
+	},
+
+	async deleteProductVariant(id: IProduct['_id'], variantId: IProductVariant['_id']) {
+		return await Promise.all([
+			ProductModel.findByIdAndUpdate(
+				id,
+				{ $pull: { variants: variantId } },
+				{ new: true }
+			).lean<IProduct>(),
+			ProductVariantModel.findByIdAndDelete(variantId).lean<IProductVariant>(),
+		]);
 	},
 };

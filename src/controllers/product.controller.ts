@@ -11,6 +11,7 @@ import { authMiddleware } from '@middlewares';
 import {
 	createProductSchema,
 	deleteProductSchema,
+	deleteProductVariantSchema,
 	getProductSchema,
 	getProductsSchema,
 	updateProductSchema,
@@ -88,5 +89,23 @@ ProductController.delete('/:id', authMiddleware, async (req, res, next) => {
 		next(error);
 	}
 });
+
+ProductController.delete(
+	'/:id/variants/:idVariant',
+	authMiddleware,
+	async (req, res, next) => {
+		try {
+			const {
+				params: { id, idVariant },
+			} = await zParse(deleteProductVariantSchema, req);
+
+			await ProductRepository.deleteProductVariant(id, idVariant);
+
+			return res.sendStatus(statuses.NO_CONTENT);
+		} catch (error) {
+			next(error);
+		}
+	}
+);
 
 export { ProductController };

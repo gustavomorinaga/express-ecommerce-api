@@ -73,3 +73,10 @@ export const deleteProductSchema = z.object({
 		id: objectIdGeneric,
 	}),
 });
+
+export const deleteProductVariantSchema = z.object({
+	params: z.object({
+		id: objectIdGeneric,
+		idVariant: objectIdGeneric,
+	}),
+});
