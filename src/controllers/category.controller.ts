@@ -14,6 +14,7 @@ import {
 	getCategorySchema,
 	updateCategorySchema,
 	deleteCategorySchema,
+	deleteSubCategorySchema,
 } from '@schemas';
 
 // Utils
@@ -88,5 +89,23 @@ CategoryController.delete('/:id', authMiddleware, async (req, res, next) => {
 		next(error);
 	}
 });
+
+CategoryController.delete(
+	'/:id/sub-categories/:idSubCategory',
+	authMiddleware,
+	async (req, res, next) => {
+		try {
+			const {
+				params: { id, idSubCategory },
+			} = await zParse(deleteSubCategorySchema, req);
+
+			await CategoryRepository.deleteSubCategory(id, idSubCategory);
+
+			return res.sendStatus(statuses.NO_CONTENT);
+		} catch (error) {
+			next(error);
+		}
+	}
+);
 
 export { CategoryController };

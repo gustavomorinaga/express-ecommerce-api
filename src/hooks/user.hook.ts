@@ -1,8 +1,5 @@
 import type { CallbackWithoutResultAndOptionalError } from 'mongoose';
 
-// Config
-import { environment } from '@config';
-
 // TS
 import { IUserDocument, IUserMethods } from '@ts';
 

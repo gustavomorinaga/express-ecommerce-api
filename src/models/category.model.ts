@@ -16,13 +16,10 @@ const CategorySchema = new Schema<ICategory, ICategoryModel, ICategoryMethods>(
 			required: false,
 			trim: true,
 		},
+		subCategories: [{ type: Schema.Types.ObjectId, ref: 'SubCategory' }],
 	},
-	{
-		timestamps: true,
-		collation: { locale: 'en' },
-	}
+	{ timestamps: true, collation: { locale: 'en' } }
 );
-CategorySchema.add({ subCategories: [CategorySchema] });
 
 CategorySchema.index({ name: 'text' });
 

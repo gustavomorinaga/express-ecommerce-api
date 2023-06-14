@@ -41,6 +41,11 @@ const ProductSchema = new Schema<IProduct, IProductModel, IProductMethods>(
 			ref: 'Category',
 			required: true,
 		},
+		subCategory: {
+			type: Schema.Types.ObjectId,
+			ref: 'SubCategory',
+			required: true,
+		},
 		active: {
 			type: Boolean,
 			default: true,

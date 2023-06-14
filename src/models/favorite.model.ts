@@ -27,7 +27,7 @@ const FavoriteSchema = new Schema<IFavorite, IFavoriteModel, IFavoriteMethods>(
 			},
 		],
 	},
-	{ timestamps: true }
+	{ timestamps: true, collation: { locale: 'en' } }
 );
 
 FavoriteSchema.plugin(paginatePlugin);

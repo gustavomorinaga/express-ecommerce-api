@@ -36,7 +36,7 @@ const CartSchema = new Schema<ICart, ICartModel, ICartMethods>(
 		},
 		products: [CartProductSchema],
 	},
-	{ timestamps: true }
+	{ timestamps: true, collation: { locale: 'en' } }
 );
 
 CartSchema.plugin(paginatePlugin);

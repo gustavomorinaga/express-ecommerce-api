@@ -30,18 +30,31 @@ export const getCategorySchema = z.object({
 });
 
 export const createCategorySchema = z.object({
-	body: baseCategoryGeneric,
+	body: categoryGeneric.extend({
+		subCategories: categoryGeneric.shape.subCategories.default([]),
+	}),
 });
 
 export const updateCategorySchema = z.object({
 	params: z.object({
 		id: objectIdGeneric,
 	}),
-	body: categoryGeneric,
+	body: categoryGeneric.partial().augment({
+		subCategories: z
+			.array(baseCategoryGeneric.extend({ _id: objectIdGeneric }).partial())
+			.optional(),
+	}),
 });
 
 export const deleteCategorySchema = z.object({
 	params: z.object({
 		id: objectIdGeneric,
+	}),
+});
+
+export const deleteSubCategorySchema = z.object({
+	params: z.object({
+		id: objectIdGeneric,
+		idSubCategory: objectIdGeneric,
 	}),
 });

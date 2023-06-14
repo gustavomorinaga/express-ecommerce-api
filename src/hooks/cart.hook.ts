@@ -3,6 +3,9 @@ import type { CallbackWithoutResultAndOptionalError } from 'mongoose';
 // Models
 import { ProductModel, UserModel } from '@models';
 
+// Errors
+import { handleError } from '@errors';
+
 // TS
 import { ICartDocument } from '@ts';
 
@@ -21,10 +24,10 @@ export const preSaveCartHook = async function (
 		}).lean(),
 	]);
 
-	if (!user) return next(new Error('Invalid user'));
-	if (!products.length) return next(new Error('Cart is empty'));
+	if (!user) return handleError('User not found', 'NOT_FOUND');
+	if (!products.length) return handleError('Cart is empty', 'NOT_FOUND');
 	if (products.length !== cart.products.length)
-		return next(new Error('Invalid products'));
+		return handleError('Products invalid or not found', 'BAD_REQUEST');
 
 	return next();
 };

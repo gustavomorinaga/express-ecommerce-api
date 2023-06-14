@@ -17,10 +17,7 @@ const BrandSchema = new Schema<IBrand, IBrandModel, IBrandMethods>(
 			trim: true,
 		},
 	},
-	{
-		timestamps: true,
-		collation: { locale: 'en' },
-	}
+	{ timestamps: true, collation: { locale: 'en' } }
 );
 
 BrandSchema.index({ name: 'text' });

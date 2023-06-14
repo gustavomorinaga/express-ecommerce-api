@@ -50,10 +50,7 @@ const UserSchema = new Schema<IUser, IUserModel, IUserMethods>(
 			default: true,
 		},
 	},
-	{
-		timestamps: true,
-		collation: { locale: 'en' },
-	}
+	{ timestamps: true, collation: { locale: 'en' } }
 );
 
 UserSchema.plugin(paginatePlugin);
