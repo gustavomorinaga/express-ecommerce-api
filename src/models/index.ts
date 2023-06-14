@@ -1,5 +1,5 @@
-export * from './user.model';
 export * from './address.model';
+export * from './user.model';
 export * from './brand.model';
 export * from './category.model';
 export * from './sub-category.model';
