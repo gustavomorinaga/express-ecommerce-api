@@ -53,7 +53,7 @@ export const CategoryRepository = {
 			const upsertedSubCategories = await SubCategoryModel.bulkWrite(
 				category.subCategories.map(({ _id, ...subCategory }) => ({
 					updateOne: {
-						filter: { _id },
+						filter: { name: subCategory.name },
 						update: { $set: subCategory },
 						upsert: true,
 					},

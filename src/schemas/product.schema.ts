@@ -30,6 +30,7 @@ export const getProductsSchema = z.object({
 			term: z.string().optional(),
 			brand: z.string().optional(),
 			category: z.string().optional(),
+			subCategory: z.string().optional(),
 			startPrice: z.coerce.number().positive().optional(),
 			endPrice: z.coerce.number().positive().optional(),
 			hasEmptyStock: z.coerce.boolean().optional(),

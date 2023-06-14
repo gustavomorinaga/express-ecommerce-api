@@ -1,7 +1,9 @@
 import { z } from 'zod';
 
 // Schemas
-import { createCartSchema, updateCartSchema } from '@schemas';
+import { createCartSchema, getCartsSchema, updateCartSchema } from '@schemas';
+
+export type TCartQuery = z.infer<typeof getCartsSchema>['query'];
 
 export type TCartCreate = z.infer<typeof createCartSchema>['body'];
 

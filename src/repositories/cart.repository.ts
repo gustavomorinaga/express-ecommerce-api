@@ -5,10 +5,10 @@ import { CartModel } from '@models';
 import { handleError } from '@errors';
 
 // TS
-import { ICart, ICartPopulated, TCartCreate, TCartUpdate } from '@ts';
+import { ICart, ICartPopulated, TCartCreate, TCartQuery, TCartUpdate } from '@ts';
 
 export const CartRepository = {
-	async getCarts() {
+	async getCarts(query: TCartQuery) {
 		return await CartModel.paginate(
 			{},
 			{
@@ -23,7 +23,7 @@ export const CartRepository = {
 						path: 'products.product',
 						select: '-variants',
 						populate: {
-							path: 'brand category',
+							path: 'brand category subCategory',
 						},
 					},
 				],
@@ -37,7 +37,7 @@ export const CartRepository = {
 			.populate({
 				path: 'products.product',
 				select: '-variants',
-				populate: { path: 'brand category' },
+				populate: { path: 'brand category subCategory' },
 			})
 			.lean<ICartPopulated>();
 		if (!cart) return handleError('Cart not found', 'NOT_FOUND');
@@ -52,7 +52,7 @@ export const CartRepository = {
 				doc.populate({
 					path: 'products.product',
 					select: '-variants',
-					populate: { path: 'brand category' },
+					populate: { path: 'brand category subCategory' },
 				})
 			);
 
@@ -70,7 +70,7 @@ export const CartRepository = {
 			.populate({
 				path: 'products.product',
 				select: '-variants',
-				populate: { path: 'brand category' },
+				populate: { path: 'brand category subCategory' },
 			})
 			.lean<ICartPopulated>();
 	},

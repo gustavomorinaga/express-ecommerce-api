@@ -1,7 +1,7 @@
 import { z } from 'zod';
 
 // Schemas
-import { objectIdGeneric } from '@schemas';
+import { objectIdGeneric, queryEnums, queryGeneric } from '@schemas';
 
 // Generics
 export const cartProductGeneric = z.object({
@@ -16,6 +16,13 @@ export const cartGeneric = z.object({
 });
 
 // Schemas
+export const getCartsSchema = z.object({
+	query: z.object({ term: z.string().optional() }).extend({
+		...queryGeneric.shape,
+		sortBy: z.enum(['term', ...queryEnums.sortBy]).default('term'),
+	}),
+});
+
 export const getCartSchema = z.object({
 	params: z.object({
 		userId: objectIdGeneric,

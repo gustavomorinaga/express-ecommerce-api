@@ -23,6 +23,7 @@ export const ProductRepository = {
 		const activeQuery: Record<string, boolean> = {
 			brand: !!query.brand,
 			category: !!query.category,
+			subCategory: !!query.subCategory,
 			variants: !!(query.startPrice || query.endPrice || query.hasEmptyStock),
 		};
 
@@ -52,6 +53,23 @@ export const ProductRepository = {
 				{
 					$unwind: {
 						path: '$category',
+						preserveNullAndEmptyArrays: true,
+					},
+				},
+				{ $unset: ['category.subCategories'] },
+			],
+			subCategory: [
+				{
+					$lookup: {
+						from: 'subcategories',
+						localField: 'subCategory',
+						foreignField: '_id',
+						as: 'subCategory',
+					},
+				},
+				{
+					$unwind: {
+						path: '$subCategory',
 						preserveNullAndEmptyArrays: true,
 					},
 				},
@@ -92,6 +110,11 @@ export const ProductRepository = {
 				$match: { 'category.name': query.category },
 			});
 
+		if (query.subCategory)
+			conditions.push(...populateDictionary.subCategory, {
+				$match: { 'subCategory.name': query.subCategory },
+			});
+
 		if (query.startPrice || query.endPrice || query.hasEmptyStock)
 			conditions.push(...populateDictionary.variants);
 
@@ -126,6 +149,7 @@ export const ProductRepository = {
 				description: { $first: '$description' },
 				brand: { $first: '$brand' },
 				category: { $first: '$category' },
+				subCategory: { $first: '$subCategory' },
 				active: { $first: '$active' },
 				variants: { $push: '$variants' },
 			},
@@ -143,7 +167,7 @@ export const ProductRepository = {
 
 	async getProduct(id: IProduct['_id']) {
 		return await ProductModel.findById(id)
-			.populate('brand category variants')
+			.populate('brand category subCategory variants')
 			.lean<IProductPopulated>();
 	},
 
@@ -157,7 +181,7 @@ export const ProductRepository = {
 		}
 
 		const createdProduct = await ProductModel.create({ ...product, variants }).then(doc =>
-			doc.populate('brand category variants')
+			doc.populate('brand category subCategory variants')
 		);
 
 		return createdProduct.toObject<IProductPopulated>();
@@ -190,7 +214,7 @@ export const ProductRepository = {
 		return await ProductModel.findByIdAndUpdate(id, data, {
 			new: true,
 		})
-			.populate('brand category variants')
+			.populate('brand category subCategory variants')
 			.lean<IProductPopulated>();
 	},
 

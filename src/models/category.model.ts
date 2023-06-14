@@ -1,5 +1,8 @@
 import { model, Schema } from 'mongoose';
 
+// Hooks
+import { preUpdateCategoryHook } from '@hooks';
+
 // TS
 import { ICategory, ICategoryDocument, ICategoryMethods, ICategoryModel } from '@ts';
 
@@ -16,10 +19,12 @@ const CategorySchema = new Schema<ICategory, ICategoryModel, ICategoryMethods>(
 			required: false,
 			trim: true,
 		},
-		subCategories: [{ type: Schema.Types.ObjectId, ref: 'SubCategory' }],
+		subCategories: [{ type: Schema.Types.ObjectId, ref: 'SubCategory', select: false }],
 	},
 	{ timestamps: true, collation: { locale: 'en' } }
 );
+
+CategorySchema.pre('findOneAndUpdate', preUpdateCategoryHook);
 
 CategorySchema.index({ name: 'text' });
 

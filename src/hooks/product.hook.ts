@@ -45,6 +45,9 @@ export const preUpdateProductHook = async function (
 	this: Query<IProductDocument, {}>,
 	next: CallbackWithoutResultAndOptionalError
 ) {
+	const product = await ProductModel.findOne(this.getQuery()).lean();
+	if (!product) return handleError('Product not found', 'NOT_FOUND');
+
 	const data = this.getUpdate() as IProductDocument & UpdateQuery<IProductDocument>;
 
 	if (data.brand) {
@@ -63,9 +66,6 @@ export const preUpdateProductHook = async function (
 	}
 
 	if (!data?.variants?.length) return next();
-
-	const product = await ProductModel.findOne(this.getQuery()).lean();
-	if (!product) return handleError('Product not found', 'NOT_FOUND');
 
 	product.variants ??= [];
 

@@ -9,7 +9,7 @@ export const orderGeneric = z.object({
 	user: objectIdGeneric,
 	deliveryAddress: addressGeneric,
 	totalPrice: z.number().positive().min(0),
-	status: z.enum(['pending', 'canceled', 'delivered']).default('pending'),
+	status: z.enum(['pending', 'canceled', 'delivered', 'completed']).default('pending'),
 	observation: z.string().max(100).optional(),
 	products: z.array(
 		z.object({
