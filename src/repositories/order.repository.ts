@@ -13,92 +13,164 @@ export const OrderRepository = {
 	async getOrders(query: TOrderQuery) {
 		const conditions: PipelineStage[] = [];
 
+		const populateDictionary: Record<string, PipelineStage[]> = {
+			users: [
+				{
+					$lookup: {
+						from: 'users',
+						localField: 'user',
+						foreignField: '_id',
+						as: 'user',
+					},
+				},
+				{
+					$unwind: '$user',
+				},
+				{
+					$unset: ['user.password'],
+				},
+				{
+					$match: { 'user.active': true },
+				},
+			],
+			products: [
+				{
+					$unwind: '$products',
+				},
+				{
+					$lookup: {
+						from: 'products',
+						localField: 'products.product',
+						foreignField: '_id',
+						as: 'products.product',
+					},
+				},
+				{
+					$unwind: '$products.product',
+				},
+				{
+					$unset: ['products.product.variants'],
+				},
+			],
+			brand: [
+				{
+					$lookup: {
+						from: 'brands',
+						localField: 'products.product.brand',
+						foreignField: '_id',
+						as: 'products.product.brand',
+					},
+				},
+				{
+					$unwind: '$products.product.brand',
+				},
+			],
+			category: [
+				{
+					$lookup: {
+						from: 'categories',
+						localField: 'products.product.category',
+						foreignField: '_id',
+						as: 'products.product.category',
+					},
+				},
+				{
+					$unwind: {
+						path: '$products.product.category',
+						preserveNullAndEmptyArrays: true,
+					},
+				},
+				{ $unset: ['products.product.category.subCategories'] },
+			],
+			subCategory: [
+				{
+					$lookup: {
+						from: 'subcategories',
+						localField: 'products.product.subCategory',
+						foreignField: '_id',
+						as: 'products.product.subCategory',
+					},
+				},
+				{
+					$unwind: {
+						path: '$products.product.subCategory',
+						preserveNullAndEmptyArrays: true,
+					},
+				},
+			],
+			variants: [
+				{
+					$lookup: {
+						from: 'productvariants',
+						localField: 'products.variant',
+						foreignField: '_id',
+						as: 'products.variant',
+					},
+				},
+				{
+					$unwind: '$products.variant',
+				},
+				{
+					$group: {
+						_id: {
+							_id: '$_id',
+							orderID: '$orderID',
+						},
+						user: { $first: '$user' },
+						deliveryAddress: { $first: '$deliveryAddress' },
+						totalPrice: { $first: '$totalPrice' },
+						status: { $first: '$status' },
+						products: { $push: '$products' },
+						createdAt: { $first: '$createdAt' },
+						updatedAt: { $first: '$updatedAt' },
+					},
+				},
+				{
+					$project: {
+						_id: '$_id._id',
+						orderID: '$_id.orderID',
+						user: '$user',
+						deliveryAddress: '$deliveryAddress',
+						totalPrice: '$totalPrice',
+						status: '$status',
+						observation: '$observation',
+						products: '$products',
+						createdAt: '$createdAt',
+						updatedAt: '$updatedAt',
+					},
+				},
+			],
+		};
+
+		const sortByDictionary = {
+			user: { 'user.name': query.orderBy },
+			totalPrice: { totalPrice: query.orderBy },
+			status: { status: query.orderBy },
+			createdAt: { createdAt: query.orderBy },
+			updatedAt: { updatedAt: query.orderBy },
+		} as const;
+
 		if (query.orderID)
 			conditions.unshift({ $match: { $text: { $search: query.orderID } } });
+
 		if (query.userID)
 			conditions.push({ $match: { user: new Types.ObjectId(query.userID) } });
+
 		if (query.status) conditions.push({ $match: { status: query.status } });
 
-		conditions.push(
-			{
-				$lookup: {
-					from: 'users',
-					localField: 'user',
-					foreignField: '_id',
-					as: 'user',
-				},
-			},
-			{
-				$unwind: '$user',
-			},
-			{
-				$unset: ['user.password'],
-			},
-			{
-				$unwind: '$products',
-			},
-			{
-				$lookup: {
-					from: 'products',
-					localField: 'products.product',
-					foreignField: '_id',
-					as: 'product',
-				},
-			},
-			{
-				$unwind: '$product',
-			},
-			{
-				$unset: ['product.variants'],
-			},
-			{
-				$lookup: {
-					from: 'productvariants',
-					localField: 'products.variant',
-					foreignField: '_id',
-					as: 'variant',
-				},
-			},
-			{
-				$unwind: '$variant',
-			},
-			{
-				$group: {
-					_id: {
-						_id: '$_id',
-						orderID: '$orderID',
+		if (query.startDate || query.endDate)
+			conditions.push({
+				$match: {
+					createdAt: {
+						...(query.startDate && { $gte: new Date(query.startDate) }),
+						...(query.endDate && { $lte: new Date(query.endDate) }),
 					},
-					user: { $first: '$user' },
-					deliveryAddress: { $first: '$deliveryAddress' },
-					totalPrice: { $first: '$totalPrice' },
-					status: { $first: '$status' },
-					observation: { $first: '$observation' },
-					products: {
-						$push: {
-							product: '$product',
-							variant: '$variant',
-							quantity: '$products.quantity',
-						},
-					},
-					createdAt: { $first: '$createdAt' },
-					updatedAt: { $first: '$updatedAt' },
 				},
-			},
-			{
-				$project: {
-					_id: '$_id._id',
-					orderID: '$_id.orderID',
-					user: '$user',
-					deliveryAddress: '$deliveryAddress',
-					totalPrice: '$totalPrice',
-					status: '$status',
-					observation: '$observation',
-					products: '$products',
-					createdAt: '$createdAt',
-					updatedAt: '$updatedAt',
-				},
-			}
-		);
+			});
+
+		const populateStages = Object.values(populateDictionary).flat();
+
+		conditions.push(...populateStages);
 
 		const aggregation = OrderModel.aggregate<IOrderPopulated>(conditions);
 
@@ -106,7 +178,7 @@ export const OrderRepository = {
 			...paginateConfig,
 			page: query.page,
 			limit: query.limit,
-			sort: { [query.sortBy]: query.orderBy },
+			sort: sortByDictionary[query.sortBy],
 		});
 	},
 

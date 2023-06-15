@@ -17,7 +17,7 @@ export const categoryGeneric = baseCategoryGeneric.extend({
 export const getCategoriesSchema = z.object({
 	query: z
 		.object({
-			name: z.string().optional(),
+			name: z.coerce.string().optional(),
 			sortBy: z.enum(['name']).default('name'),
 		})
 		.extend({ orderBy: queryGeneric.shape.orderBy }),

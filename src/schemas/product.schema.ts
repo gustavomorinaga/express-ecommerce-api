@@ -27,10 +27,10 @@ export const productGeneric = z.object({
 export const getProductsSchema = z.object({
 	query: z
 		.object({
-			term: z.string().optional(),
-			brand: z.string().optional(),
-			category: z.string().optional(),
-			subCategory: z.string().optional(),
+			term: z.coerce.string().optional(),
+			brand: z.coerce.string().optional(),
+			category: z.coerce.string().optional(),
+			subCategory: z.coerce.string().optional(),
 			startPrice: z.coerce.number().positive().optional(),
 			endPrice: z.coerce.number().positive().optional(),
 			hasEmptyStock: z.coerce.boolean().optional(),

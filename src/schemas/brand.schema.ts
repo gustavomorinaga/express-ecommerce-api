@@ -13,7 +13,7 @@ export const brandGeneric = z.object({
 export const getBrandsSchema = z.object({
 	query: z
 		.object({
-			name: z.string().optional(),
+			name: z.coerce.string().optional(),
 		})
 		.extend({
 			...queryGeneric.shape,

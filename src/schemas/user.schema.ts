@@ -16,7 +16,7 @@ export const userGeneric = z.object({
 export const getUsersSchema = z.object({
 	query: z
 		.object({
-			term: z.string().optional(),
+			term: z.coerce.string().optional(),
 			showInactive: z.coerce.boolean().optional(),
 		})
 		.extend({

@@ -134,6 +134,16 @@ export const ProductRepository = {
 				},
 			});
 
+		if (query.startDate || query.endDate)
+			conditions.push({
+				$match: {
+					createdAt: {
+						...(query.startDate && { $gte: new Date(query.startDate) }),
+						...(query.endDate && { $lte: new Date(query.endDate) }),
+					},
+				},
+			});
+
 		const keysToPopulate = Object.keys(populateDictionary).filter(
 			key => !activeQuery[key]
 		);
@@ -142,18 +152,9 @@ export const ProductRepository = {
 			Object.entries(populateDictionary).filter(([key]) => keysToPopulate.includes(key))
 		);
 
-		conditions.push(...Object.values(populateDictionaryFiltered).flat(), {
-			$group: {
-				_id: '$_id',
-				name: { $first: '$name' },
-				description: { $first: '$description' },
-				brand: { $first: '$brand' },
-				category: { $first: '$category' },
-				subCategory: { $first: '$subCategory' },
-				active: { $first: '$active' },
-				variants: { $push: '$variants' },
-			},
-		});
+		const populateStages = Object.values(populateDictionaryFiltered).flat();
+
+		conditions.push(...populateStages);
 
 		const aggregation = ProductModel.aggregate<IProductPopulated>(conditions);
 

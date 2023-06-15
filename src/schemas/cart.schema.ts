@@ -17,7 +17,7 @@ export const cartGeneric = z.object({
 
 // Schemas
 export const getCartsSchema = z.object({
-	query: z.object({ term: z.string().optional() }).extend({
+	query: z.object({ term: z.coerce.string().optional() }).extend({
 		...queryGeneric.shape,
 		sortBy: z.enum(['term', ...queryEnums.sortBy]).default('term'),
 	}),
