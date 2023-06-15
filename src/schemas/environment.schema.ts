@@ -1,25 +1,25 @@
 import { z } from 'zod';
 
 export const envSchema = z.object({
-	ENV: z.enum(['development', 'tests', 'production']).optional().default('development'),
-	PORT: z.string().optional().default('3000').transform(Number),
+	ENV: z.enum(['development', 'tests', 'production']).default('development'),
+	PORT: z.coerce.number().default(3000),
 
-	JWT_SECRET: z.string(),
-	JWT_REFRESH_SECRET: z.string(),
+	JWT_SECRET: z.coerce.string(),
+	JWT_REFRESH_SECRET: z.coerce.string(),
 
-	BCRYPT_SALT: z.string().optional().default('10').transform(Number),
+	BCRYPT_SALT: z.coerce.number().default(10),
 
-	DATABASE_USER: z.string(),
-	DATABASE_PASS: z.string(),
-	DATABASE_HOST: z.string(),
-	DATABASE_NAME: z.string(),
+	DATABASE_USER: z.coerce.string(),
+	DATABASE_PASS: z.coerce.string(),
+	DATABASE_HOST: z.coerce.string(),
+	DATABASE_NAME: z.coerce.string(),
 
-	EMAIL_SERVICE: z.string().optional().default('gmail'),
-	EMAIL_HOST: z.string(),
-	EMAIL_PORT: z.string().optional().default('465').transform(Number),
-	EMAIL_USER: z.string(),
-	EMAIL_PASS: z.string(),
-	EMAIL_FROM: z.string(),
+	EMAIL_SERVICE: z.coerce.string().default('gmail'),
+	EMAIL_HOST: z.coerce.string(),
+	EMAIL_PORT: z.coerce.number().default(465),
+	EMAIL_USER: z.coerce.string(),
+	EMAIL_PASS: z.coerce.string(),
+	EMAIL_FROM: z.coerce.string(),
 
-	AVATAR_GENERATOR_URL: z.string(),
+	AVATAR_GENERATOR_URL: z.coerce.string(),
 });
