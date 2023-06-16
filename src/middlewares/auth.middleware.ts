@@ -20,7 +20,7 @@ export const authMiddleware = (req: Request, res: Response, next: NextFunction) 
 
 	if (!token) return handleError('Token not found', 'UNAUTHORIZED');
 
-	jwt.verify(token, environment.JWT_SECRET, (err: any, user: any) => {
+	jwt.verify(token, environment.JWT_SECRET, (err, user) => {
 		if (err) return handleError('Token has expired', 'UNAUTHORIZED');
 
 		req._user = user as IUser;
