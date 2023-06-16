@@ -28,8 +28,8 @@ export const FavoriteRepository = {
 		);
 	},
 
-	async getUserFavorites(userId: IFavorite['user']) {
-		const favorite = await FavoriteModel.findOne({ user: userId })
+	async getUserFavorites(userID: IFavorite['user']) {
+		const favorite = await FavoriteModel.findOne({ user: userID })
 			.populate('user')
 			.populate({
 				path: 'products',
@@ -56,11 +56,11 @@ export const FavoriteRepository = {
 		return createdFavorite.toObject<IFavoritePopulated>();
 	},
 
-	async updateUserFavorites(userId: IFavorite['user'], favorites: TFavoriteUpdate) {
-		const existsFavorite = await FavoriteModel.findOne({ user: userId });
+	async updateUserFavorites(userID: IFavorite['user'], favorites: TFavoriteUpdate) {
+		const existsFavorite = await FavoriteModel.findOne({ user: userID });
 		if (!existsFavorite) return handleError('Favorites not found', 'NOT_FOUND');
 
-		return await FavoriteModel.findOneAndUpdate({ user: userId }, favorites, {
+		return await FavoriteModel.findOneAndUpdate({ user: userID }, favorites, {
 			new: true,
 		})
 			.populate('user')
@@ -72,12 +72,12 @@ export const FavoriteRepository = {
 			.lean<IFavoritePopulated>();
 	},
 
-	async clearUserFavorites(userId: IFavorite['user']) {
-		const existsFavorite = await FavoriteModel.findOne({ user: userId });
+	async clearUserFavorites(userID: IFavorite['user']) {
+		const existsFavorite = await FavoriteModel.findOne({ user: userID });
 		if (!existsFavorite) return handleError('Favorites not found', 'NOT_FOUND');
 
 		return await FavoriteModel.findOneAndUpdate(
-			{ user: userId },
+			{ user: userID },
 			{ products: [] },
 			{ new: true }
 		)
@@ -85,7 +85,7 @@ export const FavoriteRepository = {
 			.lean<IFavoritePopulated>();
 	},
 
-	async deleteUserFavorites(userId: IFavorite['user']) {
-		return await FavoriteModel.findOneAndDelete({ user: userId }).lean<IFavorite>();
+	async deleteUserFavorites(userID: IFavorite['user']) {
+		return await FavoriteModel.findOneAndDelete({ user: userID }).lean<IFavorite>();
 	},
 };

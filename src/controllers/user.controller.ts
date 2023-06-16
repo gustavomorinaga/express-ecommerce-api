@@ -4,6 +4,9 @@ import statuses from 'http-status';
 // Repositories
 import { UserRepository } from '@repositories';
 
+// Middlewares
+import { isAdminMiddleware } from '@middlewares';
+
 // Schemas
 import {
 	createUserSchema,
@@ -21,7 +24,7 @@ import { zParse } from '@utils';
 /** Responsável por gerenciar as contas dos usuários */
 const UserController = Router();
 
-UserController.get('/', async (req, res, next) => {
+UserController.get('/', isAdminMiddleware, async (req, res, next) => {
 	try {
 		const { query } = await zParse(getUsersSchema, req);
 
@@ -47,7 +50,7 @@ UserController.get('/:id', async (req, res, next) => {
 	}
 });
 
-UserController.post('/', async (req, res, next) => {
+UserController.post('/', isAdminMiddleware, async (req, res, next) => {
 	try {
 		const { body: data } = await zParse(createUserSchema, req);
 
@@ -89,20 +92,6 @@ UserController.patch('/:id/password', async (req, res, next) => {
 	}
 });
 
-UserController.patch('/:id/activate', async (req, res, next) => {
-	try {
-		const {
-			params: { id },
-		} = await zParse(updateUserActiveSchema, req);
-
-		const response = await UserRepository.changeUserActive(id);
-
-		return res.status(statuses.OK).send(response);
-	} catch (error) {
-		next(error);
-	}
-});
-
 UserController.patch('/:id/change-active', async (req, res, next) => {
 	try {
 		const {
@@ -117,7 +106,7 @@ UserController.patch('/:id/change-active', async (req, res, next) => {
 	}
 });
 
-UserController.delete('/:id', async (req, res, next) => {
+UserController.delete('/:id', isAdminMiddleware, async (req, res, next) => {
 	try {
 		const {
 			params: { id },

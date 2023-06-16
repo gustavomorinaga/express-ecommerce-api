@@ -188,7 +188,7 @@ export const OrderRepository = {
 			.populate({
 				path: 'products.product',
 				select: '-variants',
-				populate: { path: 'brand' },
+				populate: { path: 'brand category subCategory' },
 			})
 			.lean<IOrderPopulated>();
 	},
@@ -200,7 +200,7 @@ export const OrderRepository = {
 				doc.populate({
 					path: 'products.product',
 					select: '-variants',
-					populate: { path: 'brand' },
+					populate: { path: 'brand category subCategory' },
 				})
 			);
 
@@ -213,7 +213,7 @@ export const OrderRepository = {
 			.populate({
 				path: 'products.product',
 				select: '-variants',
-				populate: { path: 'brand' },
+				populate: { path: 'brand category subCategory' },
 			})
 			.lean<IOrderPopulated>();
 	},
@@ -224,7 +224,7 @@ export const OrderRepository = {
 			.populate({
 				path: 'products.product',
 				select: '-variants',
-				populate: { path: 'brand' },
+				populate: { path: 'brand category subCategory' },
 			})
 			.lean<IOrderPopulated>();
 	},

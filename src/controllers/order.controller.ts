@@ -25,6 +25,9 @@ const OrderController = Router();
 OrderController.get('/', async (req, res, next) => {
 	try {
 		const { query } = await zParse(getOrdersSchema, req);
+		const { _id: authUserID, role } = req._user;
+
+		if (role === 'user') query.userID = authUserID;
 
 		const orders = await OrderRepository.getOrders(query);
 
@@ -39,8 +42,12 @@ OrderController.get('/:id', async (req, res, next) => {
 		const {
 			params: { id },
 		} = await zParse(getOrderSchema, req);
+		const { _id: authUserID, role } = req._user;
 
 		const order = await OrderRepository.getOrder(id);
+		if (!order) return handleError('Order not found', 'NOT_FOUND');
+		if (role === 'user' && order.user._id?.toString() !== authUserID)
+			return handleError('User unauthorized', 'UNAUTHORIZED');
 
 		return res.status(statuses.OK).send(order);
 	} catch (error) {

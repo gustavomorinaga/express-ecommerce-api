@@ -12,7 +12,7 @@ export const favoriteGeneric = z.object({
 // Schemas
 export const getFavoriteSchema = z.object({
 	params: z.object({
-		userId: objectIdGeneric,
+		userID: objectIdGeneric,
 	}),
 });
 
@@ -22,7 +22,7 @@ export const createFavoriteSchema = z.object({
 
 export const updateFavoriteSchema = z.object({
 	params: z.object({
-		userId: objectIdGeneric,
+		userID: objectIdGeneric,
 	}),
 	body: z.object({
 		products: favoriteGeneric.shape.products,
@@ -31,12 +31,12 @@ export const updateFavoriteSchema = z.object({
 
 export const clearFavoriteSchema = z.object({
 	params: z.object({
-		userId: objectIdGeneric,
+		userID: objectIdGeneric,
 	}),
 });
 
 export const deleteFavoriteSchema = z.object({
 	params: z.object({
-		userId: objectIdGeneric,
+		userID: objectIdGeneric,
 	}),
 });

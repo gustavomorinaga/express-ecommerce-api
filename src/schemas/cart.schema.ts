@@ -25,7 +25,7 @@ export const getCartsSchema = z.object({
 
 export const getCartSchema = z.object({
 	params: z.object({
-		userId: objectIdGeneric,
+		userID: objectIdGeneric,
 	}),
 });
 
@@ -35,7 +35,7 @@ export const createCartSchema = z.object({
 
 export const updateCartSchema = z.object({
 	params: z.object({
-		userId: objectIdGeneric,
+		userID: objectIdGeneric,
 	}),
 	body: z.object({
 		products: cartGeneric.shape.products,
@@ -44,12 +44,12 @@ export const updateCartSchema = z.object({
 
 export const clearCartSchema = z.object({
 	params: z.object({
-		userId: objectIdGeneric,
+		userID: objectIdGeneric,
 	}),
 });
 
 export const deleteCartSchema = z.object({
 	params: z.object({
-		userId: objectIdGeneric,
+		userID: objectIdGeneric,
 	}),
 });

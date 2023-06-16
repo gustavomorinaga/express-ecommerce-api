@@ -8,9 +8,11 @@ export interface IUser extends TDocument {
 	email: string;
 	avatar?: string;
 	password: string;
+	dateOfBirth?: Date;
 	billingAddress?: IAddress;
 	deliveryAddress?: IAddress;
 	active?: boolean;
+	role: 'user' | 'admin';
 }
 
 export interface IUserDocument extends IUser, Document<string> {}

@@ -5,17 +5,20 @@ import jwt from 'jsonwebtoken';
 // Config
 import { environment } from '@config';
 
-// TS
-import { IUser } from '@ts';
+// Errors
 import { handleError } from '@errors';
 
+// TS
+import { IUser } from '@ts';
+
 export const authMiddleware = (req: Request, res: Response, next: NextFunction) => {
-	if (!environment.JWT_SECRET) throw new Error('JWT_SECRET not found!');
+	if (!environment.JWT_SECRET)
+		return handleError('JWT_SECRET not found', 'INTERNAL_SERVER_ERROR');
 
 	const authHeader = req.headers['authorization'];
 	const token = authHeader && authHeader.split(' ')[1];
 
-	if (!token) return res.sendStatus(statuses.UNAUTHORIZED);
+	if (!token) return handleError('Token not found', 'UNAUTHORIZED');
 
 	jwt.verify(token, environment.JWT_SECRET, (err: any, user: any) => {
 		if (err) return handleError('Token has expired', 'UNAUTHORIZED');

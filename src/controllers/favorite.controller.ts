@@ -4,6 +4,9 @@ import statuses from 'http-status';
 // Repositories
 import { FavoriteRepository } from '@repositories';
 
+// Middlewares
+import { isAdminMiddleware } from '@middlewares';
+
 // Schemas
 import {
 	clearFavoriteSchema,
@@ -19,7 +22,7 @@ import { zParse } from '@utils';
 /** Responsável por gerenciar os produtos favoritos dos usuários */
 const FavoriteController = Router();
 
-FavoriteController.get('/', async (req, res, next) => {
+FavoriteController.get('/', isAdminMiddleware, async (req, res, next) => {
 	try {
 		const carts = await FavoriteRepository.getFavorites();
 
@@ -29,13 +32,13 @@ FavoriteController.get('/', async (req, res, next) => {
 	}
 });
 
-FavoriteController.get('/:userId', async (req, res, next) => {
+FavoriteController.get('/:userID', async (req, res, next) => {
 	try {
 		const {
-			params: { userId },
+			params: { userID },
 		} = await zParse(getFavoriteSchema, req);
 
-		const cart = await FavoriteRepository.getUserFavorites(userId);
+		const cart = await FavoriteRepository.getUserFavorites(userID);
 
 		return res.status(statuses.OK).send(cart);
 	} catch (error) {
@@ -55,14 +58,14 @@ FavoriteController.post('/', async (req, res, next) => {
 	}
 });
 
-FavoriteController.put('/:userId', async (req, res, next) => {
+FavoriteController.put('/:userID', async (req, res, next) => {
 	try {
 		const {
-			params: { userId },
+			params: { userID },
 			body: data,
 		} = await zParse(updateFavoriteSchema, req);
 
-		const response = await FavoriteRepository.updateUserFavorites(userId, data);
+		const response = await FavoriteRepository.updateUserFavorites(userID, data);
 
 		return res.status(statuses.OK).send(response);
 	} catch (error) {
@@ -70,13 +73,13 @@ FavoriteController.put('/:userId', async (req, res, next) => {
 	}
 });
 
-FavoriteController.patch('/:userId/clear', async (req, res, next) => {
+FavoriteController.patch('/:userID/clear', async (req, res, next) => {
 	try {
 		const {
-			params: { userId },
+			params: { userID },
 		} = await zParse(clearFavoriteSchema, req);
 
-		const response = await FavoriteRepository.clearUserFavorites(userId);
+		const response = await FavoriteRepository.clearUserFavorites(userID);
 
 		return res.status(statuses.OK).send(response);
 	} catch (error) {
@@ -84,13 +87,13 @@ FavoriteController.patch('/:userId/clear', async (req, res, next) => {
 	}
 });
 
-FavoriteController.delete('/:userId', async (req, res, next) => {
+FavoriteController.delete('/:userID', isAdminMiddleware, async (req, res, next) => {
 	try {
 		const {
-			params: { userId },
+			params: { userID },
 		} = await zParse(deleteFavoriteSchema, req);
 
-		await FavoriteRepository.deleteUserFavorites(userId);
+		await FavoriteRepository.deleteUserFavorites(userID);
 
 		return res.sendStatus(statuses.NO_CONTENT);
 	} catch (error) {

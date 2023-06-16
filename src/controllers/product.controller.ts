@@ -5,7 +5,7 @@ import statuses from 'http-status';
 import { ProductRepository } from '@repositories';
 
 // Middlewares
-import { authMiddleware } from '@middlewares';
+import { authMiddleware, isAdminMiddleware } from '@middlewares';
 
 // Schemas
 import {
@@ -49,50 +49,62 @@ ProductController.get('/:id', async (req, res, next) => {
 	}
 });
 
-ProductController.post('/', authMiddleware, async (req, res, next) => {
-	try {
-		const { body: data } = await zParse(createProductSchema, req);
+ProductController.post(
+	'/',
+	...[authMiddleware, isAdminMiddleware],
+	async (req, res, next) => {
+		try {
+			const { body: data } = await zParse(createProductSchema, req);
 
-		const response = await ProductRepository.createProduct(data);
+			const response = await ProductRepository.createProduct(data);
 
-		return res.status(statuses.CREATED).send(response);
-	} catch (error) {
-		next(error);
+			return res.status(statuses.CREATED).send(response);
+		} catch (error) {
+			next(error);
+		}
 	}
-});
+);
 
-ProductController.put('/:id', authMiddleware, async (req, res, next) => {
-	try {
-		const {
-			params: { id },
-			body: data,
-		} = await zParse(updateProductSchema, req);
+ProductController.put(
+	'/:id',
+	...[authMiddleware, isAdminMiddleware],
+	async (req, res, next) => {
+		try {
+			const {
+				params: { id },
+				body: data,
+			} = await zParse(updateProductSchema, req);
 
-		const response = await ProductRepository.updateProduct(id, data);
+			const response = await ProductRepository.updateProduct(id, data);
 
-		return res.status(statuses.OK).send(response);
-	} catch (error) {
-		next(error);
+			return res.status(statuses.OK).send(response);
+		} catch (error) {
+			next(error);
+		}
 	}
-});
+);
 
-ProductController.delete('/:id', authMiddleware, async (req, res, next) => {
-	try {
-		const {
-			params: { id },
-		} = await zParse(deleteProductSchema, req);
+ProductController.delete(
+	'/:id',
+	...[authMiddleware, isAdminMiddleware],
+	async (req, res, next) => {
+		try {
+			const {
+				params: { id },
+			} = await zParse(deleteProductSchema, req);
 
-		await ProductRepository.deleteProduct(id);
+			await ProductRepository.deleteProduct(id);
 
-		return res.sendStatus(statuses.NO_CONTENT);
-	} catch (error) {
-		next(error);
+			return res.sendStatus(statuses.NO_CONTENT);
+		} catch (error) {
+			next(error);
+		}
 	}
-});
+);
 
 ProductController.delete(
 	'/:id/variants/:idVariant',
-	authMiddleware,
+	...[authMiddleware, isAdminMiddleware],
 	async (req, res, next) => {
 		try {
 			const {

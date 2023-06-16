@@ -18,7 +18,7 @@ import {
 } from '@controllers';
 
 // Middlewares
-import { authMiddleware } from '@middlewares';
+import { authMiddleware, isAdminMiddleware } from '@middlewares';
 
 const routes = Router();
 

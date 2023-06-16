@@ -4,24 +4,33 @@ import statuses from 'http-status';
 // Repositories
 import { CartRepository } from '@repositories';
 
+// Middlewares
+import { isAdminMiddleware } from '@middlewares';
+
 // Schemas
 import {
 	clearCartSchema,
 	createCartSchema,
 	deleteCartSchema,
 	getCartSchema,
+	getCartsSchema,
 	updateCartSchema,
 } from '@schemas';
 
 // Utils
 import { zParse } from '@utils';
 
+// Errors
+import { handleError } from '@errors';
+
 /** Responsável por gerenciar o carrinho de compras dos usuários */
 const CartController = Router();
 
-CartController.get('/', async (req, res, next) => {
+CartController.get('/', isAdminMiddleware, async (req, res, next) => {
 	try {
-		const carts = await CartRepository.getCarts();
+		const { query } = await zParse(getCartsSchema, req);
+
+		const carts = await CartRepository.getCarts(query);
 
 		return res.status(statuses.OK).send(carts);
 	} catch (error) {
@@ -29,13 +38,17 @@ CartController.get('/', async (req, res, next) => {
 	}
 });
 
-CartController.get('/:userId', async (req, res, next) => {
+CartController.get('/:userID', async (req, res, next) => {
 	try {
 		const {
-			params: { userId },
+			params: { userID },
 		} = await zParse(getCartSchema, req);
+		const { _id: authUserID, role } = req._user;
 
-		const cart = await CartRepository.getCart(userId);
+		const cart = await CartRepository.getCart(userID);
+		if (!cart) return handleError('Cart not found', 'NOT_FOUND');
+		if (role === 'user' && cart.user._id?.toString() !== authUserID)
+			return handleError('User unauthorized', 'UNAUTHORIZED');
 
 		return res.status(statuses.OK).send(cart);
 	} catch (error) {
@@ -55,14 +68,14 @@ CartController.post('/', async (req, res, next) => {
 	}
 });
 
-CartController.put('/:userId', async (req, res, next) => {
+CartController.put('/:userID', async (req, res, next) => {
 	try {
 		const {
-			params: { userId },
+			params: { userID },
 			body: data,
 		} = await zParse(updateCartSchema, req);
 
-		const response = await CartRepository.updateCart(userId, data);
+		const response = await CartRepository.updateCart(userID, data);
 
 		return res.status(statuses.OK).send(response);
 	} catch (error) {
@@ -70,13 +83,13 @@ CartController.put('/:userId', async (req, res, next) => {
 	}
 });
 
-CartController.patch('/:userId/clear', async (req, res, next) => {
+CartController.patch('/:userID/clear', async (req, res, next) => {
 	try {
 		const {
-			params: { userId },
+			params: { userID },
 		} = await zParse(clearCartSchema, req);
 
-		const response = await CartRepository.clearCart(userId);
+		const response = await CartRepository.clearCart(userID);
 
 		return res.status(statuses.OK).send(response);
 	} catch (error) {
@@ -84,13 +97,13 @@ CartController.patch('/:userId/clear', async (req, res, next) => {
 	}
 });
 
-CartController.delete('/:userId', async (req, res, next) => {
+CartController.delete('/:userID', isAdminMiddleware, async (req, res, next) => {
 	try {
 		const {
-			params: { userId },
+			params: { userID },
 		} = await zParse(deleteCartSchema, req);
 
-		await CartRepository.deleteCart(userId);
+		await CartRepository.deleteCart(userID);
 
 		return res.sendStatus(statuses.NO_CONTENT);
 	} catch (error) {

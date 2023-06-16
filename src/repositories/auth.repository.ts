@@ -5,10 +5,10 @@ import { UserModel } from '@models';
 import { handleError } from '@errors';
 
 // TS
-import { IAuth, IUser } from '@ts';
+import { IUser, TAuthLogin, TAuthReset, TUserCreate } from '@ts';
 
 export const AuthRepository = {
-	async login({ email, password }: IAuth) {
+	async login({ email, password }: TAuthLogin) {
 		const user = await UserModel.findOne({ email }).populate('password');
 		if (!user) return handleError('User not found', 'NOT_FOUND');
 
@@ -18,11 +18,11 @@ export const AuthRepository = {
 		return user.toObject<IUser>();
 	},
 
-	async signUp(user: IUser) {
+	async signUp(user: TUserCreate) {
 		return (await UserModel.create(user)).toObject<IUser>();
 	},
 
-	async resetPassword({ email, password }: IAuth) {
+	async resetPassword({ email, password }: TAuthReset) {
 		return await UserModel.findOneAndUpdate(
 			{ email },
 			{ password },

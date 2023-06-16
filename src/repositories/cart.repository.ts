@@ -31,8 +31,8 @@ export const CartRepository = {
 		);
 	},
 
-	async getCart(userId: ICart['user']) {
-		const cart = await CartModel.findOne({ user: userId })
+	async getCart(userID: ICart['user']) {
+		const cart = await CartModel.findOne({ user: userID })
 			.populate('user products.variant')
 			.populate({
 				path: 'products.product',
@@ -59,11 +59,11 @@ export const CartRepository = {
 		return createdCart.toObject<ICartPopulated>();
 	},
 
-	async updateCart(userId: ICart['user'], cart: TCartUpdate) {
-		const existsCart = await CartModel.findOne({ user: userId });
+	async updateCart(userID: ICart['user'], cart: TCartUpdate) {
+		const existsCart = await CartModel.findOne({ user: userID });
 		if (!existsCart) return handleError('Cart not found', 'NOT_FOUND');
 
-		return await CartModel.findOneAndUpdate({ user: userId }, cart, {
+		return await CartModel.findOneAndUpdate({ user: userID }, cart, {
 			new: true,
 		})
 			.populate('user products.variant')
@@ -75,12 +75,12 @@ export const CartRepository = {
 			.lean<ICartPopulated>();
 	},
 
-	async clearCart(userId: ICart['user']) {
-		const existsCart = await CartModel.findOne({ user: userId });
+	async clearCart(userID: ICart['user']) {
+		const existsCart = await CartModel.findOne({ user: userID });
 		if (!existsCart) return handleError('Cart not found', 'NOT_FOUND');
 
 		return await CartModel.findOneAndUpdate(
-			{ user: userId },
+			{ user: userID },
 			{ products: [] },
 			{ new: true }
 		)
@@ -88,7 +88,7 @@ export const CartRepository = {
 			.lean<ICartPopulated>();
 	},
 
-	async deleteCart(userId: ICart['user']) {
-		return await CartModel.findOneAndDelete({ user: userId }).lean<ICart>();
+	async deleteCart(userID: ICart['user']) {
+		return await CartModel.findOneAndDelete({ user: userID }).lean<ICart>();
 	},
 };

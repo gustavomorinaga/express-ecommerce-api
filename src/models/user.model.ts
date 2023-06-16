@@ -36,6 +36,10 @@ const UserSchema = new Schema<IUser, IUserModel, IUserMethods>(
 			required: true,
 			select: false,
 		},
+		dateOfBirth: {
+			type: Date,
+			required: false,
+		},
 		billingAddress: {
 			type: AddressSchema.obj,
 			required: false,
@@ -48,6 +52,12 @@ const UserSchema = new Schema<IUser, IUserModel, IUserMethods>(
 			type: Boolean,
 			required: false,
 			default: true,
+		},
+		role: {
+			type: String,
+			required: true,
+			enum: ['user', 'admin'],
+			default: 'user',
 		},
 	},
 	{ timestamps: true, collation: { locale: 'en' } }

@@ -5,7 +5,7 @@ import statuses from 'http-status';
 import { CategoryRepository } from '@repositories';
 
 // Middlewares
-import { authMiddleware } from '@middlewares';
+import { authMiddleware, isAdminMiddleware } from '@middlewares';
 
 // Schemas
 import {
@@ -49,50 +49,62 @@ CategoryController.get('/:id', async (req, res, next) => {
 	}
 });
 
-CategoryController.post('/', authMiddleware, async (req, res, next) => {
-	try {
-		const { body: data } = await zParse(createCategorySchema, req);
+CategoryController.post(
+	'/',
+	...[authMiddleware, isAdminMiddleware],
+	async (req, res, next) => {
+		try {
+			const { body: data } = await zParse(createCategorySchema, req);
 
-		const response = await CategoryRepository.createCategory(data);
+			const response = await CategoryRepository.createCategory(data);
 
-		return res.status(statuses.CREATED).send(response);
-	} catch (error) {
-		next(error);
+			return res.status(statuses.CREATED).send(response);
+		} catch (error) {
+			next(error);
+		}
 	}
-});
+);
 
-CategoryController.put('/:id', authMiddleware, async (req, res, next) => {
-	try {
-		const {
-			params: { id },
-			body: data,
-		} = await zParse(updateCategorySchema, req);
+CategoryController.put(
+	'/:id',
+	...[authMiddleware, isAdminMiddleware],
+	async (req, res, next) => {
+		try {
+			const {
+				params: { id },
+				body: data,
+			} = await zParse(updateCategorySchema, req);
 
-		const response = await CategoryRepository.updateCategory(id, data);
+			const response = await CategoryRepository.updateCategory(id, data);
 
-		return res.status(statuses.OK).send(response);
-	} catch (error) {
-		next(error);
+			return res.status(statuses.OK).send(response);
+		} catch (error) {
+			next(error);
+		}
 	}
-});
+);
 
-CategoryController.delete('/:id', authMiddleware, async (req, res, next) => {
-	try {
-		const {
-			params: { id },
-		} = await zParse(deleteCategorySchema, req);
+CategoryController.delete(
+	'/:id',
+	...[authMiddleware, isAdminMiddleware],
+	async (req, res, next) => {
+		try {
+			const {
+				params: { id },
+			} = await zParse(deleteCategorySchema, req);
 
-		await CategoryRepository.deleteCategory(id);
+			await CategoryRepository.deleteCategory(id);
 
-		return res.sendStatus(statuses.NO_CONTENT);
-	} catch (error) {
-		next(error);
+			return res.sendStatus(statuses.NO_CONTENT);
+		} catch (error) {
+			next(error);
+		}
 	}
-});
+);
 
 CategoryController.delete(
 	'/:id/sub-categories/:idSubCategory',
-	authMiddleware,
+	...[authMiddleware, isAdminMiddleware],
 	async (req, res, next) => {
 		try {
 			const {
