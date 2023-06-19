@@ -4,13 +4,19 @@
 	"description": "Express E-commerce API",
 	"author": "Gustavo Morinaga <me@gustavomorinaga.dev>",
 	"keywords": [
+		"bcrypt",
+		"esbuild",
+		"eslint",
 		"express",
-		"typescript",
+		"jwt",
 		"mongodb",
 		"mongoose",
-		"zod",
-		"eslint",
-		"prettier"
+		"nodemailer",
+		"pm2",
+		"prettier",
+		"swagger",
+		"typescript",
+		"zod"
 	],
 	"license": "MIT",
 	"main": "./src/index.ts",
