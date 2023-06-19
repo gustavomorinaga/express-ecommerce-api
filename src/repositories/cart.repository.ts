@@ -21,9 +21,9 @@ export const CartRepository = {
 					},
 					{
 						path: 'products.product',
-						select: '-variants',
+						select: '-variants -category -subCategory',
 						populate: {
-							path: 'brand category subCategory',
+							path: 'brand',
 						},
 					},
 				],
@@ -36,8 +36,8 @@ export const CartRepository = {
 			.populate('user products.variant')
 			.populate({
 				path: 'products.product',
-				select: '-variants',
-				populate: { path: 'brand category subCategory' },
+				select: '-variants -category -subCategory',
+				populate: { path: 'brand' },
 			})
 			.lean<ICartPopulated>();
 		if (!cart) return handleError('Cart not found', 'NOT_FOUND');
@@ -51,8 +51,8 @@ export const CartRepository = {
 			.then(doc =>
 				doc.populate({
 					path: 'products.product',
-					select: '-variants',
-					populate: { path: 'brand category subCategory' },
+					select: '-variants -category -subCategory',
+					populate: { path: 'brand' },
 				})
 			);
 
@@ -69,8 +69,8 @@ export const CartRepository = {
 			.populate('user products.variant')
 			.populate({
 				path: 'products.product',
-				select: '-variants',
-				populate: { path: 'brand category subCategory' },
+				select: '-variants -category -subCategory',
+				populate: { path: 'brand' },
 			})
 			.lean<ICartPopulated>();
 	},

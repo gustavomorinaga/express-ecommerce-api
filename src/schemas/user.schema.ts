@@ -1,14 +1,20 @@
 import { z } from 'zod';
 
 // Schemas
-import { addressGeneric, objectIdGeneric, queryEnums, queryGeneric } from '@schemas';
+import {
+	addressGeneric,
+	dateGeneric,
+	objectIdGeneric,
+	queryEnums,
+	queryGeneric,
+} from '@schemas';
 
 // Generics
 export const userGeneric = z.object({
 	name: z.string().min(3).max(50),
 	email: z.string().email(),
 	password: z.string().min(6).max(20),
-	dateOfBirth: z.date().optional(),
+	dateOfBirth: dateGeneric.optional(),
 	billingAddress: addressGeneric.optional(),
 	deliveryAddress: addressGeneric.optional(),
 	active: z.boolean().default(true),
@@ -35,11 +41,7 @@ export const getUserSchema = z.object({
 });
 
 export const createUserSchema = z.object({
-	body: z.object({
-		name: userGeneric.shape.name,
-		email: userGeneric.shape.email,
-		password: userGeneric.shape.password,
-	}),
+	body: userGeneric.pick({ name: true, email: true, password: true }),
 });
 
 export const updateUserSchema = z.object({
@@ -53,9 +55,7 @@ export const updateUserPasswordSchema = z.object({
 	params: z.object({
 		id: objectIdGeneric,
 	}),
-	body: z.object({
-		password: userGeneric.shape.password,
-	}),
+	body: userGeneric.pick({ password: true }),
 });
 
 export const updateUserActiveSchema = z.object({

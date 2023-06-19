@@ -16,7 +16,7 @@ export const envSchema = z.object({
 
 	EMAIL_SERVICE: z.coerce.string().default('gmail'),
 	EMAIL_HOST: z.coerce.string(),
-	EMAIL_PORT: z.coerce.number().default(465),
+	EMAIL_PORT: z.enum(['25', '465', '587']).default('465').transform(Number),
 	EMAIL_USER: z.coerce.string(),
 	EMAIL_PASS: z.coerce.string(),
 	EMAIL_FROM: z.coerce.string(),

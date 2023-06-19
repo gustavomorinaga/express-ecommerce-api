@@ -1,19 +1,29 @@
 import { z } from 'zod';
 
 // Schemas
-import { objectIdGeneric } from '@schemas';
+import { objectIdGeneric, queryEnums, queryGeneric } from '@schemas';
 
 // Generics
+export const favoriteProductGeneric = z.object({
+	product: objectIdGeneric,
+	variant: objectIdGeneric,
+});
+
 export const favoriteGeneric = z.object({
-	user: objectIdGeneric,
-	products: z.array(objectIdGeneric),
+	user: objectIdGeneric.optional(),
+	products: z.array(favoriteProductGeneric),
 });
 
 // Schemas
-export const getFavoriteSchema = z.object({
-	params: z.object({
-		userID: objectIdGeneric,
-	}),
+export const getFavoritesSchema = z.object({
+	query: z
+		.object({
+			userID: objectIdGeneric.optional(),
+		})
+		.extend({
+			...queryGeneric.shape,
+			sortBy: z.enum(['price', ...queryEnums.sortBy]).default('createdAt'),
+		}),
 });
 
 export const createFavoriteSchema = z.object({

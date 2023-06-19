@@ -49,7 +49,11 @@ export const OrderRepository = {
 					$unwind: '$products.product',
 				},
 				{
-					$unset: ['products.product.variants'],
+					$unset: [
+						'products.product.variants',
+						'products.product.category',
+						'products.product.subCategory',
+					],
 				},
 			],
 			brand: [
@@ -63,39 +67,6 @@ export const OrderRepository = {
 				},
 				{
 					$unwind: '$products.product.brand',
-				},
-			],
-			category: [
-				{
-					$lookup: {
-						from: 'categories',
-						localField: 'products.product.category',
-						foreignField: '_id',
-						as: 'products.product.category',
-					},
-				},
-				{
-					$unwind: {
-						path: '$products.product.category',
-						preserveNullAndEmptyArrays: true,
-					},
-				},
-				{ $unset: ['products.product.category.subCategories'] },
-			],
-			subCategory: [
-				{
-					$lookup: {
-						from: 'subcategories',
-						localField: 'products.product.subCategory',
-						foreignField: '_id',
-						as: 'products.product.subCategory',
-					},
-				},
-				{
-					$unwind: {
-						path: '$products.product.subCategory',
-						preserveNullAndEmptyArrays: true,
-					},
 				},
 			],
 			variants: [
@@ -199,8 +170,8 @@ export const OrderRepository = {
 			.then(doc =>
 				doc.populate({
 					path: 'products.product',
-					select: '-variants',
-					populate: { path: 'brand category subCategory' },
+					select: '-variants -category -subCategory',
+					populate: { path: 'brand' },
 				})
 			);
 
@@ -212,8 +183,8 @@ export const OrderRepository = {
 			.populate('user products.variant')
 			.populate({
 				path: 'products.product',
-				select: '-variants',
-				populate: { path: 'brand category subCategory' },
+				select: '-variants -category -subCategory',
+				populate: { path: 'brand' },
 			})
 			.lean<IOrderPopulated>();
 	},
@@ -223,8 +194,8 @@ export const OrderRepository = {
 			.populate('user products.variant')
 			.populate({
 				path: 'products.product',
-				select: '-variants',
-				populate: { path: 'brand category subCategory' },
+				select: '-variants -category -subCategory',
+				populate: { path: 'brand' },
 			})
 			.lean<IOrderPopulated>();
 	},

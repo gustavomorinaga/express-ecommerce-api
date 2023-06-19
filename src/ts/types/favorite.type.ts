@@ -1,7 +1,9 @@
 import { z } from 'zod';
 
 // Schemas
-import { createFavoriteSchema, updateFavoriteSchema } from '@schemas';
+import { createFavoriteSchema, getFavoritesSchema, updateFavoriteSchema } from '@schemas';
+
+export type TFavoriteQuery = z.infer<typeof getFavoritesSchema>['query'];
 
 export type TFavoriteCreate = z.infer<typeof createFavoriteSchema>['body'];
 
