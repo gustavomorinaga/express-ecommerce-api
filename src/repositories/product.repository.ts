@@ -83,9 +83,6 @@ export const ProductRepository = {
 						as: 'variants',
 					},
 				},
-				{
-					$unwind: '$variants',
-				},
 			],
 		};
 
@@ -155,6 +152,8 @@ export const ProductRepository = {
 		const populateStages = Object.values(populateDictionaryFiltered).flat();
 
 		conditions.push(...populateStages);
+
+		console.log(conditions);
 
 		const aggregation = ProductModel.aggregate<IProductPopulated>(conditions);
 
