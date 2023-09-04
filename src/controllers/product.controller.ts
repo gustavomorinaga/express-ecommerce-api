@@ -35,13 +35,13 @@ ProductController.get('/', async (req, res, next) => {
 	}
 });
 
-ProductController.get('/:id', async (req, res, next) => {
+ProductController.get('/:slug', async (req, res, next) => {
 	try {
 		const {
-			params: { id },
+			params: { slug },
 		} = await zParse(getProductSchema, req);
 
-		const product = await ProductRepository.getProduct(id);
+		const product = await ProductRepository.getProduct(slug);
 
 		return res.status(statuses.OK).send(product);
 	} catch (error) {

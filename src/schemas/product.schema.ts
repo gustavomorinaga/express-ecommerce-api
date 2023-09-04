@@ -44,9 +44,11 @@ export const getProductsSchema = z.object({
 });
 
 export const getProductSchema = z.object({
-	params: z.object({
-		id: objectIdGeneric,
-	}),
+	params: z
+		.object({
+			slug: productGeneric.shape.slug,
+		})
+		.required(),
 });
 
 export const createProductSchema = z.object({

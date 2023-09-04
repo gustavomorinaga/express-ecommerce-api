@@ -153,8 +153,6 @@ export const ProductRepository = {
 
 		conditions.push(...populateStages);
 
-		console.log(conditions);
-
 		const aggregation = ProductModel.aggregate<IProductPopulated>(conditions);
 
 		return await ProductModel.aggregatePaginate(aggregation, {
@@ -165,8 +163,8 @@ export const ProductRepository = {
 		});
 	},
 
-	async getProduct(id: IProduct['_id']) {
-		return await ProductModel.findById(id)
+	async getProduct(slug: IProduct['slug']) {
+		return await ProductModel.findOne({ slug })
 			.populate('brand category subCategory variants')
 			.lean<IProductPopulated>();
 	},

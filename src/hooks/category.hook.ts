@@ -23,8 +23,6 @@ export const preUpdateCategoryHook = async function (
 
 	const data = this.getUpdate() as ICategoryDocument & UpdateQuery<ICategoryDocument>;
 
-	console.log(data);
-
 	if (!data?.subCategories?.length) return next();
 
 	category.subCategories ??= [];
