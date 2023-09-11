@@ -8,6 +8,7 @@ export const productVariantGeneric = z.object({
 	name: z.string().min(1).max(50),
 	sku: z.string().min(5).max(50),
 	price: z.number().nonnegative().min(0).default(0),
+	originalPrice: z.number().nonnegative().min(0).optional(),
 	stock: z.number().nonnegative().min(0).default(0),
 	status: z.enum(['low-stock', 'out-of-stock', 'in-stock']).optional(),
 	active: z.boolean().default(true).optional(),
@@ -19,6 +20,7 @@ export const productGeneric = z.object({
 	description: z.string().min(20),
 	brand: objectIdGeneric,
 	category: objectIdGeneric,
+	subCategory: objectIdGeneric,
 	variants: z.array(productVariantGeneric),
 	active: z.boolean().default(true).optional(),
 });

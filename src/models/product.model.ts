@@ -25,6 +25,7 @@ const ProductSchema = new Schema<IProduct, IProductModel, IProductMethods>(
 		slug: {
 			type: String,
 			unique: true,
+			trim: true,
 		},
 		description: {
 			type: String,

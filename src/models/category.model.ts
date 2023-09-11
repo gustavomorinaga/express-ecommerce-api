@@ -19,7 +19,7 @@ const CategorySchema = new Schema<ICategory, ICategoryModel, ICategoryMethods>(
 			required: false,
 			trim: true,
 		},
-		subCategories: [{ type: Schema.Types.ObjectId, ref: 'SubCategory', select: false }],
+		subCategories: [{ type: Schema.Types.ObjectId, ref: 'SubCategory' }],
 	},
 	{ timestamps: true, collation: { locale: 'en' } }
 );

@@ -165,7 +165,11 @@ export const ProductRepository = {
 
 	async getProduct(slug: IProduct['slug']) {
 		return await ProductModel.findOne({ slug })
-			.populate('brand category subCategory variants')
+			.populate('brand subCategory variants')
+			.populate({
+				path: 'category',
+				select: '-subCategories',
+			})
 			.lean<IProductPopulated>();
 	},
 
@@ -178,9 +182,14 @@ export const ProductRepository = {
 			variants = createdVariants.map(variant => variant._id);
 		}
 
-		const createdProduct = await ProductModel.create({ ...product, variants }).then(doc =>
-			doc.populate('brand category subCategory variants')
-		);
+		const createdProduct = await ProductModel.create({ ...product, variants })
+			.then(doc => doc.populate('brand subCategory variants'))
+			.then(doc =>
+				doc.populate({
+					path: 'category',
+					select: '-subCategories',
+				})
+			);
 
 		return createdProduct.toObject<IProductPopulated>();
 	},
@@ -207,12 +216,16 @@ export const ProductRepository = {
 				variants = upsertedVariantsIds.map(upsertedIds => upsertedIds.toString());
 		}
 
-		const data = { ...product, variants: variants.length ? variants : undefined };
+		const data = { ...product, ...(variants.length && { variants }) };
 
 		return await ProductModel.findByIdAndUpdate(id, data, {
 			new: true,
 		})
-			.populate('brand category subCategory variants')
+			.populate('brand subCategory variants')
+			.populate({
+				path: 'category',
+				select: '-subCategories',
+			})
 			.lean<IProductPopulated>();
 	},
 

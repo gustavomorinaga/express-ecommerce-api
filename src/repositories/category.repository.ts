@@ -22,6 +22,7 @@ export const CategoryRepository = {
 
 		return await CategoryModel.find(conditions)
 			.sort({ [query.sortBy]: query.orderBy })
+			.populate('subCategories')
 			.lean<ICategory>();
 	},
 
